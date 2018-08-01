@@ -1,0 +1,19 @@
+<fs-list [config]="config" #<%= classify(name) %>Table>
+  <fs-list-column>
+    <ng-template fs-list-header>
+      №
+    </ng-template>
+    <ng-template fs-list-cell let-index="index">
+      {{index}}
+    </ng-template>
+  </fs-list-column>
+
+  <fs-list-column name="name" title="Name" [sortable]="true">
+    <ng-template fs-list-header>
+      <b>User</b> name
+    </ng-template>
+    <ng-template fs-list-cell let-value="value" let-row="row">
+      {{value}}
+    </ng-template>
+  </fs-list-column>
+</fs-list>
