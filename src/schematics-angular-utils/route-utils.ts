@@ -7,7 +7,7 @@
  */
 import * as ts from 'typescript';
 import { findNodes, insertAfterLastOccurrence } from './ast-utils';
-import { Change, NoopChange } from './change';
+import { Change, InsertChange, NoopChange } from './change';
 
 
 /**
@@ -17,13 +17,38 @@ import { Change, NoopChange } from './change';
  * @param symbolName (item to import)
  * @param fileName (path to the file)
  * @param isDefault (if true, import follows style for importing default exports)
+ * @param existingChagnes
  * @return Change
  */
 
 export function insertImport(source: ts.SourceFile, fileToEdit: string, symbolName: string,
-                             fileName: string, isDefault = false): Change {
+                             fileName: string, isDefault = false, existingChagnes: InsertChange[] = []): Change {
   const rootNode = source;
   const allImports = findNodes(rootNode, ts.SyntaxKind.ImportDeclaration);
+  let prevImports: any;
+
+  existingChagnes.some((change, index) => {
+    const text = change.toAdd;
+    if (text.indexOf('import') > -1
+      && text.indexOf('*') === -1
+      && text.indexOf(fileName) > -1
+    ) {
+      const importsArray = text.match(/{(.*)}/im);
+
+      if (importsArray) {
+        importsArray.shift();
+        prevImports = {};
+        prevImports.text = importsArray[0].trim();
+        prevImports.coma = (prevImports.text.lastIndexOf(',') === prevImports.text.length - 1) ? '' : ',';
+      }
+
+      existingChagnes.splice(index, 1);
+
+      return true;
+    } else {
+      return false;
+    }
+  });
 
   // get nodes that map to import statements from the file fileName
   const relevantImports = allImports.filter(node => {
@@ -59,7 +84,13 @@ export function insertImport(source: ts.SourceFile, fileToEdit: string, symbolNa
         findNodes(relevantImports[0], ts.SyntaxKind.CloseBraceToken)[0].getStart() ||
         findNodes(relevantImports[0], ts.SyntaxKind.FromKeyword)[0].getStart();
 
-      return insertAfterLastOccurrence(imports, `, ${symbolName}`, fileToEdit, fallbackPos);
+      let insertText = `, ${symbolName}`;
+
+      if (prevImports) {
+        insertText = `, ${prevImports.text}${prevImports.coma} ${symbolName}`
+      }
+
+      return insertAfterLastOccurrence(imports, insertText, fileToEdit, fallbackPos);
     }
 
     return new NoopChange();
@@ -77,8 +108,14 @@ export function insertImport(source: ts.SourceFile, fileToEdit: string, symbolNa
   // if there are no imports or 'use strict' statement, insert import at beginning of file
   const insertAtBeginning = allImports.length === 0 && useStrict.length === 0;
   const separator = insertAtBeginning ? '' : ';\n';
-  const toInsert = `${separator}import ${open}${symbolName}${close}` +
+
+  let toInsert = `${separator}import ${open}${symbolName}${close}` +
     ` from '${fileName}'${insertAtBeginning ? ';\n' : ''}`;
+
+  if (prevImports) {
+    toInsert = `${separator}import ${open}${prevImports.text}${prevImports.coma} ${symbolName}${close}` +
+      ` from '${fileName}'${insertAtBeginning ? ';\n' : ''}`;
+  }
 
   return insertAfterLastOccurrence(
     allImports,

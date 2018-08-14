@@ -1,7 +1,7 @@
 {
-  "name": "list",
+  "name": "fs-schematics",
   "version": "0.0.0",
-  "description": "A blank schematics",
+  "description": "",
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && jasmine src/**/*_spec.js"
@@ -19,5 +19,8 @@
     "@types/node": "^8.0.31",
     "jasmine": "^2.8.0",
     "typescript": "^2.5.2"
+  },
+  "devDependencies": {
+    "tslint": "^5.11.0"
   }
 }

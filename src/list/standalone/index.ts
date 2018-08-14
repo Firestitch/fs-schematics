@@ -1,24 +1,31 @@
 import {
-  apply, branchAndMerge, chain, filter, mergeWith,
+  apply,
+  branchAndMerge,
+  chain,
+  filter,
+  mergeWith,
   move,
   Rule,
   SchematicContext,
   SchematicsException,
-  Tree, url, template, externalSchematic
+  Tree,
+  url,
+  template,
+  externalSchematic
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
-import { parseName } from '../utils/parse-name';
-import { ListOptions } from './schema';
-import { addDeclarationToNgModule } from '../utils/ng-module-utils';
-import { findModuleFromOptions } from '../schematics-angular-utils/find-module';
+import { parseName } from '../../utils/parse-name';
+import { addDeclarationToNgModule, addDeclarationToRoutingModule } from '../../utils/ng-module-utils';
+import {
+  findModuleFromOptions,
+  findRoutingModuleFromOptions
+} from '../../schematics-angular-utils/find-module';
 
 
 export function getWorkspacePath(host: Tree): string {
   const possibleFiles = [ '/angular.json', '/.angular.json' ];
-  const path = possibleFiles.filter(path => host.exists(path))[0];
-
-  return path;
+  return possibleFiles.filter(path => host.exists(path))[0];
 }
 
 export function getWorkspace(host: Tree): WorkspaceSchema {
@@ -51,27 +58,23 @@ function filterTemplates(options: any): Rule {
 // per file.
 export function list(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
-    console.log('root options? ', options);
-
     const workspace = getWorkspace(tree);
 
     if (!options.project) {
       options.project = Object.keys(workspace.projects)[0];
     }
-    const project = workspace.projects[options.project];
 
-    if (options.path === undefined) {
-      const projectDirName = project.projectType === 'application' ? 'app' : 'lib';
-      options.path = `/${project.root}/src/${projectDirName}`;
-    }
+    options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
 
-    options.module = findModuleFromOptions(tree, options);
+    options.module = `${options.path}/${options.module}`;
+    options.routingModule = `${options.path}/${options.routingModule}`;
 
-    const parsedPath = parseName(options.path, options.name);
-    options.name = parsedPath.name;
-    options.path = parsedPath.path;
+    // const parsedPath = parseName(options.path, options.name);
+    // options.name = parsedPath.name;
+    // options.path = parsedPath.path;
 
-    // console.log('options', options);
+    options.create = options.create || false;
+    options.edit = options.edit || false;
 
     const templateSource = apply(url('./files'), [
       filterTemplates(options),
@@ -79,11 +82,9 @@ export function list(options: any): Rule {
         ...strings,
         ...options
       }),
-      () => { console.debug('path', parsedPath.path )},
-      move(parsedPath.path)
+      () => { console.debug('path', options.path )},
+      move(options.path)
     ]);
-
-    // console.log('templ', templateSource);
 
     const extrenalSchematics: any = [];
 
@@ -98,7 +99,7 @@ export function list(options: any): Rule {
 
       if (options.create) {
         extrenalSchematics.push(
-          externalSchematic('list', 'create', Object.assign({
+          externalSchematic('fs-schematics', 'list-create-edit', Object.assign({
             childName: 'create',
             }, createOptions)
           )
@@ -107,7 +108,7 @@ export function list(options: any): Rule {
 
       if (options.edit) {
         extrenalSchematics.push(
-          externalSchematic('list', 'create', Object.assign({
+          externalSchematic('fs-schematics', 'list-create-edit', Object.assign({
               childName: 'edit',
             }, createOptions)
           )
@@ -115,13 +116,12 @@ export function list(options: any): Rule {
       }
     }
 
-    console.log('external che', extrenalSchematics, options);
-
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
         addDeclarationToNgModule(options, false),
-        ...extrenalSchematics
+        addDeclarationToRoutingModule(options),
+        ...extrenalSchematics,
       ]))
     ]);
 

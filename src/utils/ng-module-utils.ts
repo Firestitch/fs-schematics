@@ -14,12 +14,18 @@ const { dasherize, classify } = strings;
 
 // Referencing forked and copied private APIs
 import { ModuleOptions, buildRelativePath } from '../schematics-angular-utils/find-module';
-import { addDeclarationToModule, addExportToModule } from '../schematics-angular-utils/ast-utils';
+import {
+  addDeclarationToModule,
+  addExportToModule, addSymbolToNgModuleRoutingMetadata,
+  findNodes
+} from '../schematics-angular-utils/ast-utils';
 import { InsertChange } from '../schematics-angular-utils/change';
+import { insertImport } from '../schematics-angular-utils/route-utils';
 
 const stringUtils = { dasherize, classify };
 
 export function addDeclarationToNgModule(options: ModuleOptions, exports: boolean): Rule {
+  debugger;
   return (host: Tree) => {
     addDeclaration(host, options);
     if (exports) {
@@ -29,8 +35,14 @@ export function addDeclarationToNgModule(options: ModuleOptions, exports: boolea
   };
 }
 
-function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModuleContext {
+export function addDeclarationToRoutingModule(options: ModuleOptions): Rule {
+  return (host: Tree) => {
+    addRoutingDeclaration(host, options);
+    return host;
+  };
+}
 
+function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModuleContext {
   const result = new AddToModuleContext();
 
   if (!options.module) {
@@ -79,6 +91,55 @@ function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModu
   return result;
 }
 
+function readTest(host: Tree, options: ModuleOptions) {
+  if (!options.routingModule) {
+    throw new SchematicsException(`RoutingModule not found.`);
+  }
+
+  const result = new AddToModuleContext();
+
+  const text = host.read(options.routingModule);
+
+  if (text === null) {
+    throw new SchematicsException(`File ${options.routingModule} does not exist!`);
+  }
+  const sourceText = text.toString('utf-8');
+  result.source = ts.createSourceFile(options.routingModule, sourceText, ts.ScriptTarget.Latest, true);
+
+  let hasIndexExportsFile = false;
+
+  host
+    .getDir(`${options.path}/` + stringUtils.dasherize(options.name))
+    .visit(filePath => {
+      if (filePath.indexOf('index.ts') > -1) {
+        const fileContent = host.read(filePath);
+
+        if (fileContent && fileContent.indexOf(`${stringUtils.dasherize(options.name)}.component`)) {
+          hasIndexExportsFile = true
+        }
+      }
+    });
+
+  let componentPath;
+
+  if (hasIndexExportsFile) {
+    componentPath = `${options.path}/`
+      + stringUtils.dasherize(options.name);
+  } else {
+    componentPath = `${options.path}/`
+      + stringUtils.dasherize(options.name) + '/'
+      + stringUtils.dasherize(options.name)
+      + '.component';
+  }
+
+
+
+  result.relativePath = buildRelativePath(options.module || '', componentPath);
+  result.classifiedName = stringUtils.classify(`${options.name}Component`);
+
+  return result;
+}
+
 function createAddSecondLevelToModuleContext(host: Tree, options: ModuleOptions): AddToModuleContext {
   const result = createAddToModuleContext(host, options);
 
@@ -89,19 +150,11 @@ function createAddSecondLevelToModuleContext(host: Tree, options: ModuleOptions)
 }
 
 function addDeclaration(host: Tree, options: ModuleOptions) {
-
-  // console.log('host', host);
-  // console.log('options', options);
   const context = !options.secondLevel
     ? createAddToModuleContext(host, options)
     : createAddSecondLevelToModuleContext(host, options);
-  // console.log('context', context);
-  const modulePath = options.module || '';
 
-  // console.log('source', context.source);
-  // console.log('modulePath', modulePath);
-  // console.log('context.classifiedName', context.classifiedName);
-  // console.log('context.relativePath', context.relativePath);
+  const modulePath = options.module || '';
 
   const declarationChanges = addDeclarationToModule(
     context.source,
@@ -118,6 +171,28 @@ function addDeclaration(host: Tree, options: ModuleOptions) {
   }
   host.commitUpdate(declarationRecorder);
 }
+
+function addRoutingDeclaration(host: Tree, options: ModuleOptions) {
+  const context = readTest(host, options);
+  const routingChanges = addSymbolToNgModuleRoutingMetadata(
+    context.source,
+    options.routingModule || '',
+    context.classifiedName,
+    context.relativePath,
+    options.name
+  );
+
+  if (options.routingModule) {
+    const declarationRecorder = host.beginUpdate(options.routingModule);
+    for (const change of routingChanges) {
+      if (change instanceof InsertChange) {
+        declarationRecorder.insertLeft(change.pos, change.toAdd);
+      }
+    }
+    host.commitUpdate(declarationRecorder);
+  }
+}
+
 
 function addExport(host: Tree, options: ModuleOptions) {
   const context = createAddToModuleContext(host, options);

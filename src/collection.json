@@ -3,11 +3,15 @@
   "schematics": {
     "list": {
       "description": "A blank schematic.",
-      "factory": "./list/index#list"
+      "factory": "./list/standalone/index#list"
     },
-    "create": {
+    "list-create-edit": {
       "description": "A blank schematic.",
-      "factory": "./create/index#create"
+      "factory": "./list/create-edit/index#createOrEdit"
+    },
+    "modules-list": {
+      "description": "A blank schematic.",
+      "factory": "./modules-list/index#list"
     }
   }
 }

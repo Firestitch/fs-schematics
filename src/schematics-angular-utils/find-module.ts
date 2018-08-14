@@ -11,6 +11,7 @@ import { DirEntry, Tree } from '@angular-devkit/schematics';
 
 export interface ModuleOptions {
   module?: string;
+  routingModule?: string;
   name: string;
   parentName?: string;
   flat?: boolean;
@@ -53,6 +54,38 @@ export function findModuleFromOptions(host: Tree, options: ModuleOptions, flag =
 }
 
 /**
+ * Find the module referred by a set of options passed to the schematics.
+ */
+export function findRoutingModuleFromOptions(host: Tree, options: ModuleOptions, flag = false): Path | undefined {
+  if (options.hasOwnProperty('skipImport') && options.skipImport) {
+    return undefined;
+  }
+
+  if (!options.routingModule) {
+    const pathToCheck = (options.path || '')
+      + (options.flat ? '' : '/' + strings.dasherize(options.name));
+
+    return normalize(findModule(host, pathToCheck));
+  } else {
+    const modulePath = !flag ? normalize(
+      '/' + (options.path) + '/' + options.routingModule) : options.routingModule;
+    const moduleBaseName = normalize(modulePath).split('/').pop();
+
+    if (host.exists(modulePath)) {
+      return normalize(modulePath);
+    } else if (host.exists(modulePath + '.ts')) {
+      return normalize(modulePath + '.ts');
+    } else if (host.exists(modulePath + '-routing.module.ts')) {
+      return normalize(modulePath + '-routing.module.ts');
+    } else if (host.exists(modulePath + '/' + moduleBaseName + '-routing.module.ts')) {
+      return normalize(modulePath + '/' + moduleBaseName + '-routing.module.ts');
+    } else {
+      throw new Error('Specified module does not exist');
+    }
+  }
+}
+
+/**
  * Function to find the "closest" module to a generated file's path.
  */
 export function findModule(host: Tree, generateDir: string): Path {
@@ -79,6 +112,41 @@ export function findModule(host: Tree, generateDir: string): Path {
   throw new Error('Could not find an NgModule. Use the skip-import '
     + 'option to skip importing in NgModule.');
 }
+
+export function findAllModules(host: Tree, generateDir: string) {
+  const dir: DirEntry | null = host.getDir('/' + generateDir);
+
+  const moduleRe = /\.module\.ts$/;
+  const routingModuleRe = /-routing\.module\.ts/;
+  const modules: any = [];
+
+  if (dir.subdirs) {
+    dir.subdirs.forEach((subDir) => {
+      modules.push(...findAllModules(host, `${generateDir}/${subDir}`));
+    });
+  }
+
+  const matches = dir.subfiles.filter(p => moduleRe.test(p) && !routingModuleRe.test(p));
+
+  if (matches.length > 0) {
+    return [
+      ...modules,
+      ...matches.reduce((acc: any, match) => {
+        const moduleInfo = {
+          modulePath: join((dir as any).path),
+          moduleFullPath: join((dir as any).path, match),
+          moduleName: match
+        };
+        acc.push(moduleInfo);
+
+        return acc;
+      }, [])
+    ]
+  }
+
+  return [];
+}
+
 
 /**
  * Build a relative path from one file path to another file path.

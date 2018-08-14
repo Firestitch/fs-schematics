@@ -1,17 +1,22 @@
 import {
-  apply, branchAndMerge, chain, filter, mergeWith,
+  apply,
+  branchAndMerge,
+  chain,
+  filter,
+  mergeWith,
   move,
+  url,
+  template,
   Rule,
   SchematicContext,
   SchematicsException,
-  Tree, url, template
+  Tree,
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
-import { parseName } from '../utils/parse-name';
-import { ListOptions } from './schema';
-import { addDeclarationToNgModule } from '../utils/ng-module-utils';
-import { findModuleFromOptions } from '../schematics-angular-utils/find-module';
+import { parseName } from '../../utils/parse-name';
+import { addDeclarationToNgModule } from '../../utils/ng-module-utils';
+import { findModuleFromOptions } from '../../schematics-angular-utils/find-module';
 
 
 export function getWorkspacePath(host: Tree): string {
@@ -49,7 +54,7 @@ function filterTemplates(options: any): Rule {
 
 // You don't have to export the function as default. You can also have more than one rule factory
 // per file.
-export function create(options: any): Rule {
+export function createOrEdit(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     const workspace = getWorkspace(tree);
 
@@ -70,8 +75,6 @@ export function create(options: any): Rule {
     options.name = parsedPath.name;
     options.path = parsedPath.path;
 
-    // console.log('options', options);
-    console.log('##create options', options);
     const templateSource = apply(url('./files'), [
       filterTemplates(options),
       template({
@@ -81,8 +84,7 @@ export function create(options: any): Rule {
       () => { console.debug('path', parsedPath.path )},
       move(parsedPath.path)
     ]);
-    console.log('##create options', options);
-    console.log('templ', templateSource);
+
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
