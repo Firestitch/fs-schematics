@@ -9,6 +9,10 @@
       "description": "A blank schematic.",
       "factory": "./list/create-edit/index#createOrEdit"
     },
+    "list-create-edit-dialog": {
+      "description": "A blank schematic.",
+      "factory": "./list/create-edit-dialog/index#createOrEdit"
+    },
     "modules-list": {
       "description": "A blank schematic.",
       "factory": "./modules-list/index#list"

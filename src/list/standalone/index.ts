@@ -88,32 +88,42 @@ export function list(options: any): Rule {
 
     const extrenalSchematics: any = [];
 
-    if (options.edit || options.create) {
-      const createOptions = {
-        project: options.project,
-        path: `${options.path}/${options.name}`,
-        module: options.module,
-        parentName: options.name,
-        secondLevel: true
-      };
+    const createOptions = {
+      project: options.project,
+      path: `${options.path}/${options.name}`,
+      module: options.module,
+      parentName: options.name,
+      secondLevel: true
+    };
 
-      if (options.create) {
+    if (options.edit || options.create) {
+
+      if (options.create && !options.dialog) {
         extrenalSchematics.push(
-          externalSchematic('fs-schematics', 'list-create-edit', Object.assign({
+          externalSchematic('@firestitch/schematics', 'list-create-edit', Object.assign({
             childName: 'create',
             }, createOptions)
           )
         )
       }
 
-      if (options.edit) {
+      if (options.edit && !options.dialog) {
         extrenalSchematics.push(
-          externalSchematic('fs-schematics', 'list-create-edit', Object.assign({
+          externalSchematic('@firestitch/schematics', 'list-create-edit', Object.assign({
               childName: 'edit',
             }, createOptions)
           )
         );
       }
+    }
+
+    if (options.dialog && options.singleName) {
+      extrenalSchematics.push(
+        externalSchematic('@firestitch/schematics', 'list-create-edit-dialog', Object.assign({
+            childName: options.singleName,
+          }, createOptions)
+        )
+      );
     }
 
     const rule = chain([
