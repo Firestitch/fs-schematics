@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FsListComponent, FsListConfig } from '@firestitch/list';
+<% if (dialog) { %>import { MatDialog } from '@angular/material';<% } %>
 import { of } from 'rxjs';
-
 <% if (dialog) { %>
-import { <%= classify(singleName) %>Component } from '<%=dasherize(name)%>/<%=dasherize(name)%>.component.ts';
+import { <%= classify(singleName) %>Component } from './<%=dasherize(singleName)%>';
 <% } %>
 
 @Component({
@@ -17,10 +17,22 @@ export class <%= classify(name) %>Component implements OnInit {
 
   public config: FsListConfig;
 
+  <% if (dialog) {%>
+  constructor(private _dialog: MatDialog,) {
+  }
+  <% } %>
+
   public ngOnInit() {
 
     this.config = {
       heading: '<%= classify(name) %>',
+      filters: [
+        {
+          name: 'keyword',
+          type: 'text',
+          label: 'Search'
+        }
+      ],
       fetch: (query) => {
         return of({
           data: [
@@ -33,11 +45,11 @@ export class <%= classify(name) %>Component implements OnInit {
       }
     };
   }
-  <% if (dialog) { %>
-  public open(<%= classify(singleName) %>) {
-    const dialogRef = this.dialog.open(<%= classify(singleName) %>Component, {
+  <% if (dialog){%>
+  public open(<%= camelize(singleName) %>) {
+    const dialogRef = this._dialog.open(<%= classify(singleName) %>Component, {
       width: '700px',
-      data: { data: <%= classify(singleName) %> }
+      data: { data: <%= camelize(singleName) %> }
     });
 
     dialogRef.afterClosed().subscribe(result => {

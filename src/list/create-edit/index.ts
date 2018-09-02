@@ -15,7 +15,7 @@ import {
 import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import { parseName } from '../../utils/parse-name';
-import { addDeclarationToNgModule } from '../../utils/ng-module-utils';
+import { addDeclarationToNgModule, addDeclarationToRoutingModule } from '../../utils/ng-module-utils';
 import { findModuleFromOptions } from '../../schematics-angular-utils/find-module';
 
 
@@ -57,7 +57,6 @@ function filterTemplates(options: any): Rule {
 export function createOrEdit(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     const workspace = getWorkspace(tree);
-
     if (!options.project) {
       options.project = Object.keys(workspace.projects)[0];
     }
@@ -69,6 +68,11 @@ export function createOrEdit(options: any): Rule {
     }
 
     options.module = findModuleFromOptions(tree, options, true);
+    options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
+
+    // options.routingModule = `${options.path}/${options.routingModule}`;
+    // options.module = `${options.path}/${options.module}`;
+
 
 
     const parsedPath = parseName(options.path, options.childName);
@@ -88,7 +92,8 @@ export function createOrEdit(options: any): Rule {
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
-        addDeclarationToNgModule(options, false)
+        addDeclarationToNgModule(options, false),
+        addDeclarationToRoutingModule(options),
       ]))
     ]);
 

@@ -29,7 +29,7 @@ export function insertImport(source: ts.SourceFile, fileToEdit: string, symbolNa
 
   existingChagnes.some((change, index) => {
     const text = change.toAdd;
-    if (text.indexOf('import') > -1
+    if (text && text.indexOf('import') > -1
       && text.indexOf('*') === -1
       && text.indexOf(fileName) > -1
     ) {

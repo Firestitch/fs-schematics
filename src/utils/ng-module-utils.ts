@@ -15,22 +15,26 @@ const { dasherize, classify } = strings;
 // Referencing forked and copied private APIs
 import { ModuleOptions, buildRelativePath } from '../schematics-angular-utils/find-module';
 import {
-  addDeclarationToModule,
+  addDeclarationToModule, addEntryComponentToModule,
   addExportToModule, addSymbolToNgModuleRoutingMetadata,
-  findNodes
 } from '../schematics-angular-utils/ast-utils';
 import { InsertChange } from '../schematics-angular-utils/change';
-import { insertImport } from '../schematics-angular-utils/route-utils';
 
 const stringUtils = { dasherize, classify };
 
 export function addDeclarationToNgModule(options: ModuleOptions, exports: boolean): Rule {
-  debugger;
   return (host: Tree) => {
     addDeclaration(host, options);
     if (exports) {
       addExport(host, options);
     }
+    return host;
+  };
+}
+
+export function addEntryComponentDeclarationToNgModule(options: ModuleOptions, exports: boolean): Rule {
+  return (host: Tree) => {
+    addEntryComponentDeclaration(host, options);
     return host;
   };
 }
@@ -135,7 +139,11 @@ function readTest(host: Tree, options: ModuleOptions) {
 
 
   result.relativePath = buildRelativePath(options.module || '', componentPath);
-  result.classifiedName = stringUtils.classify(`${options.name}Component`);
+  if (options.secondLevel && !options.dialog) {
+    result.classifiedName = stringUtils.classify(`${options.name} ${(options.parentName || '')}Component`);
+  } else {
+    result.classifiedName = stringUtils.classify(`${options.name}Component`);
+  }
 
   return result;
 }
@@ -172,6 +180,29 @@ function addDeclaration(host: Tree, options: ModuleOptions) {
   host.commitUpdate(declarationRecorder);
 }
 
+function addEntryComponentDeclaration(host: Tree, options: ModuleOptions) {
+  const context = !options.secondLevel
+    ? createAddToModuleContext(host, options)
+    : createAddSecondLevelToModuleContext(host, options);
+
+  const modulePath = options.module || '';
+
+  const declarationChanges = addEntryComponentToModule(
+    context.source,
+    modulePath,
+    context.classifiedName,
+    context.relativePath
+  );
+
+  const declarationRecorder = host.beginUpdate(modulePath);
+  for (const change of declarationChanges) {
+    if (change instanceof InsertChange) {
+      declarationRecorder.insertLeft(change.pos, change.toAdd);
+    }
+  }
+  host.commitUpdate(declarationRecorder);
+}
+
 function addRoutingDeclaration(host: Tree, options: ModuleOptions) {
   const context = readTest(host, options);
   const routingChanges = addSymbolToNgModuleRoutingMetadata(
@@ -179,7 +210,9 @@ function addRoutingDeclaration(host: Tree, options: ModuleOptions) {
     options.routingModule || '',
     context.classifiedName,
     context.relativePath,
-    options.name
+    options.name,
+    options.parentName || null,
+    options.childRoute || null
   );
 
   if (options.routingModule) {

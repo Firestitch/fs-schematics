@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-<%=dasherize(name)%>-create',
   templateUrl: './<%=dasherize(childName)%>.component.html'
 })
-export class <%= classify(name) %><%= classify(parentName) %>Component {
+export class <%= classify(name) %>Component {
 
   public save() {
 

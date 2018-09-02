@@ -64,6 +64,10 @@ export function list(options: any): Rule {
       options.project = Object.keys(workspace.projects)[0];
     }
 
+    if (options.dialog === void 0) {
+      options.dialog = false;
+    }
+
     options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
 
     options.module = `${options.path}/${options.module}`;
@@ -102,6 +106,7 @@ export function list(options: any): Rule {
         extrenalSchematics.push(
           externalSchematic('@firestitch/schematics', 'list-create-edit', Object.assign({
             childName: 'create',
+            childRoute: true,
             }, createOptions)
           )
         )
@@ -111,6 +116,7 @@ export function list(options: any): Rule {
         extrenalSchematics.push(
           externalSchematic('@firestitch/schematics', 'list-create-edit', Object.assign({
               childName: 'edit',
+            childRoute: true,
             }, createOptions)
           )
         );
@@ -121,6 +127,7 @@ export function list(options: any): Rule {
       extrenalSchematics.push(
         externalSchematic('@firestitch/schematics', 'list-create-edit-dialog', Object.assign({
             childName: options.singleName,
+            childRoute: true,
           }, createOptions)
         )
       );

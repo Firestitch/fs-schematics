@@ -15,7 +15,11 @@ import {
 import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import { parseName } from '../../utils/parse-name';
-import { addDeclarationToNgModule } from '../../utils/ng-module-utils';
+import {
+  addDeclarationToNgModule,
+  addDeclarationToRoutingModule,
+  addEntryComponentDeclarationToNgModule
+} from '../../utils/ng-module-utils';
 import { findModuleFromOptions } from '../../schematics-angular-utils/find-module';
 
 
@@ -69,11 +73,18 @@ export function createOrEdit(options: any): Rule {
     }
 
     options.module = findModuleFromOptions(tree, options, true);
+    options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
 
 
     const parsedPath = parseName(options.path, options.childName);
     options.name = parsedPath.name;
     options.path = parsedPath.path;
+
+    // When we are do generate Component name for insert into module declaration
+    // we must do it without parent component name
+    // but in case of route we must have this parameter for related route matching
+    const customOptions = Object.assign({}, options);
+    delete customOptions.parentName;
 
     const templateSource = apply(url('./files'), [
       filterTemplates(options),
@@ -88,7 +99,9 @@ export function createOrEdit(options: any): Rule {
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
-        addDeclarationToNgModule(options, false)
+        addDeclarationToNgModule(customOptions, false),
+        addEntryComponentDeclarationToNgModule(customOptions, false),
+        addDeclarationToRoutingModule(options),
       ]))
     ]);
 

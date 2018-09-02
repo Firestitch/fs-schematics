@@ -3,4 +3,5 @@ export interface ListOptions {
   create: boolean;
   edit: boolean;
   ordering: boolean;
+  dialog: boolean;
 }

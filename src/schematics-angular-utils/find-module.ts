@@ -18,6 +18,8 @@ export interface ModuleOptions {
   path?: string;
   skipImport?: boolean;
   secondLevel?: boolean;
+  childRoute?: boolean;
+  dialog?: boolean;
 }
 
 
