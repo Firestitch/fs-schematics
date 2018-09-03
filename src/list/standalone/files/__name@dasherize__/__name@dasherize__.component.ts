@@ -12,7 +12,7 @@ import { <%= classify(singleName) %>Component } from './<%=dasherize(singleName)
 })
 export class <%= classify(name) %>Component implements OnInit {
 
-  @ViewChild('<%=dasherize(name)%>Table')
+  @ViewChild('<%=classify(name)%>Table')
   public table: FsListComponent;
 
   public config: FsListConfig;
