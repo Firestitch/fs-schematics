@@ -126,8 +126,10 @@ export function list(options: any): Rule {
     if (options.dialog && options.singleName) {
       extrenalSchematics.push(
         externalSchematic('@firestitch/schematics', 'list-create-edit-dialog', Object.assign({
-            childName: options.singleName,
-            childRoute: true,
+          childName: options.singleName,
+          childRoute: true,
+          secondLevel: true,
+          dialog: true
           }, createOptions)
         )
       );
