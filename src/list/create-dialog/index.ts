@@ -76,7 +76,7 @@ export function createOrEdit(options: any): Rule {
     options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
 
 
-    const parsedPath = parseName(options.path, options.childName);
+    const parsedPath = parseName(options.path, options.name);
     options.name = parsedPath.name;
     options.path = parsedPath.path;
 

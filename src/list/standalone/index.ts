@@ -72,7 +72,7 @@ export function list(options: any): Rule {
 
     options.module = `${options.path}/${options.module}`;
     options.routingModule = `${options.path}/${options.routingModule}`;
-
+    options.mode = options.mode || false;
     // const parsedPath = parseName(options.path, options.name);
     // options.name = parsedPath.name;
     // options.path = parsedPath.path;
@@ -92,47 +92,31 @@ export function list(options: any): Rule {
 
     const extrenalSchematics: any = [];
 
-    const createOptions = {
+    const childSchematicOptions = {
       project: options.project,
       path: `${options.path}/${options.name}`,
       module: options.module,
+      mode: options.mode,
+      name: options.singleName,
       parentName: options.name,
       secondLevel: true
     };
 
-    if (options.edit || options.create) {
-
-      if (options.create && !options.dialog) {
-        extrenalSchematics.push(
-          externalSchematic('@firestitch/schematics', 'list-create-edit', Object.assign({
-            childName: 'create',
-            childRoute: true,
-            }, createOptions)
-          )
-        )
-      }
-
-      if (options.edit && !options.dialog) {
-        extrenalSchematics.push(
-          externalSchematic('@firestitch/schematics', 'list-create-edit', Object.assign({
-              childName: 'edit',
-            childRoute: true,
-            }, createOptions)
-          )
-        );
-      }
-    }
-
-    if (options.dialog && options.singleName) {
+    if (options.mode === 'full') {
       extrenalSchematics.push(
-        externalSchematic('@firestitch/schematics', 'list-create-edit-dialog', Object.assign({
-          childName: options.singleName,
-          childRoute: true,
-          secondLevel: true,
-          dialog: true
-          }, createOptions)
+        externalSchematic(
+          '@firestitch/schematics',
+          'list-create',
+          childSchematicOptions
         )
-      );
+      )
+    } else if (options.mode === 'dialog') {
+      extrenalSchematics.push(
+        externalSchematic(
+          '@firestitch/schematics',
+          'list-create-dialog',
+          childSchematicOptions
+        ));
     }
 
     const rule = chain([

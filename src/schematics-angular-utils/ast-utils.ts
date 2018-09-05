@@ -7,9 +7,9 @@
  */
 import * as ts from 'typescript';
 import { Change, InsertChange } from './change';
-import { insertImport } from './route-utils';
-import { LiteralLikeNode } from 'typescript';
+import { insertImport, checkIfRouteExists, addRoutesArrayDeclaration } from './route-utils';
 import { classify } from '@angular-devkit/core/src/utils/strings';
+import { ModuleOptions } from './find-module';
 
 
 /**
@@ -411,278 +411,31 @@ export function addSymbolToNgModuleRoutingMetadata(
   ngModulePath: string,
   componentName: string,
   importPath: string | null = null,
-  url: string,
-  parentComponentName: string | null,
-  childRoute: boolean | null,
+  options: ModuleOptions
 ): any {
-  parentComponentName = classify(`${parentComponentName} Component`);
-
   const changes: any = [];
 
   changes.push(
-    insertImport(source, ngModulePath || '', 'RouterModule', '@angular/router', false, changes)
+    insertImport(
+      source,
+      ngModulePath || '',
+      'RouterModule',
+      '@angular/router',
+      false,
+      changes
+    ),
+    ...addRoutesArrayDeclaration(
+      source,
+      ngModulePath || '',
+      componentName,
+      importPath,
+      options
+    ),
   );
-
-  const routesArrayNodes = findNodes(source, ts.SyntaxKind.ArrayLiteralExpression);
-
-  if (!routesArrayNodes) {
-    return [];
-  }
-
-  const routesArrayNode = routesArrayNodes
-    .find((node: ts.ArrayLiteralExpression) => {
-      const nodeParent = <any>node.parent;
-
-      return nodeParent.getChildren().find((node) => {
-        return node.kind === ts.SyntaxKind.TypeReference && node.typeName.text === 'Routes'
-      });
-    }) as ts.ArrayLiteralExpression;
-
-  if (routesArrayNode) {
-    const matchingProperties =
-      routesArrayNode.getChildren()
-        .filter(prop => prop.kind == ts.SyntaxKind.SyntaxList);
-
-    let duplicated = false;
-    if (matchingProperties) {
-      matchingProperties[0].getChildren()
-        .filter(prop => prop.kind == ts.SyntaxKind.ObjectLiteralExpression)
-        .forEach((prop: any) => {
-          if (!duplicated) {
-            duplicated = checkIfRouteExists(prop, url, componentName);
-          }
-        });
-    }
-
-    if (duplicated) {
-      return changes
-    }
-
-    changes.push(...addRouteModuleToModuleImports(source, ngModulePath));
-
-    if (childRoute) {
-      const routeForParentComponent = routesArrayNode.elements.find((element: ts.ObjectLiteralExpression) => {
-        return !!element.properties
-          .find((prop: any) =>
-            (prop && prop.name && prop.name.text === 'component'
-              && prop.initializer.text === parentComponentName)
-            || false
-          );
-      }) as ts.ObjectLiteralExpression || void 0;
-
-      if (routeForParentComponent) {
-        const childrenNode = routeForParentComponent.properties.find((prop: any) => {
-          return prop && prop.name && prop.name.text === 'children';
-        }) as any;
-
-        if (childrenNode) {
-          let coma = '';
-
-          if (childrenNode.initializer && childrenNode.initializer.elements && !childrenNode.initializer.elements.hasTrailingComma) {
-            coma = ','
-          }
-
-          const position = childrenNode.initializer.getEnd() - 1;
-          const toInsert = `${coma} { path: '${url}', component: ${componentName}}, `;
-
-          changes.push(
-            new InsertChange(ngModulePath || '', position, toInsert),
-            insertImport(source, ngModulePath || '', componentName, importPath || '')
-          );
-
-        } else {
-          let coma = '';
-          if (routeForParentComponent.getLastToken().kind !== ts.SyntaxKind.CommaToken) {
-            coma = ','
-          }
-
-          const position = routeForParentComponent.properties.end;
-          const toInsert = `${coma} children: [ { path: '${url}', component: ${componentName}}, ] `;
-
-          changes.push(
-            new InsertChange(ngModulePath || '', position, toInsert),
-            insertImport(source, ngModulePath || '', componentName, importPath || '')
-          );
-        }
-      }
-    } else {
-      const endOfRoutesArray = routesArrayNode.getChildren().find((childNode) => {
-        return childNode.kind === ts.SyntaxKind.CloseBracketToken;
-      });
-
-      if (!endOfRoutesArray) { return changes}
-
-      const position = endOfRoutesArray.getEnd() - 1;
-      const toInsert = `  { path: '${url}', component: ${componentName} },\n`;
-
-      changes.push(
-        new InsertChange(ngModulePath || '', position, toInsert),
-        insertImport(source, ngModulePath || '', componentName, importPath || '')
-      );
-    }
-
-    return changes;
-  } else {
-    const allImports = findNodes(source, ts.SyntaxKind.ImportDeclaration);
-    const lastImport = allImports.pop();
-
-    if (lastImport) {
-      const position = lastImport.getEnd();
-      const toInsert = `\n\nexport const routes: Routes = [\n  { path: '${url}', component: ${componentName} },\n];`;
-
-      changes.push(
-        new InsertChange(ngModulePath || '', position, toInsert),
-        insertImport(source, ngModulePath || '', componentName, importPath || '')
-      );
-
-      changes.push(...addRouteModuleToModuleImports(source, ngModulePath));
-      changes.push(
-        insertImport(source, ngModulePath || '', 'Routes', '@angular/router', false, changes)
-      );
-
-      return changes;
-    } else {
-      return changes;
-    }
-  }
-}
-
-export function addRouteModuleToModuleImports(source, ngModulePath) {
-  const nodes = getDecoratorMetadata(source, 'NgModule', '@angular/core');
-  const node = nodes[0];  // tslint:disable-line:no-any
-  // Find the decorator declaration.
-  if (!node) {
-    return [];
-  }
-
-  const changes: any = [];
-
-  const matchingProperties: ts.ObjectLiteralElement[] =
-    (node as ts.ObjectLiteralExpression).properties
-      .filter(prop => prop.kind == ts.SyntaxKind.PropertyAssignment)
-      .filter((prop: any) => prop.name && prop.name.text === 'imports');
-
-  if (matchingProperties[0]) {
-    const importsArrayLiteral = matchingProperties[0].getChildren()
-      .find(child => child.kind === ts.SyntaxKind.ArrayLiteralExpression);
-
-    if (importsArrayLiteral) {
-      const importsArrayNode = importsArrayLiteral.getChildren()
-        .find(child => child.kind === ts.SyntaxKind.SyntaxList);
-
-      if (importsArrayNode) {
-        const importsArrayElements = importsArrayNode.getChildren();
-
-        importsArrayElements.forEach((child: any) => {
-          if (child.kind === ts.SyntaxKind.CallExpression) {
-            if (child.expression
-              && (child.expression.name.text === 'forRoot' || child.expression.name.text === 'forChild')
-              && child.expression.expression && child.expression.expression.text === 'RouterModule') {
-
-              const hasAddedRoutes = child.arguments.find(arg => arg.text === 'routes');
-
-              if (!hasAddedRoutes && child.arguments.length === 0) {
-                const forChildren = child.getChildren();
-                if (forChildren) {
-                  const paren = forChildren.find(forChild => forChild.kind === ts.SyntaxKind.OpenParenToken)
-                  if (paren) {
-                    const position = paren.getEnd();
-                    const toInsert = `routes`;
-                    const change = new InsertChange(ngModulePath || '', position, toInsert);
-                    changes.push(change);
-                  }
-                }
-              }
-            } else {
-              const lastImportedElem = importsArrayElements[importsArrayElements.length - 1];
-
-              const position = lastImportedElem.getEnd();
-              const toInsert = `\nRouterModule.forChild(routes),\n`;
-              const change = new InsertChange(ngModulePath || '', position, toInsert);
-              changes.push(change);
-            }
-          }
-        });
-
-        if (importsArrayElements.length === 0) {
-          const openBracketNode = importsArrayLiteral.getChildren()
-            .find(literalChild => literalChild.kind === ts.SyntaxKind.OpenBracketToken);
-
-          if (openBracketNode) {
-            const position = openBracketNode.getEnd();
-            const toInsert = `RouterModule.forChild(routes),`;
-            const change = new InsertChange(ngModulePath || '', position, toInsert);
-            changes.push(change);
-          }
-        }
-      }
-    }
-  } else {
-    const props = (node as any).properties;
-    let position;
-    let coma = '';
-
-    if (props.length > 0) {
-      const lastProp = props[props.length - 1];
-      const lastChild = lastProp.getChildren().pop();
-
-      if (lastChild.kind !== ts.SyntaxKind.CommaToken) {
-        coma = ','
-      }
-
-      position = lastChild.getEnd();
-    } else {
-      const sl = node.getChildren()
-        .find(child => child.kind === ts.SyntaxKind.SyntaxList);
-
-      if (sl) {
-        position = sl.getEnd();
-      }
-    }
-
-    if (position) {
-      const toInsert = `${coma}\n  imports: [ RouterModule.forChild(routes), ],\n`;
-      const change = new InsertChange(ngModulePath || '', position, toInsert);
-      changes.push(change);
-    }
-  }
 
   return changes;
 }
 
-export function checkIfRouteExists(obj: any, url, componentName, check = false) {
-
-  check = obj.properties
-    && obj.properties[0]
-    && obj.properties[0].initializer.text === url
-    && obj.properties[1]
-    && obj.properties[1].initializer.text === componentName;
-
-  if (check) {
-    return check;
-  }
-
-  const children = obj.properties.find(prop => prop.name.text === 'children');
-  if (children) {
-    const childrenArrNode = children
-      .getChildren()
-      .find(node => node.kind === ts.SyntaxKind.ArrayLiteralExpression);
-
-    if (childrenArrNode) {
-      const childrenArr = childrenArrNode.getChildren().find(node => node.kind === ts.SyntaxKind.SyntaxList);
-      if (childrenArr) {
-        childrenArr.getChildren()
-          .filter(prop => prop.kind == ts.SyntaxKind.ObjectLiteralExpression)
-          .forEach(objectNode => {
-            checkIfRouteExists(objectNode, url, componentName, check);
-        });
-      }
-    }
-  }
-
-  return check;
-
-}
 
 /**
  * Custom function to insert a declaration (component, pipe, directive)

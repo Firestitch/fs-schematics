@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FsListComponent, FsListConfig } from '@firestitch/list';
-<% if (dialog) { %>import { MatDialog } from '@angular/material';<% } %>
+<% if (mode === 'dialog') { %>import { MatDialog } from '@angular/material';<% } %>
 import { of } from 'rxjs';
-<% if (dialog) { %>
+<% if (mode === 'dialog') { %>
 import { <%= classify(singleName) %>Component } from './<%=dasherize(singleName)%>';
 <% } %>
 
@@ -17,10 +17,7 @@ export class <%= classify(name) %>Component implements OnInit {
 
   public config: FsListConfig;
 
-  <% if (dialog) {%>
-  constructor(private _dialog: MatDialog,) {
-  }
-  <% } %>
+  <% if (mode === 'dialog') {%>constructor(private _dialog: MatDialog) {}<% } %>
 
   public ngOnInit() {
 
@@ -45,7 +42,7 @@ export class <%= classify(name) %>Component implements OnInit {
       }
     };
   }
-  <% if (dialog){%>
+<%if (mode === 'dialog'){%>
   public open(<%= camelize(singleName) %>) {
     const dialogRef = this._dialog.open(<%= classify(singleName) %>Component, {
       width: '700px',
@@ -56,5 +53,5 @@ export class <%= classify(name) %>Component implements OnInit {
 
     });
   }
-  <% } %>
+<%}%>
 }

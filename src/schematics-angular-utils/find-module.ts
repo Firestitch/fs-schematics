@@ -20,6 +20,7 @@ export interface ModuleOptions {
   secondLevel?: boolean;
   childRoute?: boolean;
   dialog?: boolean;
+  mode?: string;
 }
 
 

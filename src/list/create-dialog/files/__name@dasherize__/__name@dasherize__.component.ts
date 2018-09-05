@@ -2,9 +2,9 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-<%=dasherize(name)%>-create',
-  templateUrl: './<%=dasherize(childName)%>.component.html'
+  templateUrl: './<%=dasherize(name)%>.component.html'
 })
-export class <%= classify(name) %><%= classify(parentName) %>Component {
+export class <%= classify(name) %>Component {
 
   public save() {
 

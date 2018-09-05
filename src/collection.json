@@ -5,13 +5,13 @@
       "description": "A blank schematic.",
       "factory": "./list/standalone/index#list"
     },
-    "list-create-edit": {
+    "list-create": {
       "description": "A blank schematic.",
-      "factory": "./list/create-edit/index#createOrEdit"
+      "factory": "./list/create/index#createOrEdit"
     },
-    "list-create-edit-dialog": {
+    "list-create-dialog": {
       "description": "A blank schematic.",
-      "factory": "./list/create-edit-dialog/index#createOrEdit"
+      "factory": "./list/create-dialog/index#createOrEdit"
     },
     "modules-list": {
       "description": "A blank schematic.",

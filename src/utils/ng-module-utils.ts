@@ -139,11 +139,12 @@ function readTest(host: Tree, options: ModuleOptions) {
 
 
   result.relativePath = buildRelativePath(options.module || '', componentPath);
-  if (options.secondLevel && !options.dialog) {
-    result.classifiedName = stringUtils.classify(`${options.name} ${(options.parentName || '')}Component`);
-  } else {
-    result.classifiedName = stringUtils.classify(`${options.name}Component`);
-  }
+  result.classifiedName = stringUtils.classify(`${options.name}Component`);
+  // if (options.secondLevel && !options.dialog) {
+  //   result.classifiedName = stringUtils.classify(`${options.name} ${(options.parentName || '')}Component`);
+  // } else {
+  //   result.classifiedName = stringUtils.classify(`${options.name}Component`);
+  // }
 
   return result;
 }
@@ -151,7 +152,7 @@ function readTest(host: Tree, options: ModuleOptions) {
 function createAddSecondLevelToModuleContext(host: Tree, options: ModuleOptions): AddToModuleContext {
   const result = createAddToModuleContext(host, options);
 
-  result.classifiedName = stringUtils.classify(`${options.name} ${(options.parentName || '')}Component`);
+  result.classifiedName = stringUtils.classify(`${options.name} Component`);
 
   return result;
 
@@ -205,14 +206,13 @@ function addEntryComponentDeclaration(host: Tree, options: ModuleOptions) {
 
 function addRoutingDeclaration(host: Tree, options: ModuleOptions) {
   const context = readTest(host, options);
+
   const routingChanges = addSymbolToNgModuleRoutingMetadata(
     context.source,
     options.routingModule || '',
     context.classifiedName,
     context.relativePath,
-    options.name,
-    options.parentName || null,
-    options.childRoute || null
+    options
   );
 
   if (options.routingModule) {
