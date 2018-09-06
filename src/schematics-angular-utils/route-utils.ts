@@ -367,19 +367,35 @@ export function addRouteToExistingRoutes(
   const changes: any = [];
   const url = options.name;
 
-  const endOfRoutesArray = routesArrayNode.getChildren().find((childNode) => {
-    return childNode.kind === ts.SyntaxKind.CloseBracketToken;
+  let insertPosition: number | null = null;
+
+  const wildCardRoute = routesArrayNode.elements.find((routeElement) => {
+    const pathProperty = routeElement.properties
+      .find((property) => property.name && property.name.text === 'path');
+
+    return (pathProperty && pathProperty.initializer.text === '**') || false
   });
 
-  if (!endOfRoutesArray) { return changes}
+  if (wildCardRoute) {
+    insertPosition = wildCardRoute.getFullStart() + 1;
+  } else {
+    const endOfRoutesArray = routesArrayNode.getChildren().find((childNode) => {
+      return childNode.kind === ts.SyntaxKind.CloseBracketToken;
+    });
 
-  const position = endOfRoutesArray.getEnd() - 1;
+    if (endOfRoutesArray) {
+      insertPosition = endOfRoutesArray.getEnd() - 1;
+    }
+  }
+
+  if (insertPosition === null || insertPosition < 0) { return changes}
+
   const toInsert = ((options.mode === 'full') && options.secondLevel)
-    ? `  { path: '${options.name}/:${options.name}_id', component: ${componentName} },\n  { path: '${url}', component: ${componentName} },\n`
+    ? `  { path: '${options.name}/:${options.name}_id',\ component: ${componentName} },\n  { path: '${url}', component: ${componentName} },\n`
     : `  { path: '${url}', component: ${componentName} },\n`;
 
   changes.push(
-    new InsertChange(ngModulePath || '', position, toInsert),
+    new InsertChange(ngModulePath || '', insertPosition, toInsert),
     insertImport(source, ngModulePath || '', componentName, importPath || '')
   );
 

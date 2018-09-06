@@ -101,7 +101,6 @@ export function createOrEdit(options: any): Rule {
         mergeWith(templateSource),
         addDeclarationToNgModule(customOptions, false),
         addEntryComponentDeclarationToNgModule(customOptions, false),
-        addDeclarationToRoutingModule(options),
       ]))
     ]);
 
