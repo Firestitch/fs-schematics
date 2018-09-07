@@ -10,6 +10,8 @@ import { Change, InsertChange } from './change';
 import { insertImport, checkIfRouteExists, addRoutesArrayDeclaration } from './route-utils';
 import { classify } from '@angular-devkit/core/src/utils/strings';
 import { ModuleOptions } from './find-module';
+import { ClassLikeDeclarationBase } from 'typescript';
+import { camelize } from 'tslint/lib/utils';
 
 
 /**
@@ -433,6 +435,118 @@ export function addSymbolToNgModuleRoutingMetadata(
     ),
   );
 
+  return changes;
+}
+
+export function addDialogToComponentMetadata(
+  source: ts.SourceFile,
+  componentPath: string,
+  name: string,
+  singleName: string,
+): any {
+
+  const changes: any = [];
+  const dialogMethodName = 'openDialog';
+  let dialogVarName = '_dialog';
+
+  const componentClass = findNodes(source, ts.SyntaxKind.ClassDeclaration)
+    .find((node: any) => {
+      return node.decorators.length
+    });
+
+  const classConstructor: any = findNodes(componentClass, ts.SyntaxKind.Constructor).pop();
+
+  if (classConstructor) {
+    const existingDialog = classConstructor.parameters.find((param) => {
+      return param.type && param.type.typeName.text === 'MatDialog'
+    });
+
+    if (existingDialog) {
+      dialogVarName = existingDialog.name.text
+    } else {
+      const position = classConstructor.parameters.end;
+      changes.push(
+        new InsertChange(componentPath, position, `public ${dialogVarName}: MatDialog`),
+        insertImport(
+          source,
+          componentPath || '',
+          'MatDialog',
+          '@angular/material',
+          false,
+        ),
+      );
+    }
+  } else {
+    const firstMethod = (componentClass as any).members.filter((node) => {
+      return node.kind === ts.SyntaxKind.MethodDeclaration;
+    }).pop();
+
+    let position = null;
+    const toInsertConstructor = `\n\n  constructor(public ${dialogVarName}: MatDialog) {}\n`;
+
+    if (firstMethod) {
+      position = firstMethod.getFullStart()
+    } else {
+      position = componentClass.getEnd() - 1;
+    }
+
+    changes.push(
+      new InsertChange(componentPath, position, toInsertConstructor),
+      insertImport(
+        source,
+        componentPath || '',
+        'MatDialog',
+        '@angular/material',
+        false,
+      ),
+    );
+  }
+
+  if (!componentClass) { return; }
+
+  const publicKeywords = findNodes(componentClass, ts.SyntaxKind.PublicKeyword).filter((node) => {
+    return node.parent.kind === ts.SyntaxKind.MethodDeclaration;
+  });
+
+  const methodExists = publicKeywords.some((keyword: any) => {
+    return keyword.parent && keyword.parent.name.text === dialogMethodName
+  });
+
+  if (methodExists) {
+    throw new Error(`Method with name ${dialogMethodName} already exists in file ${componentPath}`);
+  }
+
+
+  let insertPosition = 0;
+
+  if (publicKeywords.length) {
+    insertPosition = publicKeywords[publicKeywords.length - 1].parent.getEnd();
+  } else {
+    insertPosition = componentClass.getEnd() - 1;
+  }
+
+  const toInsert = `\n\n  public ${dialogMethodName}(${camelize(singleName)}) {
+    const dialogRef = this.${dialogVarName}.open(${classify(singleName)}Component, {
+      width: '700px',
+      data: { data: ${camelize(singleName)} }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+
+    });
+  }\n
+`;
+
+  changes.push(
+    new InsertChange(componentPath, insertPosition, toInsert),
+    insertImport(
+      source,
+      componentPath || '',
+      `${classify(singleName)}Component`,
+      `./${singleName}`,
+      false,
+    ),
+  );
   return changes;
 }
 

@@ -17,7 +17,7 @@ import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import { parseName } from '../../utils/parse-name';
 import {
   addDeclarationToNgModule,
-  addDeclarationToRoutingModule,
+  addDeclarationToRoutingModule, addDialogToParentComponent,
   addEntryComponentDeclarationToNgModule
 } from '../../utils/ng-module-utils';
 import { findModuleFromOptions } from '../../schematics-angular-utils/find-module';
@@ -101,6 +101,7 @@ export function createOrEdit(options: any): Rule {
         mergeWith(templateSource),
         addDeclarationToNgModule(customOptions, false),
         addEntryComponentDeclarationToNgModule(customOptions, false),
+        addDialogToParentComponent(options)
       ]))
     ]);
 

@@ -15,7 +15,7 @@ const { dasherize, classify } = strings;
 // Referencing forked and copied private APIs
 import { ModuleOptions, buildRelativePath } from '../schematics-angular-utils/find-module';
 import {
-  addDeclarationToModule, addEntryComponentToModule,
+  addDeclarationToModule, addDialogToComponentMetadata, addEntryComponentToModule,
   addExportToModule, addSymbolToNgModuleRoutingMetadata,
 } from '../schematics-angular-utils/ast-utils';
 import { InsertChange } from '../schematics-angular-utils/change';
@@ -42,6 +42,13 @@ export function addEntryComponentDeclarationToNgModule(options: ModuleOptions, e
 export function addDeclarationToRoutingModule(options: ModuleOptions): Rule {
   return (host: Tree) => {
     addRoutingDeclaration(host, options);
+    return host;
+  };
+}
+
+export function addDialogToParentComponent(options: ModuleOptions): Rule {
+  return (host: Tree) => {
+    addDialogToComponent(host, options);
     return host;
   };
 }
@@ -197,6 +204,33 @@ function addEntryComponentDeclaration(host: Tree, options: ModuleOptions) {
 
   const declarationRecorder = host.beginUpdate(modulePath);
   for (const change of declarationChanges) {
+    if (change instanceof InsertChange) {
+      declarationRecorder.insertLeft(change.pos, change.toAdd);
+    }
+  }
+  host.commitUpdate(declarationRecorder);
+}
+
+function addDialogToComponent(host: Tree, options: ModuleOptions) {
+  const componentFullPath = `${options.path}/${options.parentName}.component.ts`;
+
+  const text = host.read(componentFullPath);
+
+  if (text === null) {
+    throw new SchematicsException(`File ${componentFullPath} does not exist!`);
+  }
+  const sourceText = text.toString('utf-8');
+  const source = ts.createSourceFile(componentFullPath, sourceText, ts.ScriptTarget.Latest, true);
+
+
+  const changes = addDialogToComponentMetadata(
+    source,
+    componentFullPath,
+    options.parentName || '',
+    options.singleName || options.name || '');
+
+  const declarationRecorder = host.beginUpdate(componentFullPath);
+  for (const change of changes) {
     if (change instanceof InsertChange) {
       declarationRecorder.insertLeft(change.pos, change.toAdd);
     }
