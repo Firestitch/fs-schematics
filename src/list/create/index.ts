@@ -60,7 +60,6 @@ export function createOrEdit(options: any): Rule {
     if (!options.project) {
       options.project = Object.keys(workspace.projects)[0];
     }
-    debugger
     const project = workspace.projects[options.project];
 
     if (options.path === undefined) {

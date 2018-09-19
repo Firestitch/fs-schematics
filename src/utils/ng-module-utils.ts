@@ -16,9 +16,10 @@ const { dasherize, classify } = strings;
 import { ModuleOptions, buildRelativePath } from '../schematics-angular-utils/find-module';
 import {
   addDeclarationToModule, addEntryComponentToModule,
-  addExportToModule, addSymbolToNgModuleRoutingMetadata,
+  addExportToModule, addSymbolToNgModuleRoutingMetadata, addProviderToModule,
 } from '../schematics-angular-utils/ast-utils';
 import { InsertChange } from '../schematics-angular-utils/change';
+import { OptionsInterface } from './interfaces/';
 
 const stringUtils = { dasherize, classify };
 
@@ -44,6 +45,13 @@ export function addDeclarationToRoutingModule(options: ModuleOptions): Rule {
     addRoutingDeclaration(host, options);
     return host;
   };
+}
+
+export function addProviderToNgModule(options: OptionsInterface): Rule {
+  return (host: Tree) => {
+    addServiceDeclaration(host, options);
+    return host;
+  }
 }
 
 function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModuleContext {
@@ -91,6 +99,50 @@ function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModu
 
   result.relativePath = buildRelativePath(options.module, componentPath);
   result.classifiedName = stringUtils.classify(`${options.name}Component`);
+
+  return result;
+}
+
+function createServiceToModuleContext(host: Tree, options: OptionsInterface): AddToModuleContext {
+  const result = new AddToModuleContext();
+
+  if (!options.module) {
+    throw new SchematicsException(`Module not found.`);
+  }
+
+  const text = host.read(options.module);
+
+  if (text === null) {
+    throw new SchematicsException(`File ${options.module} does not exist!`);
+  }
+  const sourceText = text.toString('utf-8');
+  result.source = ts.createSourceFile(options.module, sourceText, ts.ScriptTarget.Latest, true);
+
+  let hasIndexExportsFile = false;
+
+  host
+    .getDir(`${options.path}${options.subdirectory}`)
+    .visit(filePath => {
+      if (filePath.indexOf('index.ts') > -1) {
+        const fileContent = host.read(filePath);
+        if (fileContent && fileContent.indexOf(`${stringUtils.dasherize(options.name)}.service`)) {
+          hasIndexExportsFile = true
+        }
+      }
+    });
+
+  let componentPath;
+  // @todo !!!
+  // if (hasIndexExportsFile) {
+    componentPath = `${options.path}${options.subdirectory}/`;
+  // } else {
+  //   componentPath = `${options.path}${options.subdirectory}/`
+  //     + stringUtils.dasherize(options.name)
+  //     + '.service';
+  // }
+
+  result.relativePath = buildRelativePath(`${options.module}`, componentPath);
+  result.classifiedName = stringUtils.classify(`${options.name}Service`);
 
   return result;
 }
@@ -189,6 +241,26 @@ function addEntryComponentDeclaration(host: Tree, options: ModuleOptions) {
   const modulePath = options.module || '';
 
   const declarationChanges = addEntryComponentToModule(
+    context.source,
+    modulePath,
+    context.classifiedName,
+    context.relativePath
+  );
+
+  const declarationRecorder = host.beginUpdate(modulePath);
+  for (const change of declarationChanges) {
+    if (change instanceof InsertChange) {
+      declarationRecorder.insertLeft(change.pos, change.toAdd);
+    }
+  }
+  host.commitUpdate(declarationRecorder);
+}
+
+function addServiceDeclaration(host: Tree, options: OptionsInterface) {
+  const context = createServiceToModuleContext(host, options);
+  const modulePath = options.module || '';
+
+  const declarationChanges = addProviderToModule(
     context.source,
     modulePath,
     context.classifiedName,

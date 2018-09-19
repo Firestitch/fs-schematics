@@ -18,9 +18,11 @@ import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import { parseName } from '../../utils/parse-name';
 import { addDeclarationToNgModule, addDeclarationToRoutingModule } from '../../utils/ng-module-utils';
 import {
+  buildRelativePath,
   findModuleFromOptions,
   findRoutingModuleFromOptions
 } from '../../schematics-angular-utils/find-module';
+import {dasherize} from '@angular-devkit/core/src/utils/strings';
 
 
 export function getWorkspacePath(host: Tree): string {
@@ -76,9 +78,11 @@ export function list(options: any): Rule {
     // const parsedPath = parseName(options.path, options.name);
     // options.name = parsedPath.name;
     // options.path = parsedPath.path;
-
     options.create = options.create || false;
     options.edit = options.edit || false;
+
+    options.servicePath = buildRelativePathForService(options);
+    options.service = options.service.replace('.ts', '').replace('.', '-');
 
     const templateSource = apply(url('./files'), [
       filterTemplates(options),
@@ -99,7 +103,9 @@ export function list(options: any): Rule {
       mode: options.mode,
       name: options.singleName,
       parentName: options.name,
-      secondLevel: true
+      service: options.service,
+      servicePath: '../' + options.servicePath,
+      secondLevel: true,
     };
 
     if (options.mode === 'full') {
@@ -128,7 +134,13 @@ export function list(options: any): Rule {
       ]))
     ]);
 
-
     return rule(tree, _context);
   };
+}
+
+function buildRelativePathForService(options) {
+  return buildRelativePath(
+    `${options.path}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
+    `${options.servicePath}/${options.service}`
+  );
 }
