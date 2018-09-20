@@ -47,19 +47,18 @@ export function addDeclarationToRoutingModule(options: ModuleOptions): Rule {
   };
 }
 
-<<<<<<< HEAD
 export function addProviderToNgModule(options: OptionsInterface): Rule {
   return (host: Tree) => {
     addServiceDeclaration(host, options);
     return host;
   }
-=======
+}
+
 export function addDialogToParentComponent(options: ModuleOptions): Rule {
   return (host: Tree) => {
     addDialogToComponent(host, options);
     return host;
   };
->>>>>>> 8a3aaa5783b263af33f26b52c43c7d1cb38c2a29
 }
 
 function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModuleContext {
