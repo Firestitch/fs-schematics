@@ -1,10 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FsListComponent, FsListConfig } from '@firestitch/list';
 import { FsPrompt } from '@firestitch/prompt';
-<% if (mode === 'dialog') { %>import { MatDialog } from '@angular/material';<% } %>
-<% if (mode === 'dialog') { %>
-import { <%= classify(singleName) %>Component } from './<%=dasherize(singleName)%>';
-<% } %>
 import { <%= classify(service) %>} from '<%= servicePath %>';
 
 @Component({
@@ -19,7 +15,6 @@ export class <%= classify(name) %>Component implements OnInit {
   public config: FsListConfig;
 
   constructor(private _service: <%= classify(service) %>,
-  <% if (mode === 'dialog') {%>private _dialog: MatDialog, <% } %>
               private _fsPrompt: FsPrompt) {}
 
   public ngOnInit() {

@@ -8,11 +8,9 @@
 import * as ts from 'typescript';
 import { Change, InsertChange } from './change';
 import { insertImport, checkIfRouteExists, addRoutesArrayDeclaration } from './route-utils';
-import { classify } from '@angular-devkit/core/src/utils/strings';
+import { camelize, classify } from '@angular-devkit/core/src/utils/strings';
 import { ModuleOptions } from './find-module';
 import { ClassLikeDeclarationBase } from 'typescript';
-import { camelize } from 'tslint/lib/utils';
-
 
 /**
  * Find all nodes from the AST in the subtree of node of SyntaxKind kind.
