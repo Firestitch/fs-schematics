@@ -370,6 +370,8 @@ export function addRouteToExistingRoutes(
   let insertPosition: number | null = null;
 
   const wildCardRoute = routesArrayNode.elements.find((routeElement) => {
+    if (routeElement.kind !== ts.SyntaxKind.ObjectLiteralExpression) { return false }
+
     const pathProperty = routeElement.properties
       .find((property) => property.name && property.name.text === 'path');
 
@@ -379,9 +381,19 @@ export function addRouteToExistingRoutes(
   if (wildCardRoute) {
     insertPosition = wildCardRoute.getFullStart() + 1;
   } else {
-    const endOfRoutesArray = routesArrayNode.getChildren().find((childNode) => {
+    const routesNodes = routesArrayNode.getChildren();
+    const endOfRoutesArray = routesNodes.find((childNode) => {
       return childNode.kind === ts.SyntaxKind.CloseBracketToken;
     });
+
+    // const bracketIndex = routesNodes.indexOf(endOfRoutesArray);
+
+    if (endOfRoutesArray &&
+      endOfRoutesArray.parent &&
+      endOfRoutesArray.parent.elements &&
+      !endOfRoutesArray.parent.elements.hasTrailingComma) {
+      changes.push(new InsertChange(ngModulePath || '', endOfRoutesArray.getEnd(), ','));
+    }
 
     if (endOfRoutesArray) {
       insertPosition = endOfRoutesArray.getEnd() - 1;
@@ -390,9 +402,11 @@ export function addRouteToExistingRoutes(
 
   if (insertPosition === null || insertPosition < 0) { return changes}
 
+  const endComa = wildCardRoute ? ',' : '';
+
   const toInsert = ((options.mode === 'full') && options.secondLevel)
-    ? `  { path: '${options.name}/:${options.name}_id',\ component: ${componentName} },\n  { path: '${url}', component: ${componentName} },\n`
-    : `  { path: '${url}', component: ${componentName} },\n`;
+    ? `  { path: '${options.name}/:${options.name}_id',\ component: ${componentName} },\n  { path: '${url}', component: ${componentName} }${endComa}\n`
+    : `  { path: '${url}', component: ${componentName} }${endComa}\n`;
 
   changes.push(
     new InsertChange(ngModulePath || '', insertPosition, toInsert),

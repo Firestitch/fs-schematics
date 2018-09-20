@@ -21,6 +21,7 @@ export interface ModuleOptions {
   childRoute?: boolean;
   dialog?: boolean;
   mode?: string;
+  singleName?: string;
 }
 
 

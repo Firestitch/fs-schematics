@@ -75,16 +75,4 @@ export class <%= classify(name) %>Component implements OnInit {
       }
     };
   }
-<%if (mode === 'dialog'){%>
-  public open(<%= camelize(singleName) %>) {
-    const dialogRef = this._dialog.open(<%= classify(singleName) %>Component, {
-      width: '700px',
-      data: { data: <%= camelize(singleName) %> }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-
-    });
-  }
-<%}%>
 }

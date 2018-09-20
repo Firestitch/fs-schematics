@@ -14,7 +14,7 @@
         <b>User</b> name
       </ng-template>
       <ng-template fs-list-cell let-value="value" let-row="row">
-        <% if (dialog) { %><span (click)="open(row)">{{value}}</span><% } else { %> {{value}} <% } %>
+        <% if (mode === 'dialog') { %><span (click)="openDialog(row)">{{value}}</span><% } else { %> {{value}} <% } %>
       </ng-template>
     </fs-list-column>
   </fs-list>

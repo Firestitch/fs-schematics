@@ -15,8 +15,8 @@ const { dasherize, classify } = strings;
 // Referencing forked and copied private APIs
 import { ModuleOptions, buildRelativePath } from '../schematics-angular-utils/find-module';
 import {
-  addDeclarationToModule, addEntryComponentToModule,
-  addExportToModule, addSymbolToNgModuleRoutingMetadata, addProviderToModule,
+  addDeclarationToModule, addDialogToComponentMetadata, addEntryComponentToModule,
+  addExportToModule, addSymbolToNgModuleRoutingMetadata, addProviderToModule
 } from '../schematics-angular-utils/ast-utils';
 import { InsertChange } from '../schematics-angular-utils/change';
 import { OptionsInterface } from './interfaces/';
@@ -47,11 +47,19 @@ export function addDeclarationToRoutingModule(options: ModuleOptions): Rule {
   };
 }
 
+<<<<<<< HEAD
 export function addProviderToNgModule(options: OptionsInterface): Rule {
   return (host: Tree) => {
     addServiceDeclaration(host, options);
     return host;
   }
+=======
+export function addDialogToParentComponent(options: ModuleOptions): Rule {
+  return (host: Tree) => {
+    addDialogToComponent(host, options);
+    return host;
+  };
+>>>>>>> 8a3aaa5783b263af33f26b52c43c7d1cb38c2a29
 }
 
 function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModuleContext {
@@ -273,6 +281,33 @@ function addServiceDeclaration(host: Tree, options: OptionsInterface) {
       declarationRecorder.insertLeft(change.pos, change.toAdd);
     }
   }
+    host.commitUpdate(declarationRecorder);
+}
+
+function addDialogToComponent(host: Tree, options: ModuleOptions) {
+  const componentFullPath = `${options.path}/${options.parentName}.component.ts`;
+
+  const text = host.read(componentFullPath);
+
+  if (text === null) {
+    throw new SchematicsException(`File ${componentFullPath} does not exist!`);
+  }
+  const sourceText = text.toString('utf-8');
+  const source = ts.createSourceFile(componentFullPath, sourceText, ts.ScriptTarget.Latest, true);
+
+
+  const changes = addDialogToComponentMetadata(
+    source,
+    componentFullPath,
+    options.parentName || '',
+    options.singleName || options.name || '');
+
+  const declarationRecorder = host.beginUpdate(componentFullPath);
+  for (const change of changes) {
+    if (change instanceof InsertChange) {
+      declarationRecorder.insertLeft(change.pos, change.toAdd);
+    }
+  }
   host.commitUpdate(declarationRecorder);
 }
 
@@ -317,3 +352,4 @@ function addExport(host: Tree, options: ModuleOptions) {
   }
   host.commitUpdate(exportRecorder);
 }
+
