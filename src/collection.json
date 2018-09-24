@@ -28,6 +28,10 @@
     "index-control": {
       "description": "A blank schematic service.",
       "factory": "./list/index-control/index#create"
+    },
+    "module": {
+      "description": "A blank schematic service.",
+      "factory": "./list/module/index#create"
     }
   }
 }

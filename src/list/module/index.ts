@@ -2,6 +2,7 @@ import {
   apply,
   branchAndMerge,
   chain,
+  filter,
   mergeWith,
   move,
   Rule,
@@ -10,10 +11,12 @@ import {
   Tree,
   url,
   template,
+  externalSchematic,
+  DirEntry
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
-
+import { addModuleDeclarationToNgModule } from '../../utils/ng-module-utils';
 
 export function getWorkspacePath(host: Tree): string {
   const possibleFiles = [ '/angular.json', '/.angular.json' ];
@@ -41,20 +44,19 @@ export function create(options: any): Rule {
       options.project = Object.keys(workspace.projects)[0];
     }
 
-    options.module = `${options.path}/${options.module}`;
-
     const templateSource = apply(url('./files'), [
       template({
         ...strings,
         ...options
       }),
-      () => { console.debug('path', `${options.path}` )},
-      move(`${options.path}`)
+      () => { console.debug('path', options.path )},
+      move(options.path)
     ]);
 
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
+        addModuleDeclarationToNgModule(options),
       ]))
     ]);
 

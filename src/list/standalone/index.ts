@@ -61,7 +61,6 @@ function filterTemplates(options: any): Rule {
 export function list(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     const workspace = getWorkspace(tree);
-
     if (!options.project) {
       options.project = Object.keys(workspace.projects)[0];
     }
@@ -142,5 +141,5 @@ function buildRelativePathForService(options) {
   return buildRelativePath(
     `${options.path}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
     `${options.servicePath}/${options.service}`
-  );
+  ).replace('.ts', '');
 }

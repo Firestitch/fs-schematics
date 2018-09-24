@@ -1,0 +1,6 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchemanticsForService",
+  "title": "List Schema",
+  "type": "object"
+}

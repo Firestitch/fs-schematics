@@ -8,7 +8,7 @@
 import { Rule, Tree, SchematicsException } from '@angular-devkit/schematics';
 import { AddToModuleContext } from './add-to-module-context';
 import * as ts from 'typescript';
-import { strings } from '@angular-devkit/core';
+import {normalize, strings} from '@angular-devkit/core';
 
 const { dasherize, classify } = strings;
 
@@ -16,7 +16,7 @@ const { dasherize, classify } = strings;
 import { ModuleOptions, buildRelativePath } from '../schematics-angular-utils/find-module';
 import {
   addDeclarationToModule, addDialogToComponentMetadata, addEntryComponentToModule,
-  addExportToModule, addSymbolToNgModuleRoutingMetadata, addProviderToModule
+  addExportToModule, addSymbolToNgModuleRoutingMetadata, addProviderToModule, addImportToModule
 } from '../schematics-angular-utils/ast-utils';
 import { InsertChange } from '../schematics-angular-utils/change';
 import { OptionsInterface } from './interfaces/';
@@ -31,6 +31,13 @@ export function addDeclarationToNgModule(options: ModuleOptions, exports: boolea
     }
     return host;
   };
+}
+
+export function addModuleDeclarationToNgModule(options: ModuleOptions): Rule {
+  return (host: Tree) => {
+    addModuleDeclaration(host, options);
+    return host;
+  }
 }
 
 export function addEntryComponentDeclarationToNgModule(options: ModuleOptions, exports: boolean): Rule {
@@ -128,7 +135,7 @@ function createServiceToModuleContext(host: Tree, options: OptionsInterface): Ad
   let hasIndexExportsFile = false;
 
   host
-    .getDir(`${options.path}${options.subdirectory}`)
+    .getDir(`${options.path}`)
     .visit(filePath => {
       if (filePath.indexOf('index.ts') > -1) {
         const fileContent = host.read(filePath);
@@ -141,7 +148,7 @@ function createServiceToModuleContext(host: Tree, options: OptionsInterface): Ad
   let componentPath;
   // @todo !!!
   // if (hasIndexExportsFile) {
-    componentPath = `${options.path}${options.subdirectory}/`;
+    componentPath = `${options.path}/`;
   // } else {
   //   componentPath = `${options.path}${options.subdirectory}/`
   //     + stringUtils.dasherize(options.name)
@@ -281,6 +288,38 @@ function addServiceDeclaration(host: Tree, options: OptionsInterface) {
     }
   }
     host.commitUpdate(declarationRecorder);
+}
+
+function addModuleDeclaration(host: Tree, options: ModuleOptions) {
+  const modulePath = options.path + '/' + options.module;
+
+  const text = host.read(modulePath);
+  if (text === null) {
+    throw new SchematicsException(`File ${modulePath} does not exist.`);
+  }
+  const sourceText = text.toString('utf-8');
+  const source = ts.createSourceFile(modulePath, sourceText, ts.ScriptTarget.Latest, true);
+
+  const importModulePath = normalize(
+    `/${options.path}/`
+    + strings.dasherize(options.name) + '/'
+    + strings.dasherize(options.name)
+    + '.module',
+  );
+
+  const relativePath = buildRelativePath(modulePath, importModulePath);
+  const changes = addImportToModule(source,
+    modulePath,
+    strings.classify(`${options.name}Module`),
+    relativePath);
+
+  const recorder = host.beginUpdate(modulePath);
+  for (const change of changes) {
+    if (change instanceof InsertChange) {
+      recorder.insertLeft(change.pos, change.toAdd);
+    }
+  }
+  host.commitUpdate(recorder);
 }
 
 function addDialogToComponent(host: Tree, options: ModuleOptions) {
