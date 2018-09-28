@@ -5,7 +5,8 @@ import { <%= classify(service) %>} from '<%= servicePath %>';
 
 @Component({
   selector: 'app-<%=dasherize(name)%>-create',
-  templateUrl: './<%=dasherize(name)%>.component.html'
+  templateUrl: './<%=dasherize(name)%>.component.html',
+  styleUrls: ['./<%=dasherize(name)%>.component.scss']
 })
 export class <%= classify(name) %>Component {
   public <%= name %>: any = {};

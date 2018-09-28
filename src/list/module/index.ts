@@ -12,7 +12,7 @@ import {
   url,
   template,
   externalSchematic,
-  DirEntry
+  DirEntry, noop
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
@@ -45,6 +45,7 @@ export function create(options: any): Rule {
     }
 
     const templateSource = apply(url('./files'), [
+      options.routing ? noop() : filter(path => !path.endsWith('-routing.module.ts')),
       template({
         ...strings,
         ...options

@@ -32,6 +32,10 @@
     "module": {
       "description": "A blank schematic service.",
       "factory": "./list/module/index#create"
+    },
+    "base": {
+      "description": "A basic empty component",
+      "factory": "./list/base/index#base"
     }
   }
 }
