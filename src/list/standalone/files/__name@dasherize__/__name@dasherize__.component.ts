@@ -4,7 +4,7 @@ import { FsListComponent, FsListConfig } from '@firestitch/list';
 import { FsPrompt } from '@firestitch/prompt';
 import { FsNavRouteHandleService } from '@firestitch/nav';
 
-import { <%= classify(service) %>} from '<%= servicePath %>';
+import { <%= classify(service) %>Service } from '<%= servicePath %>';
 
 @Component({
   selector: 'app-<%=dasherize(name)%>',
@@ -18,7 +18,7 @@ export class <%= classify(name) %>Component implements OnInit {
 
   public config: FsListConfig;
 
-  constructor(private <%= camelize(service) %>: <%= classify(service) %>,
+  constructor(private <%= camelize(service) %>Service: <%= classify(service) %>Service,
               private navRouteHandleService: FsNavRouteHandleService,
               private fsPrompt: FsPrompt) {}
 
@@ -38,7 +38,7 @@ export class <%= classify(name) %>Component implements OnInit {
           click: (filters, event) => {
             console.log('created');
           },
-          label: 'Create <%= capitalize(name) %>'
+          label: 'Create <%= capitalize(singleModel) %>'
         }
       ],
       rowActions: [
@@ -48,7 +48,7 @@ export class <%= classify(name) %>Component implements OnInit {
               title: 'Confirm',
               template: 'Are you sure you would like to delete this record?'
             }).subscribe(() => {
-              return this.<%= camelize(service) %>.delete(data)
+              return this.<%= camelize(service) %>Service.delete(data)
                 .subscribe(() => {
                   this.table.reload();
                 });
@@ -59,7 +59,7 @@ export class <%= classify(name) %>Component implements OnInit {
         }
       ],
       fetch: (query) => {
-        return this.<%= camelize(service) %>.gets(query, { key: null })
+        return this.<%= camelize(service) %>Service.gets(query, { key: null })
           .map(response => ({ data: response.<%= pluralModel %>, paging: response.paging }));
       },
       restore: {
@@ -67,7 +67,7 @@ export class <%= classify(name) %>Component implements OnInit {
         filterLabel: 'Show Deleted',
         menuLabel: 'Restore',
         click: (row, event) => {
-          return this.<%= camelize(service) %>.put({id: row.id, state: 'active'})
+          return this.<%= camelize(service) %>Service.put({id: row.id, state: 'active'})
             .subscribe(() => {
               this.table.reload();
             });

@@ -13,7 +13,7 @@ import {
   template,
   externalSchematic, noop
 } from '@angular-devkit/schematics';
-import { strings } from '@angular-devkit/core';
+import {isAbsolute, strings} from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import { parseName } from '../../utils/parse-name';
 import { addDeclarationToNgModule, addDeclarationToRoutingModule } from '../../utils/ng-module-utils';
@@ -80,8 +80,9 @@ export function list(options: any): Rule {
     options.create = options.create || false;
     options.edit = options.edit || false;
 
+
     options.servicePath = buildRelativePathForService(options);
-    options.service = options.service.replace('.ts', '').replace('.', '-');
+    options.service = options.service.replace('.service.ts', '');
 
     const templateSource = apply(url('./files'), [
       filterTemplates(options),
@@ -104,6 +105,8 @@ export function list(options: any): Rule {
       parentName: options.name,
       service: options.service,
       servicePath: '../' + options.servicePath,
+      singleModel: options.singleModel,
+      pluralModel: options.pluralModel,
       secondLevel: true,
     };
 

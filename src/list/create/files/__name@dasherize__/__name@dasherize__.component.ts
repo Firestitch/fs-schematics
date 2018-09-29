@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { FsMessage } from '@firestitch/message';
 import { FsNavRouteHandleService } from '@firestitch/nav';
 
-import { <%= classify(service) %>} from '<%= servicePath %>';
+import { <%= classify(service) %>Service } from '<%= servicePath %>';
 
 @Component({
   selector: 'app-<%=dasherize(name)%>',
@@ -16,7 +16,7 @@ export class <%= classify(name) %>Component implements OnInit {
   public <%= camelize(singleModel) %> = {};
 
   constructor(private route: ActivatedRoute,
-              private <%= camelize(service) %>: <%= classify(service) %>,
+              private <%= camelize(service) %>Service: <%= classify(service) %>Service,
               private fsMessage: FsMessage,
               private navRouteHandleService: FsNavRouteHandleService) {
 
@@ -31,7 +31,7 @@ export class <%= classify(name) %>Component implements OnInit {
           return resolve();
         }
 
-        this.<%= camelize(service) %>.get(params.<%= camelize(singleModel) %>_id)
+        this.<%= camelize(service) %>Service.get(params.<%= camelize(singleModel) %>_id)
           .subscribe(<%= camelize(singleModel) %> => {
             resolve(<%= camelize(singleModel) %>);
           });
@@ -44,7 +44,7 @@ export class <%= classify(name) %>Component implements OnInit {
   }
 
   public save() {
-    this.<%= camelize(service) %>.save(this.<%= camelize(singleModel) %>)
+    this.<%= camelize(service) %>Service.save(this.<%= camelize(singleModel) %>)
       .subscribe(response => {
         this.fsMessage.success('Saved Changes');
     })

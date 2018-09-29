@@ -19,7 +19,9 @@ import {
   addDeclarationToNgModule, addDialogToParentComponent,
   addEntryComponentDeclarationToNgModule
 } from '../../utils/ng-module-utils';
-import { findModuleFromOptions } from '../../schematics-angular-utils/find-module';
+import { buildRelativePath, findModuleFromOptions } from '../../schematics-angular-utils/find-module';
+import { dasherize } from '@angular-devkit/core/src/utils/strings';
+import { isAbsolute } from 'path';
 
 
 export function getWorkspacePath(host: Tree): string {
@@ -79,6 +81,11 @@ export function createOrEdit(options: any): Rule {
     options.name = parsedPath.name;
     options.path = parsedPath.path;
 
+    if (isAbsolute(options.servicePath)) {
+      options.servicePath = buildRelativePathForService(options);
+      options.service = options.service.replace('.service.ts', '');
+    }
+
     // When we are do generate Component name for insert into module declaration
     // we must do it without parent component name
     // but in case of route we must have this parameter for related route matching
@@ -107,4 +114,11 @@ export function createOrEdit(options: any): Rule {
 
     return rule(tree, _context);
   };
+}
+
+function buildRelativePathForService(options) {
+  return buildRelativePath(
+    `${options.path}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
+    `${options.servicePath}/${options.service}`
+  ).replace('.ts', '');
 }

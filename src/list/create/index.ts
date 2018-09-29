@@ -12,11 +12,13 @@ import {
   SchematicsException,
   Tree, noop,
 } from '@angular-devkit/schematics';
-import { strings } from '@angular-devkit/core';
+import { strings} from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import { parseName } from '../../utils/parse-name';
 import { addDeclarationToNgModule, addDeclarationToRoutingModule } from '../../utils/ng-module-utils';
-import { findModuleFromOptions } from '../../schematics-angular-utils/find-module';
+import { buildRelativePath, findModuleFromOptions } from '../../schematics-angular-utils/find-module';
+import { dasherize } from '@angular-devkit/core/src/utils/strings';
+import { isAbsolute } from 'path';
 
 
 export function getWorkspacePath(host: Tree): string {
@@ -80,6 +82,11 @@ export function createOrEdit(options: any): Rule {
     options.name = parsedPath.name;
     options.path = parsedPath.path;
 
+    if (isAbsolute(options.servicePath)) {
+      options.servicePath = buildRelativePathForService(options);
+      options.service = options.service.replace('.service.ts', '');
+    }
+
     const templateSource = apply(url('./files'), [
       filterTemplates(options),
       template({
@@ -102,4 +109,11 @@ export function createOrEdit(options: any): Rule {
 
     return rule(tree, _context);
   };
+}
+
+function buildRelativePathForService(options) {
+  return buildRelativePath(
+    `${options.path}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
+    `${options.servicePath}/${options.service}`
+  ).replace('.ts', '');
 }
