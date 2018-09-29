@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+
 import { FsListComponent, FsListConfig } from '@firestitch/list';
 import { FsPrompt } from '@firestitch/prompt';
+import { FsNavRouteHandleService } from '@firestitch/nav';
+
 import { <%= classify(service) %>} from '<%= servicePath %>';
 
 @Component({
@@ -15,13 +18,14 @@ export class <%= classify(name) %>Component implements OnInit {
 
   public config: FsListConfig;
 
-  constructor(private _service: <%= classify(service) %>,
-              private _fsPrompt: FsPrompt) {}
+  constructor(private <%= camelize(service) %>: <%= classify(service) %>,
+              private navRouteHandleService: FsNavRouteHandleService,
+              private fsPrompt: FsPrompt) {}
 
   public ngOnInit() {
+    this.navRouteHandleService.setTitle('<%= capitalize(name) %>');
 
     this.config = {
-      heading: '<%= classify(name) %>',
       filters: [
         {
           name: 'keyword',
@@ -40,11 +44,11 @@ export class <%= classify(name) %>Component implements OnInit {
       rowActions: [
         {
           click: (data) => {
-            this._fsPrompt.confirm({
+            this.fsPrompt.confirm({
               title: 'Confirm',
-              template: 'Are you sure you would like to delete?'
+              template: 'Are you sure you would like to delete this record?'
             }).subscribe(() => {
-              return this._service.delete(data)
+              return this.<%= camelize(service) %>.delete(data)
                 .subscribe(() => {
                   this.table.reload();
                 });
@@ -55,15 +59,15 @@ export class <%= classify(name) %>Component implements OnInit {
         }
       ],
       fetch: (query) => {
-        return this._service.gets(query, { key: null })
-          .map(response => ({ data: response.<%= name %>, paging: response.paging }));
+        return this.<%= camelize(service) %>.gets(query, { key: null })
+          .map(response => ({ data: response.<%= pluralModel %>, paging: response.paging }));
       },
       restore: {
         query: {state: 'deleted'},
         filterLabel: 'Show Deleted',
         menuLabel: 'Restore',
         click: (row, event) => {
-          return this._service.put({id: row.id, state: 'active'})
+          return this.<%= camelize(service) %>.put({id: row.id, state: 'active'})
             .subscribe(() => {
               this.table.reload();
             });

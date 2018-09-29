@@ -10,7 +10,7 @@ import {
   Rule,
   SchematicContext,
   SchematicsException,
-  Tree,
+  Tree, noop,
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
@@ -90,11 +90,12 @@ export function createOrEdit(options: any): Rule {
       move(parsedPath.path)
     ]);
 
+    const isRoutingExists = tree.exists(options.routingModule);
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
         addDeclarationToNgModule(options, false),
-        addDeclarationToRoutingModule(options),
+        isRoutingExists ? addDeclarationToRoutingModule(options) : noop(),
       ]))
     ]);
 

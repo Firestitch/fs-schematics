@@ -16,8 +16,7 @@ import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import { parseName } from '../../utils/parse-name';
 import {
-  addDeclarationToNgModule,
-  addDeclarationToRoutingModule, addDialogToParentComponent,
+  addDeclarationToNgModule, addDialogToParentComponent,
   addEntryComponentDeclarationToNgModule
 } from '../../utils/ng-module-utils';
 import { findModuleFromOptions } from '../../schematics-angular-utils/find-module';
