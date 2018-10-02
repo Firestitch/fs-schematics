@@ -1,8 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Routes }  from '@angular/router';
 
 import { FsListComponent, FsListConfig } from '@firestitch/list';
 import { FsPrompt } from '@firestitch/prompt';
 import { FsNavRouteHandleService } from '@firestitch/nav';
+
 
 import { <%= classify(service) %>Service } from '<%= servicePath %>';
 
@@ -12,7 +14,6 @@ import { <%= classify(service) %>Service } from '<%= servicePath %>';
   styleUrls: ['./<%=dasherize(name)%>.component.scss']
 })
 export class <%= classify(name) %>Component implements OnInit {
-
   @ViewChild('<%=classify(name)%>Table')
   public table: FsListComponent;
 
@@ -36,7 +37,7 @@ export class <%= classify(name) %>Component implements OnInit {
       actions: [
         {
           click: (filters, event) => {
-            console.log('created');
+            <% if (mode === 'full' || mode === 'dialog') { %> this.openEditForm(); <% } %>
           },
           label: 'Create <%= capitalize(singleModel) %>'
         }
@@ -75,4 +76,17 @@ export class <%= classify(name) %>Component implements OnInit {
       }
     };
   }
+
+  <% if (mode === 'dialog') { %>
+  public openEditForm(row = {}) {
+    this.openDialog(row);
+  }
+  <% } %>
+
+  <% if (mode === 'full') { %>
+  public openEditForm(row = {}) {
+    this.route.navigateBy([`<%= dasherize(name)%>/${row.id}`]);
+  }
+  <% } %>
+
 }

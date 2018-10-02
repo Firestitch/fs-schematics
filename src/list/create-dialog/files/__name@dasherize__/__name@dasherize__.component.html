@@ -1,13 +1,9 @@
 <form (fsForm)="save()">
-  <mat-dialog-content>
-    <div fxLayout="column">
-      <mat-form-field>
-        <input matInput placeholder="Empty Field" name="empty_field">
-      </mat-form-field>
-    </div>
-  </mat-dialog-content>
-  <mat-dialog-actions>
-    <button mat-raised-button color="primary">Save</button>
-    <button mat-button color="primary" [mat-dialog-close]="true">Close</button>
-  </mat-dialog-actions>
+  <div fxLayout="column">
+    <mat-form-field>
+      <input matInput placeholder="Name" [(ngModel)]="data.name" name="name">
+    </mat-form-field>
+  </div>
+  <button mat-raised-button type="submit" color="primary">{{data.id ? 'Save' : 'Create'}}</button>
+  <button mat-button color="primary" [mat-dialog-close]="true">Close</button>
 </form>

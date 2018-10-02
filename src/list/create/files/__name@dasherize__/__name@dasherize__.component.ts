@@ -13,7 +13,7 @@ import { <%= classify(service) %>Service } from '<%= servicePath %>';
 })
 export class <%= classify(name) %>Component implements OnInit {
 
-  public <%= camelize(singleModel) %> = {};
+  public <%= camelize(singleModel) %>: any = {};
 
   constructor(private route: ActivatedRoute,
               private <%= camelize(service) %>Service: <%= classify(service) %>Service,

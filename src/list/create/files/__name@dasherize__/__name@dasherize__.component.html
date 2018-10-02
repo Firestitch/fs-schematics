@@ -1,18 +1,10 @@
 <mat-card>
   <form (fsForm)="save()">
-    <div fxLayout="row" fxLayoutGap="10px" fxLayoutGap.xs="0" fxLayout.xs="column">
-      <mat-form-field fxFlex="50">
-        <input matInput placeholder="Empty Field" name="empty_field" fsFormRequired>
-      </mat-form-field>
-      <mat-form-field fxFlex>
-        <input matInput placeholder="Empty Field" name="empty_field">
-      </mat-form-field>
-    </div>
     <div fxLayout="column">
-      <mat-form-field fxFlex>
-        <input matInput placeholder="Email" [(ngModel)]="account.email" name="email" fsFormEmail fsFormRequired>
+      <mat-form-field>
+        <input matInput placeholder="Name" [(ngModel)]="<%= camelize(singleModel) %>.name" name="name">
       </mat-form-field>
     </div>
-    <button mat-raised-button type="submit" color="primary">Save</button>
+    <button mat-raised-button type="submit" color="primary">{{<%= camelize(singleModel) %>.id ? 'Save' : 'Create'}}</button>
   </form>
 </mat-card>

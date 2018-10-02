@@ -445,7 +445,7 @@ export function addDialogToComponentMetadata(
 
   const changes: any = [];
   const dialogMethodName = 'openDialog';
-  let dialogVarName = '_dialog';
+  let dialogVarName = 'dialog';
 
   const componentClass = findNodes(source, ts.SyntaxKind.ClassDeclaration)
     .find((node: any) => {
@@ -463,8 +463,11 @@ export function addDialogToComponentMetadata(
       dialogVarName = existingDialog.name.text
     } else {
       const position = classConstructor.parameters.end;
+      let declaration = classConstructor.parameters.length ? ',\n' : '';
+      declaration += `public ${dialogVarName}: MatDialog`;
+
       changes.push(
-        new InsertChange(componentPath, position, `public ${dialogVarName}: MatDialog`),
+        new InsertChange(componentPath, position, declaration),
         insertImport(
           source,
           componentPath || '',
