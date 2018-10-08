@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Routes }  from '@angular/router';
+<% if (mode === 'full') { %> import { Router } from '@angular/router'; <% } %>
 
 import { FsListComponent, FsListConfig } from '@firestitch/list';
 import { FsPrompt } from '@firestitch/prompt';
@@ -21,6 +21,7 @@ export class <%= classify(name) %>Component implements OnInit {
 
   constructor(private <%= camelize(service) %>Service: <%= classify(service) %>Service,
               private navRouteHandleService: FsNavRouteHandleService,
+              private router: Router,
               private fsPrompt: FsPrompt) {}
 
   public ngOnInit() {
@@ -36,10 +37,11 @@ export class <%= classify(name) %>Component implements OnInit {
       ],
       actions: [
         {
+          label: 'Create <%= capitalize(singleModel) %>',
           click: (filters, event) => {
-            <% if (mode === 'full' || mode === 'dialog') { %> this.openEditForm(); <% } %>
-          },
-          label: 'Create <%= capitalize(singleModel) %>'
+            <% if (mode === 'dialog ') { %> this.openDialog(); <% } %>
+            <% if (mode === 'full') { %> this.router.navigateByUrl('/<%= dasherize(singleName) %>') <% } %>
+          }
         }
       ],
       rowActions: [
@@ -76,17 +78,5 @@ export class <%= classify(name) %>Component implements OnInit {
       }
     };
   }
-
-  <% if (mode === 'dialog') { %>
-  public openEditForm(row = {}) {
-    this.openDialog(row);
-  }
-  <% } %>
-
-  <% if (mode === 'full') { %>
-  public openEditForm(row = {}) {
-    this.route.navigateBy([`<%= dasherize(name)%>/${row.id}`]);
-  }
-  <% } %>
 
 }

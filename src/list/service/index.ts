@@ -70,16 +70,21 @@ export function create(options: any): Rule {
 
     const extrenalSchematics: any = [];
 
-    tree
-      .getDir(subDir.path)
-      .visit(filePath => {
-        if (filePath.indexOf('index.ts') > -1) {
-          tree.delete(`${subDir.path}/index.ts`);
-        }
-      });
+    const indexFileExists = tree.exists(`${subDir.path}/index.ts`);
+    if (indexFileExists) {
+      tree.delete(`${subDir.path}/index.ts`);
+    }
+
+    // tree
+    //   .getDir(subDir.path)
+    //   .visit(filePath => {
+    //     if (filePath.indexOf('index.ts') > -1) {
+    //     }
+    //   });
 
     const files = subDir.subfiles.filter(p => serviceRe.test(p)) || [];
-    files.push((`${options.name}.service.ts` as any));
+    files.map((file) => file.replace('.ts', ''));  // for correct import
+    files.push((`${options.name}.service` as any));
 
     const childSchematicOptions = {
       project: options.project,

@@ -27,18 +27,18 @@ export class <%= classify(name) %>Component implements OnInit {
     this.route.params.subscribe(params => {
 
       new Promise((resolve) => {
-        if (!params.<%= camelize(singleModel) %>_id) {
+        if (!params.id) {
           return resolve();
         }
 
-        this.<%= camelize(service) %>Service.get(params.<%= camelize(singleModel) %>_id)
+        this.<%= camelize(service) %>Service.get(params.id)
           .subscribe(<%= camelize(singleModel) %> => {
             resolve(<%= camelize(singleModel) %>);
           });
 
       }).then((<%= camelize(singleModel) %>) => {
         this.<%= camelize(singleModel) %> = <%= camelize(singleModel) %> || {};
-        this.navRouteHandleService.setTitle(this.<%= camelize(singleModel) %>.id ? 'Edit <%= capitalize(name)%>' : 'Create <%= capitalize(name)%>');
+        this.navRouteHandleService.setTitle(this.<%= camelize(singleModel) %>.id ? 'Edit <%= capitalize(singleModel)%>' : 'Create <%= capitalize(singleModel)%>');
       });
     });
   }

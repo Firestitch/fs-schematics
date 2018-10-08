@@ -334,8 +334,8 @@ export function addRoutesArrayDeclaration(
       const position = lastImport.getEnd();
 
       const route = ((options.mode === 'full') && options.secondLevel)
-        ? `  { path: '${options.name}/:${options.name}_id', component: ${componentName} },\n  { path: '${url}', component: ${componentName} },`
-        : `  { path: '${url}', component: ${componentName} },`;
+        ? ` { path: '${url}',\n \t children: [\n \t \t  { path: '', component: ${componentName} },\n \t \t  { path: '/:id', component: ${componentName} },\n\ \t] \n }\n `
+        : ` { path: '${url}', component: ${componentName} },`;
 
       const toInsert = `\n\nexport const routes: Routes = [\n${route}\n];`;
 
@@ -387,12 +387,11 @@ export function addRouteToExistingRoutes(
     });
 
     // const bracketIndex = routesNodes.indexOf(endOfRoutesArray);
-
     if (endOfRoutesArray &&
       endOfRoutesArray.parent &&
       endOfRoutesArray.parent.elements &&
       !endOfRoutesArray.parent.elements.hasTrailingComma) {
-      changes.push(new InsertChange(ngModulePath || '', endOfRoutesArray.getEnd(), ','));
+      changes.push(new InsertChange(ngModulePath || '', endOfRoutesArray.parent.elements.end, ','));
     }
 
     if (endOfRoutesArray) {
@@ -405,8 +404,8 @@ export function addRouteToExistingRoutes(
   const endComa = wildCardRoute ? ',' : '';
 
   const toInsert = ((options.mode === 'full') && options.secondLevel)
-    ? `  { path: '${options.name}/:${options.name}_id',\ component: ${componentName} },\n  { path: '${url}', component: ${componentName} }${endComa}\n`
-    : `  { path: '${url}', component: ${componentName} }${endComa}\n`;
+    ? ` { path: '${url}',\n \t children: [\n \t \t  { path: '', component: ${componentName} },\n \t \t  { path: '/:id', component: ${componentName} },\n\ \t] \n }\n `
+    : ` { path: '${url}', component: ${componentName} }${endComa}\n`;
 
   changes.push(
     new InsertChange(ngModulePath || '', insertPosition, toInsert),

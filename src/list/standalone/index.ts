@@ -79,6 +79,7 @@ export function list(options: any): Rule {
     // options.path = parsedPath.path;
     options.create = options.create || false;
     options.edit = options.edit || false;
+    options.singleName = options.singleName || '';
 
 
     options.servicePath = buildRelativePathForService(options);

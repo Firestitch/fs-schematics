@@ -7,8 +7,10 @@
     </fs-list-column>
 
     <fs-list-column name="name" title="Name" [sortable]="true">
-      <ng-template fs-list-header>
-       <a  <% if (mode === 'dialog' || mode === 'full') { %>(click)="openEditForm()"<%}%>> Name </a>
+      <ng-template fs-list-header let-row="row">
+        <% if (mode === 'full') { %><a  [routerLink]="['/<%= singleName %>', row.id]"> Name </a> <%}%>
+        <% if (mode === 'dialog') { %> <a (click)="openDialog(row)" > Name </a> <%}%>
+        <% if (mode !== 'full' && mode !== 'dialog') { %>  Name  <%}%>
       </ng-template>
       <ng-template fs-list-cell let-value="value" let-row="row">
         <% if (mode === 'dialog') { %><span (click)="openDialog(row)">{{value}}</span><% } else { %> {{value}} <% } %>
