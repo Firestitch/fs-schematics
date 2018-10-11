@@ -1,19 +1,8 @@
 <mat-card>
-  <fs-list [config]="config" #<%= classify(name) %>Table>
-    <fs-list-column>
-      <ng-template fs-list-cell let-index="index">
-        {{index}}
-      </ng-template>
-    </fs-list-column>
-
+  <fs-list [config]="config" #<%= classify(name) %>List>
     <fs-list-column name="name" title="Name" [sortable]="true">
-      <ng-template fs-list-header let-row="row">
-        <% if (mode === 'full') { %><a  [routerLink]="['/<%= singleName %>', row.id]"> Name </a> <%}%>
-        <% if (mode === 'dialog') { %> <a (click)="openDialog(row)" > Name </a> <%}%>
-        <% if (mode !== 'full' && mode !== 'dialog') { %>  Name  <%}%>
-      </ng-template>
-      <ng-template fs-list-cell let-value="value" let-row="row">
-        <% if (mode === 'dialog') { %><span (click)="openDialog(row)">{{value}}</span><% } else { %> {{value}} <% } %>
+      <ng-template fs-list-cell let-row="row">
+        <a<% if (mode === 'full') { %> [routerLink]="['/<%= singleName %>', row.id]" <% } if (mode === 'dialog') { %> (click)="openDialog(row)" <%}%>> {{row.name}} </a>
       </ng-template>
     </fs-list-column>
   </fs-list>

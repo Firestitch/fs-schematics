@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { FsMessage } from '@firestitch/message';
 import { FsNavRouteHandleService } from '@firestitch/nav';
@@ -16,6 +16,7 @@ export class <%= classify(name) %>Component implements OnInit {
   public <%= camelize(singleModel) %>: any = {};
 
   constructor(private route: ActivatedRoute,
+              private router: Router,
               private <%= camelize(service) %>Service: <%= classify(service) %>Service,
               private fsMessage: FsMessage,
               private navRouteHandleService: FsNavRouteHandleService) {
@@ -45,8 +46,11 @@ export class <%= classify(name) %>Component implements OnInit {
 
   public save() {
     this.<%= camelize(service) %>Service.save(this.<%= camelize(singleModel) %>)
-      .subscribe(response => {
+      .subscribe(<%= camelize(singleModel) %> => {
         this.fsMessage.success('Saved Changes');
+        if (!this.<%= camelize(singleModel) %>.id) {
+          this.router.navigate([<%= camelize(singleModel).id %>], { relativeTo: this.route });
+        }
     })
   }
 }

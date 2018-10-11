@@ -11,12 +11,12 @@ import { <%= classify(service) %>Service } from '<%= servicePath %>';
 export class <%= classify(name) %>Component implements OnInit {
 
   constructor(private dialogRef: MatDialogRef<<%= classify(name) %>Component>,
-    private fsMessage: FsMessage,
-    private <%= camelize(service) %>Service: <%= classify(service) %>Service,
-    @Inject(MAT_DIALOG_DATA) public data) {
+              private fsMessage: FsMessage,
+              private <%= camelize(service) %>Service: <%= classify(service) %>Service,
+              @Inject(MAT_DIALOG_DATA) public data) {
   }
 
-public ngOnInit() {
+  public ngOnInit() {
     new Promise((resolve) => {
       if (!this.data.id) {
         return resolve();

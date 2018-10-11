@@ -334,8 +334,8 @@ export function addRoutesArrayDeclaration(
       const position = lastImport.getEnd();
 
       const route = ((options.mode === 'full') && options.secondLevel)
-        ? ` { path: '${url}',\n \t children: [\n \t \t  { path: '', component: ${componentName} },\n \t \t  { path: '/:id', component: ${componentName} },\n\ \t] \n }\n `
-        : ` { path: '${url}', component: ${componentName} },`;
+        ? `  { path: '${url}',\n \t children: [\n \t \t  { path: '', component: ${componentName}, pathMatch: 'full' },\n \t \t  { path: ':id', component: ${componentName} },\n \t]\n  },`
+        : `  { path: '${url}', component: ${componentName} },`;
 
       const toInsert = `\n\nexport const routes: Routes = [\n${route}\n];`;
 
@@ -404,8 +404,8 @@ export function addRouteToExistingRoutes(
   const endComa = wildCardRoute ? ',' : '';
 
   const toInsert = ((options.mode === 'full') && options.secondLevel)
-    ? ` { path: '${url}',\n \t children: [\n \t \t  { path: '', component: ${componentName} },\n \t \t  { path: '/:id', component: ${componentName} },\n\ \t] \n }\n `
-    : ` { path: '${url}', component: ${componentName} }${endComa}\n`;
+    ? `  { path: '${url}',\n \t children: [\n \t \t  { path: '', component: ${componentName}, pathMatch: 'full' },\n \t \t  { path: ':id', component: ${componentName} },\n\ \t] \n  }${endComa}\n `
+    : `  { path: '${url}', component: ${componentName} }${endComa}\n`;
 
   changes.push(
     new InsertChange(ngModulePath || '', insertPosition, toInsert),

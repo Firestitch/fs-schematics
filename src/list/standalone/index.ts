@@ -99,11 +99,11 @@ export function list(options: any): Rule {
 
     const childSchematicOptions = {
       project: options.project,
-      path: `${options.path}/${options.name}`,
+      path: `${options.path}/${dasherize(options.name)}`,
       module: options.module,
       mode: options.mode,
       name: options.singleName,
-      parentName: options.name,
+      parentName: dasherize(options.name),
       service: options.service,
       servicePath: '../' + options.servicePath,
       singleModel: options.singleModel,

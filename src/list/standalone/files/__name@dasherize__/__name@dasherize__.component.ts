@@ -14,8 +14,8 @@ import { <%= classify(service) %>Service } from '<%= servicePath %>';
   styleUrls: ['./<%=dasherize(name)%>.component.scss']
 })
 export class <%= classify(name) %>Component implements OnInit {
-  @ViewChild('<%=classify(name)%>Table')
-  public table: FsListComponent;
+  @ViewChild('<%=classify(name)%>List')
+  public list: FsListComponent;
 
   public config: FsListConfig;
 
@@ -53,7 +53,7 @@ export class <%= classify(name) %>Component implements OnInit {
             }).subscribe(() => {
               return this.<%= camelize(service) %>Service.delete(data)
                 .subscribe(() => {
-                  this.table.reload();
+                  this.list.reload();
                 });
             });
           },
@@ -72,7 +72,7 @@ export class <%= classify(name) %>Component implements OnInit {
         click: (row, event) => {
           return this.<%= camelize(service) %>Service.put({id: row.id, state: 'active'})
             .subscribe(() => {
-              this.table.reload();
+              this.list.reload();
             });
         }
       }
