@@ -1,5 +1,5 @@
 <mat-card>
-  <form (fsForm)="save()">
+  <form (fsForm)="save()" [fsSkeletonForm]="routeObserver.loaded">
     <div fxLayout="column">
       <mat-form-field>
         <input matInput placeholder="Name" [(ngModel)]="<%= camelize(singleModel) %>.name" name="name">

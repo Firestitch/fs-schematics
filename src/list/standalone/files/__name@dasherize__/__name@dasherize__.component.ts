@@ -6,7 +6,7 @@ import { FsPrompt } from '@firestitch/prompt';
 import { FsNavRouteHandleService } from '@firestitch/nav';
 
 
-import { <%= classify(service) %>Service } from '<%= servicePath %>';
+import { <%= classify(service) %>Service } from '<%= relativeServicePath %>';
 
 @Component({
   selector: 'app-<%=dasherize(name)%>',

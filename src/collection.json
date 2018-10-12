@@ -26,16 +26,20 @@
       "factory": "./list/service/index#create"
     },
     "index-control": {
-      "description": "A blank schematic service.",
+      "description": "A blank schematic.",
       "factory": "./list/index-control/index#create"
     },
     "module": {
-      "description": "A blank schematic service.",
+      "description": "A blank schematic.",
       "factory": "./list/module/index#create"
     },
     "base": {
       "description": "A basic empty component",
       "factory": "./list/base/index#base"
+    },
+    "resolver": {
+      "description": "A basic description",
+      "factory": "./list/resolver/index#create"
     }
   }
 }

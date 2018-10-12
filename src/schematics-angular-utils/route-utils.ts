@@ -9,6 +9,7 @@ import * as ts from 'typescript';
 import { findNodes, getDecoratorMetadata, insertAfterLastOccurrence } from './ast-utils';
 import { Change, InsertChange, NoopChange } from './change';
 import { ModuleOptions } from './find-module';
+import {classify} from '@angular-devkit/core/src/utils/strings';
 
 
 /**
@@ -283,6 +284,7 @@ export function addRoutesArrayDeclaration(
 
   const changes: any = [];
   const url = options.name;
+  const resolverName = `${classify(options.name)}Resolver`;
 
   const routesArrayNodes = findNodes(source, ts.SyntaxKind.ArrayLiteralExpression);
 
@@ -334,7 +336,16 @@ export function addRoutesArrayDeclaration(
       const position = lastImport.getEnd();
 
       const route = ((options.mode === 'full') && options.secondLevel)
-        ? `  { path: '${url}',\n \t children: [\n \t \t  { path: '', component: ${componentName}, pathMatch: 'full' },\n \t \t  { path: ':id', component: ${componentName} },\n \t]\n  },`
+        ? `  { path: '${url}', patchMatch: 'full', component: ${componentName},\n` +
+        `    resolve: { \n ` +
+        `      ${resolverName} \n` +
+        `     }\n` +
+        `  },\n` +
+        `  { path: '${url}/:id', component: ${componentName},\n` +
+        `    resolve: { \n` +
+        `     ${resolverName} \n` +
+        `    }\n` +
+        `  },`
         : `  { path: '${url}', component: ${componentName} },`;
 
       const toInsert = `\n\nexport const routes: Routes = [\n${route}\n];`;
@@ -366,6 +377,7 @@ export function addRouteToExistingRoutes(
 ) {
   const changes: any = [];
   const url = options.name;
+  const resolverName = `${classify(options.name)}Resolver`;
 
   let insertPosition: number | null = null;
 
@@ -404,7 +416,16 @@ export function addRouteToExistingRoutes(
   const endComa = wildCardRoute ? ',' : '';
 
   const toInsert = ((options.mode === 'full') && options.secondLevel)
-    ? `  { path: '${url}',\n \t children: [\n \t \t  { path: '', component: ${componentName}, pathMatch: 'full' },\n \t \t  { path: ':id', component: ${componentName} },\n\ \t] \n  }${endComa}\n `
+    ? `  { path: '${url}', patchMatch: 'full', component: ${componentName},\n` +
+      `    resolve: { \n ` +
+      `      ${resolverName} \n` +
+      `     }\n` +
+      `  },\n` +
+      `  { path: '${url}/:id', component: ${componentName},\n` +
+      `    resolve: { \n` +
+      `     ${resolverName} \n` +
+      `    }\n` +
+      `  }${endComa}\n `
     : `  { path: '${url}', component: ${componentName} }${endComa}\n`;
 
   changes.push(

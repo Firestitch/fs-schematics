@@ -21,7 +21,6 @@ import {
 } from '../../utils/ng-module-utils';
 import { buildRelativePath, findModuleFromOptions } from '../../schematics-angular-utils/find-module';
 import { dasherize } from '@angular-devkit/core/src/utils/strings';
-import { isAbsolute } from 'path';
 
 
 export function getWorkspacePath(host: Tree): string {
@@ -81,8 +80,8 @@ export function createOrEdit(options: any): Rule {
     options.name = parsedPath.name;
     options.path = parsedPath.path;
 
-    if (isAbsolute(options.servicePath)) {
-      options.servicePath = buildRelativePathForService(options);
+    if (!options.relativeServicePath) {
+      options.relativeServicePath = buildRelativePathForService(options);
       options.service = options.service.replace('.service.ts', '');
     }
 

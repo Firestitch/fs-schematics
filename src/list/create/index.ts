@@ -10,6 +10,7 @@ import {
   Rule,
   SchematicContext,
   SchematicsException,
+  externalSchematic,
   Tree, noop,
 } from '@angular-devkit/schematics';
 import { strings} from '@angular-devkit/core';
@@ -77,13 +78,12 @@ export function createOrEdit(options: any): Rule {
     // options.module = `${options.path}/${options.module}`;
 
 
-
     const parsedPath = parseName(options.path, options.name);
     options.name = parsedPath.name;
     options.path = parsedPath.path;
 
-    if (isAbsolute(options.servicePath)) {
-      options.servicePath = buildRelativePathForService(options);
+    if (!options.relativeServicePath) {
+      options.relativeServicePath = buildRelativePathForService(options);
       options.service = options.service.replace('.service.ts', '');
     }
 
@@ -97,12 +97,32 @@ export function createOrEdit(options: any): Rule {
       move(parsedPath.path)
     ]);
 
+    const externalSchematics: any = [];
+
+    const childSchematicOptions = {
+      project: options.project,
+      path: options.path,
+      module: options.module,
+      name: options.name,
+      service: options.service,
+      servicePath: options.servicePath,
+    };
+
+    externalSchematics.push(
+      externalSchematic(
+        '@firestitch/schematics',
+        'resolver',
+        childSchematicOptions
+      )
+    );
+
     const isRoutingExists = tree.exists(options.routingModule);
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
         addDeclarationToNgModule(options, false),
         isRoutingExists ? addDeclarationToRoutingModule(options) : noop(),
+        ...externalSchematics,
       ]))
     ]);
 
@@ -113,7 +133,7 @@ export function createOrEdit(options: any): Rule {
 
 function buildRelativePathForService(options) {
   return buildRelativePath(
-    `${options.path}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
+    `${options.path}/${dasherize(options.name)}.component.ts`,
     `${options.servicePath}/${options.service}`
   ).replace('.ts', '');
 }

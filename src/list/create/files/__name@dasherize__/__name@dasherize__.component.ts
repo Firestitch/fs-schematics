@@ -3,8 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { FsMessage } from '@firestitch/message';
 import { FsNavRouteHandleService } from '@firestitch/nav';
+import { RouteObserver } from '@firestitch/core';
 
-import { <%= classify(service) %>Service } from '<%= servicePath %>';
+import { <%= classify(service) %>Service } from '<%= relativeServicePath %>';
 
 @Component({
   selector: 'app-<%=dasherize(name)%>',
@@ -14,6 +15,7 @@ import { <%= classify(service) %>Service } from '<%= servicePath %>';
 export class <%= classify(name) %>Component implements OnInit {
 
   public <%= camelize(singleModel) %>: any = {};
+  public routeObserver = new RouteObserver(this.route);
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -24,24 +26,11 @@ export class <%= classify(name) %>Component implements OnInit {
   }
 
   public ngOnInit() {
-
-    this.route.params.subscribe(params => {
-
-      new Promise((resolve) => {
-        if (!params.id) {
-          return resolve();
-        }
-
-        this.<%= camelize(service) %>Service.get(params.id)
-          .subscribe(<%= camelize(singleModel) %> => {
-            resolve(<%= camelize(singleModel) %>);
-          });
-
-      }).then((<%= camelize(singleModel) %>) => {
+    this.routeObserver
+      .subscribe(<%= camelize(singleModel) %> => {
         this.<%= camelize(singleModel) %> = <%= camelize(singleModel) %> || {};
         this.navRouteHandleService.setTitle(this.<%= camelize(singleModel) %>.id ? 'Edit <%= capitalize(singleModel)%>' : 'Create <%= capitalize(singleModel)%>');
-      });
-    });
+      }, '<%= camelize(singleModel) %>');
   }
 
   public save() {
@@ -49,7 +38,7 @@ export class <%= classify(name) %>Component implements OnInit {
       .subscribe(<%= camelize(singleModel) %> => {
         this.fsMessage.success('Saved Changes');
         if (!this.<%= camelize(singleModel) %>.id) {
-          this.router.navigate([<%= camelize(singleModel).id %>], { relativeTo: this.route });
+          this.router.navigate([<%= camelize(singleModel)%>.id], { relativeTo: this.route });
         }
     })
   }

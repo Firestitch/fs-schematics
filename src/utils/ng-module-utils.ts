@@ -20,6 +20,7 @@ import {
 } from '../schematics-angular-utils/ast-utils';
 import { InsertChange } from '../schematics-angular-utils/change';
 import { OptionsInterface } from './interfaces/';
+import {insertImport} from '../schematics-angular-utils/route-utils';
 
 const stringUtils = { dasherize, classify };
 
@@ -66,6 +67,13 @@ export function addDialogToParentComponent(options: ModuleOptions): Rule {
     addDialogToComponent(host, options);
     return host;
   };
+}
+
+export function addResolverToNgModule(options: ModuleOptions): Rule {
+  return (host: Tree) => {
+    addResolverDeclaration(host, options);
+    return host;
+  }
 }
 
 function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModuleContext {
@@ -158,6 +166,27 @@ function createServiceToModuleContext(host: Tree, options: OptionsInterface): Ad
   result.relativePath = buildRelativePath(`${options.module}`, componentPath);
   result.classifiedName = stringUtils.classify(`${options.name}Service`);
 
+  return result;
+}
+
+function createResolverToModuleContext(host: Tree, options: ModuleOptions) {
+  if (!options.routingModule) {
+    throw new SchematicsException(`RoutingModule not found.`);
+  }
+
+  const result = new AddToModuleContext();
+
+  const text = host.read(options.routingModule);
+
+  if (text === null) {
+    throw new SchematicsException(`File ${options.routingModule} does not exist!`);
+  }
+  const sourceText = text.toString('utf-8');
+  result.source = ts.createSourceFile(options.routingModule, sourceText, ts.ScriptTarget.Latest, true);
+
+  const resolverPath = options.path + stringUtils.dasherize(options.name) + '.resolve.ts';
+  result.relativePath = buildRelativePath(options.module || '', resolverPath);
+  result.classifiedName = stringUtils.classify(`${options.name}Resolver`);
   return result;
 }
 
@@ -288,6 +317,28 @@ function addServiceDeclaration(host: Tree, options: OptionsInterface) {
     }
   }
     host.commitUpdate(declarationRecorder);
+}
+
+function addResolverDeclaration(host: Tree, options: OptionsInterface) {
+  const context = createResolverToModuleContext(host, options);
+
+  const modulePath = options.module || '';
+
+  const declarationChanges = [insertImport(
+    context.source,
+    modulePath,
+    context.classifiedName,
+    context.relativePath,
+    false
+  )];
+
+  const declarationRecorder = host.beginUpdate(modulePath);
+  for (const change of declarationChanges) {
+    if (change instanceof InsertChange) {
+      declarationRecorder.insertLeft(change.pos, change.toAdd);
+    }
+  }
+  host.commitUpdate(declarationRecorder);
 }
 
 function addModuleDeclaration(host: Tree, options: ModuleOptions) {

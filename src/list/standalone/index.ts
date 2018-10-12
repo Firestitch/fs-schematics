@@ -11,7 +11,8 @@ import {
   Tree,
   url,
   template,
-  externalSchematic, noop
+  externalSchematic,
+  noop
 } from '@angular-devkit/schematics';
 import {isAbsolute, strings} from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
@@ -42,9 +43,6 @@ export function getWorkspace(host: Tree): WorkspaceSchema {
 }
 
 function filterTemplates(options: any): Rule {
-  /*if (!options.menuService) {
-    return filter(path => !path.match(/\.service\.ts$/) && !path.match(/-item\.ts$/) && !path.match(/\.bak$/));
-  }*/
   if (!options.create) {
     return filter(path => !path.match(/\.bak$/) && !path.match(/create\/.+\.(ts|html)$/));
   }
@@ -79,10 +77,8 @@ export function list(options: any): Rule {
     // options.path = parsedPath.path;
     options.create = options.create || false;
     options.edit = options.edit || false;
-    options.singleName = options.singleName || '';
 
-
-    options.servicePath = buildRelativePathForService(options);
+    options.relativeServicePath = buildRelativePathForService(options);
     options.service = options.service.replace('.service.ts', '');
 
     const templateSource = apply(url('./files'), [
@@ -99,13 +95,14 @@ export function list(options: any): Rule {
 
     const childSchematicOptions = {
       project: options.project,
-      path: `${options.path}/${dasherize(options.name)}`,
+      path: options.path,
       module: options.module,
       mode: options.mode,
       name: options.singleName,
       parentName: dasherize(options.name),
       service: options.service,
-      servicePath: '../' + options.servicePath,
+      servicePath: options.servicePath,
+      relativeServicePath: '../' + options.relativeServicePath,
       singleModel: options.singleModel,
       pluralModel: options.pluralModel,
       secondLevel: true,

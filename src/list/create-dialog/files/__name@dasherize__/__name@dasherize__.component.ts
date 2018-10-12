@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { FsMessage } from '@firestitch/message';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
-import { <%= classify(service) %>Service } from '<%= servicePath %>';
+import { <%= classify(service) %>Service } from '<%= relativeServicePath %>';
 
 @Component({
   selector: 'app-<%=dasherize(name)%>-create',
