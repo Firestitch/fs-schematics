@@ -8,7 +8,6 @@ import { RouteObserver } from '@firestitch/core';
 import { <%= classify(service) %>Service } from '<%= relativeServicePath %>';
 
 @Component({
-  selector: 'app-<%=dasherize(name)%>',
   templateUrl: './<%=dasherize(name)%>.component.html',
   styleUrls: ['./<%=dasherize(name)%>.component.scss']
 })
@@ -30,7 +29,7 @@ export class <%= classify(name) %>Component implements OnInit {
       .subscribe(<%= camelize(singleModel) %> => {
         this.<%= camelize(singleModel) %> = <%= camelize(singleModel) %> || {};
         this.navRouteHandleService.setTitle(this.<%= camelize(singleModel) %>.id ? 'Edit <%= capitalize(singleModel)%>' : 'Create <%= capitalize(singleModel)%>');
-      }, '<%= camelize(singleModel) %>');
+      }, '<%= dasherize(name) %>');
   }
 
   public save() {

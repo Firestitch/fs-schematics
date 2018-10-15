@@ -11,8 +11,7 @@ import {
   Tree,
   url,
   template,
-  externalSchematic,
-  DirEntry
+  noop
 } from '@angular-devkit/schematics';
 import {strings} from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
@@ -44,10 +43,8 @@ function filterTemplates(options: any): Rule {
   return filter(path => !path.match(/\.bak$/));
 }
 
-// You don't have to export the function as default. You can also have more than one rule factory
-// per file.
-export function create(options: any): Rule {
 
+export function create(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
 
     const workspace = getWorkspace(tree);
@@ -68,11 +65,12 @@ export function create(options: any): Rule {
       move(options.path)
     ]);
 
+    const isRoutingExists = tree.exists(options.routingModule);
 
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
-        addResolverToNgModule(options),
+        isRoutingExists ? addResolverToNgModule(options) : noop(),
       ]))
     ]);
 
@@ -82,7 +80,7 @@ export function create(options: any): Rule {
 
 function buildRelativePathForService(options) {
   const resolverFile = `${options.path}/shared/resolves/${dasherize(options.name)}.resolve.ts`;
-  const serviceFile =  `${options.servicePath}/${options.service}`;
+  const serviceFile =  `${options.servicePath}/${options.service}.service.ts`;
 
   return buildRelativePath(resolverFile, serviceFile).replace('.ts', '');
 }

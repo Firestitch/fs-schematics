@@ -184,9 +184,9 @@ function createResolverToModuleContext(host: Tree, options: ModuleOptions) {
   const sourceText = text.toString('utf-8');
   result.source = ts.createSourceFile(options.routingModule, sourceText, ts.ScriptTarget.Latest, true);
 
-  const resolverPath = options.path + stringUtils.dasherize(options.name) + '.resolve.ts';
+  const resolverPath = options.path + stringUtils.dasherize(options.name) + '.resolve';
   result.relativePath = buildRelativePath(options.module || '', resolverPath);
-  result.classifiedName = stringUtils.classify(`${options.name}Resolver`);
+  result.classifiedName = stringUtils.classify(`${options.name}Resolve`);
   return result;
 }
 
@@ -322,23 +322,25 @@ function addServiceDeclaration(host: Tree, options: OptionsInterface) {
 function addResolverDeclaration(host: Tree, options: OptionsInterface) {
   const context = createResolverToModuleContext(host, options);
 
-  const modulePath = options.module || '';
+  const routingModulePath = options.routingModule || '';
 
   const declarationChanges = [insertImport(
     context.source,
-    modulePath,
+    routingModulePath,
     context.classifiedName,
     context.relativePath,
     false
   )];
 
-  const declarationRecorder = host.beginUpdate(modulePath);
-  for (const change of declarationChanges) {
-    if (change instanceof InsertChange) {
-      declarationRecorder.insertLeft(change.pos, change.toAdd);
+  if (routingModulePath) {
+    const declarationRecorder = host.beginUpdate(routingModulePath);
+    for (const change of declarationChanges) {
+      if (change instanceof InsertChange) {
+        declarationRecorder.insertLeft(change.pos, change.toAdd);
+      }
     }
+    host.commitUpdate(declarationRecorder);
   }
-  host.commitUpdate(declarationRecorder);
 }
 
 function addModuleDeclaration(host: Tree, options: ModuleOptions) {

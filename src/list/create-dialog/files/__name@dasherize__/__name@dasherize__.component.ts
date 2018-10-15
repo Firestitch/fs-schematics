@@ -8,7 +8,7 @@ import { <%= classify(service) %>Service } from '<%= relativeServicePath %>';
   templateUrl: './<%=dasherize(name)%>.component.html',
   styleUrls: ['./<%=dasherize(name)%>.component.scss']
 })
-export class <%= classify(name) %>Component implements OnInit {
+export class <%= classify(name) %>Dialog implements OnInit {
 
   constructor(private dialogRef: MatDialogRef<<%= classify(name) %>Component>,
               private fsMessage: FsMessage,

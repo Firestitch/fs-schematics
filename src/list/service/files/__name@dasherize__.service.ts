@@ -4,7 +4,7 @@ import { FsApi } from '@firestitch/api';
 
 @Injectable()
 export class <%= classify(name) %>Service {
-  constructor(private _fsApi: FsApi){
+  constructor(private _fsApi: FsApi) {
   }
 
   public get(<%= name %>_id, query = {}): Observable<any> {

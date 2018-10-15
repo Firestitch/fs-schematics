@@ -75,8 +75,10 @@ export function create(options: any): Rule {
       tree.delete(`${subDir.path}/index.ts`);
     }
 
-    const files = subDir.subfiles.filter(p => serviceRe.test(p)) || [];
-    files.map((file) => file.replace('.ts', ''));  // for correct import
+    const files = subDir.subfiles
+      .filter(p => serviceRe.test(p))
+      .map((file) => file.replace('.ts', ''));  // for correct import
+
     files.push((`${options.name}.service` as any));
 
     const childSchematicOptions = {

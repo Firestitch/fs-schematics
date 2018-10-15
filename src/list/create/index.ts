@@ -73,7 +73,7 @@ export function createOrEdit(options: any): Rule {
 
     options.module = findModuleFromOptions(tree, options, true);
     options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
-
+    options.isRouting = tree.exists(options.routingModule);
     // options.routingModule = `${options.path}/${options.routingModule}`;
     // options.module = `${options.path}/${options.module}`;
 
@@ -108,20 +108,22 @@ export function createOrEdit(options: any): Rule {
       servicePath: options.servicePath,
     };
 
-    externalSchematics.push(
-      externalSchematic(
-        '@firestitch/schematics',
-        'resolver',
-        childSchematicOptions
-      )
-    );
 
-    const isRoutingExists = tree.exists(options.routingModule);
+    if (options.isRouting) {
+      externalSchematics.push(
+        externalSchematic(
+          '@firestitch/schematics',
+          'resolver',
+          childSchematicOptions
+        )
+      );
+    }
+
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
         addDeclarationToNgModule(options, false),
-        isRoutingExists ? addDeclarationToRoutingModule(options) : noop(),
+        options.isRouting ? addDeclarationToRoutingModule(options) : noop(),
         ...externalSchematics,
       ]))
     ]);
@@ -133,7 +135,7 @@ export function createOrEdit(options: any): Rule {
 
 function buildRelativePathForService(options) {
   return buildRelativePath(
-    `${options.path}/${dasherize(options.name)}.component.ts`,
+    `${options.path}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
     `${options.servicePath}/${options.service}`
   ).replace('.ts', '');
 }

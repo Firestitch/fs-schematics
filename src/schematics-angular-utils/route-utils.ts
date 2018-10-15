@@ -9,7 +9,7 @@ import * as ts from 'typescript';
 import { findNodes, getDecoratorMetadata, insertAfterLastOccurrence } from './ast-utils';
 import { Change, InsertChange, NoopChange } from './change';
 import { ModuleOptions } from './find-module';
-import {classify} from '@angular-devkit/core/src/utils/strings';
+import { camelize, classify } from '@angular-devkit/core/src/utils/strings';
 
 
 /**
@@ -284,7 +284,7 @@ export function addRoutesArrayDeclaration(
 
   const changes: any = [];
   const url = options.name;
-  const resolverName = `${classify(options.name)}Resolver`;
+  const resolverName = `${classify(options.name)}Resolve`;
 
   const routesArrayNodes = findNodes(source, ts.SyntaxKind.ArrayLiteralExpression);
 
@@ -336,17 +336,17 @@ export function addRoutesArrayDeclaration(
       const position = lastImport.getEnd();
 
       const route = ((options.mode === 'full') && options.secondLevel)
-        ? `  { path: '${url}', patchMatch: 'full', component: ${componentName},\n` +
-        `    resolve: { \n ` +
-        `      ${resolverName} \n` +
+      ? `  { path: '${url}', pathMatch: 'full', component: ${componentName},\n` +
+        `     resolve: {\n ` +
+        `       ${camelize(url)}: ${resolverName}\n` +
         `     }\n` +
-        `  },\n` +
-        `  { path: '${url}/:id', component: ${componentName},\n` +
-        `    resolve: { \n` +
-        `     ${resolverName} \n` +
-        `    }\n` +
-        `  },`
-        : `  { path: '${url}', component: ${componentName} },`;
+        `   },\n` +
+        `   { path: '${url}/:id', component: ${componentName},\n` +
+        `     resolve: { \n` +
+        `      ${camelize(url)}: ${resolverName}\n` +
+        `     }\n` +
+        `   },`
+      : `  { path: '${url}:', component: ${componentName} },`;
 
       const toInsert = `\n\nexport const routes: Routes = [\n${route}\n];`;
 
@@ -377,7 +377,7 @@ export function addRouteToExistingRoutes(
 ) {
   const changes: any = [];
   const url = options.name;
-  const resolverName = `${classify(options.name)}Resolver`;
+  const resolverName = `${classify(options.name)}Resolve`;
 
   let insertPosition: number | null = null;
 
@@ -389,7 +389,7 @@ export function addRouteToExistingRoutes(
 
     return (pathProperty && pathProperty.initializer.text === '**') || false
   });
-
+  debugger;
   if (wildCardRoute) {
     insertPosition = wildCardRoute.getFullStart() + 1;
   } else {
@@ -402,6 +402,7 @@ export function addRouteToExistingRoutes(
     if (endOfRoutesArray &&
       endOfRoutesArray.parent &&
       endOfRoutesArray.parent.elements &&
+      endOfRoutesArray.parent.elements.pos !== endOfRoutesArray.parent.elements.end &&
       !endOfRoutesArray.parent.elements.hasTrailingComma) {
       changes.push(new InsertChange(ngModulePath || '', endOfRoutesArray.parent.elements.end, ','));
     }
@@ -416,14 +417,14 @@ export function addRouteToExistingRoutes(
   const endComa = wildCardRoute ? ',' : '';
 
   const toInsert = ((options.mode === 'full') && options.secondLevel)
-    ? `  { path: '${url}', patchMatch: 'full', component: ${componentName},\n` +
-      `    resolve: { \n ` +
-      `      ${resolverName} \n` +
+    ? `  { path: '${url}', pathMatch: 'full', component: ${componentName},\n` +
+      `    resolve: {\n ` +
+      `      ${camelize(url)}: ${resolverName}\n` +
       `     }\n` +
       `  },\n` +
       `  { path: '${url}/:id', component: ${componentName},\n` +
-      `    resolve: { \n` +
-      `     ${resolverName} \n` +
+      `    resolve: {\n` +
+      `     ${camelize(url)}: ${resolverName}\n` +
       `    }\n` +
       `  }${endComa}\n `
     : `  { path: '${url}', component: ${componentName} }${endComa}\n`;

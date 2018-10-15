@@ -1,9 +1,9 @@
-import { NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';<% if (routing) { %>
 
-import { <%= classify(name) %>RoutingModule } from './<%= dasherize(name) %>-routing.module';
+import { <%= classify(name) %>RoutingModule } from './<%= dasherize(name) %>-routing.module';<% } %>
 
 @NgModule({
-  imports: [<%= classify(name) %>RoutingModule],
+  imports: [<% if (routing) { %><%= classify(name) %>RoutingModule,<% } %>],
   declarations: []
 })
 export class <%= classify(name) %>Module { }

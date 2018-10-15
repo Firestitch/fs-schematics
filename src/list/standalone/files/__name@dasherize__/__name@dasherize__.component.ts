@@ -1,27 +1,28 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-<% if (mode === 'full') { %> import { Router } from '@angular/router'; <% } %>
+import { Component, OnInit, ViewChild } from '@angular/core';<% if (mode === 'full') { %>
+import { Router, ActivatedRoute } from '@angular/router';<% } %>
 
 import { FsListComponent, FsListConfig } from '@firestitch/list';
 import { FsPrompt } from '@firestitch/prompt';
 import { FsNavRouteHandleService } from '@firestitch/nav';
 
-
 import { <%= classify(service) %>Service } from '<%= relativeServicePath %>';
 
+
+
 @Component({
-  selector: 'app-<%=dasherize(name)%>',
   templateUrl: './<%=dasherize(name)%>.component.html',
   styleUrls: ['./<%=dasherize(name)%>.component.scss']
 })
 export class <%= classify(name) %>Component implements OnInit {
   @ViewChild('<%=classify(name)%>List')
-  public list: FsListComponent;
 
+  public list: FsListComponent;
   public config: FsListConfig;
 
   constructor(private <%= camelize(service) %>Service: <%= classify(service) %>Service,
-              private navRouteHandleService: FsNavRouteHandleService,
-              private router: Router,
+              private navRouteHandleService: FsNavRouteHandleService, <% if (mode === 'full') { %>
+              private route: ActivatedRoute,
+              private router: Router,<% } %>
               private fsPrompt: FsPrompt) {}
 
   public ngOnInit() {
@@ -38,9 +39,8 @@ export class <%= classify(name) %>Component implements OnInit {
       actions: [
         {
           label: 'Create <%= capitalize(singleModel) %>',
-          click: (filters, event) => {
-            <% if (mode === 'dialog ') { %> this.openDialog(); <% } %>
-            <% if (mode === 'full') { %> this.router.navigateByUrl('/<%= dasherize(singleName) %>') <% } %>
+          click: (filters, event) => {<% if (mode === 'full') { %>
+            this.router.navigate(['../<%= dasherize(singleName) %>'], { relativeTo: this.route }); <% } %>
           }
         }
       ],
