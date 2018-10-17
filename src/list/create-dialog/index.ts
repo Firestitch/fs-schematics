@@ -10,7 +10,7 @@ import {
   Rule,
   SchematicContext,
   SchematicsException,
-  Tree,
+  Tree, noop,
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
@@ -106,6 +106,7 @@ export function createOrEdit(options: any): Rule {
         mergeWith(templateSource),
         addDeclarationToNgModule(customOptions, false),
         addEntryComponentDeclarationToNgModule(customOptions, false),
+        options.parentName ? addDialogToParentComponent(options) : noop()
       ]))
     ]);
 

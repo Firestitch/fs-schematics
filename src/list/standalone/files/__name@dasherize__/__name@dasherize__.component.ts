@@ -40,7 +40,8 @@ export class <%= classify(name) %>Component implements OnInit {
         {
           label: 'Create <%= capitalize(singleModel) %>',
           click: (filters, event) => {<% if (mode === 'full') { %>
-            this.router.navigate(['../<%= dasherize(singleName) %>'], { relativeTo: this.route }); <% } %>
+            this.router.navigate(['../<%= dasherize(singleName) %>'], { relativeTo: this.route }); <% } if (mode === 'dialog') { %>
+            this.openDialog({})<%}%>
           }
         }
       ],

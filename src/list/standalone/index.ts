@@ -12,18 +12,19 @@ import {
   url,
   template,
   externalSchematic,
-  noop
+  noop, DirEntry
 } from '@angular-devkit/schematics';
 import {isAbsolute, strings} from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import { parseName } from '../../utils/parse-name';
-import { addDeclarationToNgModule, addDeclarationToRoutingModule } from '../../utils/ng-module-utils';
+import {addDeclarationToNgModule, addDeclarationToRoutingModule, updateIndexFile} from '../../utils/ng-module-utils';
 import {
   buildRelativePath,
   findModuleFromOptions,
   findRoutingModuleFromOptions
 } from '../../schematics-angular-utils/find-module';
 import {dasherize} from '@angular-devkit/core/src/utils/strings';
+import {ExpansionType} from '../../utils/models/expansion-type';
 
 
 export function getWorkspacePath(host: Tree): string {
@@ -58,6 +59,7 @@ function filterTemplates(options: any): Rule {
 // per file.
 export function list(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
+    const indexFileExists = tree.exists(`${options.path}/index.ts`);
     const workspace = getWorkspace(tree);
     if (!options.project) {
       options.project = Object.keys(workspace.projects)[0];
@@ -77,6 +79,9 @@ export function list(options: any): Rule {
     // options.path = parsedPath.path;
     options.create = options.create || false;
     options.edit = options.edit || false;
+
+    const componentPosition = getComponentPosition(tree, options);
+    options.path = componentPosition.path;
 
     options.relativeServicePath = buildRelativePathForService(options);
     options.service = options.service.replace('.service.ts', '');
@@ -101,6 +106,7 @@ export function list(options: any): Rule {
       name: options.singleName,
       service: options.service,
       servicePath: options.servicePath,
+      parentName: dasherize(options.name),
       relativeServicePath: options.relativeServicePath,
       singleModel: options.singleModel,
       pluralModel: options.pluralModel,
@@ -130,6 +136,7 @@ export function list(options: any): Rule {
         mergeWith(templateSource),
         addDeclarationToNgModule(options, false),
         isRoutingExists ? addDeclarationToRoutingModule(options) : noop(),
+        indexFileExists ? updateIndexFile(options, ExpansionType.Component) : noop(),
         ...extrenalSchematics,
       ]))
     ]);
@@ -138,9 +145,18 @@ export function list(options: any): Rule {
   };
 }
 
-function buildRelativePathForService(options) {
+function buildRelativePathForService(options): string {
   return buildRelativePath(
     `${options.path}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
     `${options.servicePath}/${options.service}`
   ).replace('.ts', '');
+}
+
+function getComponentPosition(tree: Tree, options): { path: string } {
+  const dir = tree.getDir(`${options.path}`);
+  const isComponentFolderExists = (dir.subdirs as string[]).indexOf('components') !== -1;
+
+  const path = options.path + ( isComponentFolderExists ? '/components' : '');
+
+  return { path };
 }

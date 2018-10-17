@@ -19,8 +19,10 @@ import {
   addExportToModule, addSymbolToNgModuleRoutingMetadata, addProviderToModule, addImportToModule
 } from '../schematics-angular-utils/ast-utils';
 import { InsertChange } from '../schematics-angular-utils/change';
-import { OptionsInterface } from './interfaces/';
+import { OptionsInterface } from './models/';
 import {insertImport} from '../schematics-angular-utils/route-utils';
+import {insertExport} from './insert-export';
+import {ExpansionType} from './models/expansion-type';
 
 const stringUtils = { dasherize, classify };
 
@@ -55,9 +57,16 @@ export function addDeclarationToRoutingModule(options: ModuleOptions): Rule {
   };
 }
 
-export function addProviderToNgModule(options: OptionsInterface): Rule {
+export function addServiceProviderToNgModule(options: OptionsInterface): Rule {
   return (host: Tree) => {
     addServiceDeclaration(host, options);
+    return host;
+  }
+}
+
+export function addResolveDeclarationToNgModule(options: OptionsInterface): Rule {
+  return (host: Tree) => {
+    addResolveDeclaration(host, options);
     return host;
   }
 }
@@ -69,9 +78,9 @@ export function addDialogToParentComponent(options: ModuleOptions): Rule {
   };
 }
 
-export function addResolverToNgModule(options: ModuleOptions): Rule {
+export function addResolverToRouting(options: ModuleOptions): Rule {
   return (host: Tree) => {
-    addResolverDeclaration(host, options);
+    addResolverDeclarationRouting(host, options);
     return host;
   }
 }
@@ -92,32 +101,31 @@ function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModu
   result.source = ts.createSourceFile(options.module, sourceText, ts.ScriptTarget.Latest, true);
 
   let hasIndexExportsFile = false;
-
-  host
-    .getDir(`${options.path}/` + stringUtils.dasherize(options.name))
-    .visit(filePath => {
-      if (filePath.indexOf('index.ts') > -1) {
-        const fileContent = host.read(filePath);
-
-        if (fileContent && fileContent.indexOf(`${stringUtils.dasherize(options.name)}.component`)) {
-          hasIndexExportsFile = true
-        }
-      }
-    });
-
   let componentPath;
 
-  if (hasIndexExportsFile) {
+  const isParentIndexExists = host.exists(`${options.path}/index.ts`);
+
+  const indexPath = `${options.path}/${stringUtils.dasherize(options.name)}/index.ts`;
+  const isIndexExists = host.exists(indexPath);
+  if (isIndexExists) {
+    const fileContent = host.read(indexPath);
+
+    if (fileContent && fileContent.indexOf(`${stringUtils.dasherize(options.name)}.component`)) {
+      hasIndexExportsFile = true
+    }
+  }
+
+  if (isParentIndexExists) {
+    componentPath = options.path
+  } else if (hasIndexExportsFile) {
     componentPath = `${options.path}/`
-      + stringUtils.dasherize(options.name);
+      + stringUtils.dasherize(options.name)
   } else {
     componentPath = `${options.path}/`
       + stringUtils.dasherize(options.name) + '/'
       + stringUtils.dasherize(options.name)
       + '.component';
   }
-
-
 
   result.relativePath = buildRelativePath(options.module, componentPath);
   result.classifiedName = stringUtils.classify(`${options.name}Component`);
@@ -169,7 +177,7 @@ function createServiceToModuleContext(host: Tree, options: OptionsInterface): Ad
   return result;
 }
 
-function createResolverToModuleContext(host: Tree, options: ModuleOptions) {
+function createResolverToRoutingContext(host: Tree, options: ModuleOptions) {
   if (!options.routingModule) {
     throw new SchematicsException(`RoutingModule not found.`);
   }
@@ -184,9 +192,52 @@ function createResolverToModuleContext(host: Tree, options: ModuleOptions) {
   const sourceText = text.toString('utf-8');
   result.source = ts.createSourceFile(options.routingModule, sourceText, ts.ScriptTarget.Latest, true);
 
-  const resolverPath = options.path + stringUtils.dasherize(options.name) + '.resolve';
+  const resolverPath = options.path;
   result.relativePath = buildRelativePath(options.module || '', resolverPath);
   result.classifiedName = stringUtils.classify(`${options.name}Resolve`);
+  return result;
+}
+
+function createResolverToModuleContext(host: Tree, options: ModuleOptions) {
+  if (!options.module) {
+    throw new SchematicsException(`Module not found.`);
+  }
+
+  const result = new AddToModuleContext();
+
+  const text = host.read(options.module);
+
+  if (text === null) {
+    throw new SchematicsException(`File ${options.module} does not exist!`);
+  }
+  const sourceText = text.toString('utf-8');
+  result.source = ts.createSourceFile(options.module, sourceText, ts.ScriptTarget.Latest, true);
+
+  const resolverPath = options.path;
+  result.relativePath = buildRelativePath(options.module || '', resolverPath);
+  result.classifiedName = stringUtils.classify(`${options.name}Resolve`);
+  return result;
+}
+
+function createUpdatingIndexContext(host: Tree, options: ModuleOptions, expansionType: ExpansionType) {
+  const targetPath = options.path + '/index.ts';
+  let filePath = `${options.path}/${options.name}.${expansionType}`;
+
+  if (expansionType == ExpansionType.Component) {
+    filePath = `${options.path}/${stringUtils.dasherize(options.name)}`;
+  }
+
+  const result = new AddToModuleContext();
+
+  const text = host.read(targetPath);
+  if (text === null) {
+    throw new SchematicsException(`File ${options.routingModule} does not exist!`);
+  }
+
+  const sourceText = text.toString('utf-8');
+  result.source = ts.createSourceFile(targetPath, sourceText, ts.ScriptTarget.Latest, true);
+  result.relativePath = buildRelativePath(targetPath, filePath);
+
   return result;
 }
 
@@ -206,24 +257,25 @@ function readTest(host: Tree, options: ModuleOptions) {
   result.source = ts.createSourceFile(options.routingModule, sourceText, ts.ScriptTarget.Latest, true);
 
   let hasIndexExportsFile = false;
-
-  host
-    .getDir(`${options.path}/` + stringUtils.dasherize(options.name))
-    .visit(filePath => {
-      if (filePath.indexOf('index.ts') > -1) {
-        const fileContent = host.read(filePath);
-
-        if (fileContent && fileContent.indexOf(`${stringUtils.dasherize(options.name)}.component`)) {
-          hasIndexExportsFile = true
-        }
-      }
-    });
-
   let componentPath;
 
-  if (hasIndexExportsFile) {
+  const isParentIndexExists = host.exists(`${options.path}/index.ts`);
+
+  const indexPath = `${options.path}/${stringUtils.dasherize(options.name)}/index.ts`;
+  const isIndexExists = host.exists(indexPath);
+  if (isIndexExists) {
+    const fileContent = host.read(indexPath);
+
+    if (fileContent && fileContent.indexOf(`${stringUtils.dasherize(options.name)}.component`)) {
+      hasIndexExportsFile = true
+    }
+  }
+
+  if (isParentIndexExists) {
+    componentPath = options.path
+  } else if (hasIndexExportsFile) {
     componentPath = `${options.path}/`
-      + stringUtils.dasherize(options.name);
+      + stringUtils.dasherize(options.name)
   } else {
     componentPath = `${options.path}/`
       + stringUtils.dasherize(options.name) + '/'
@@ -232,14 +284,8 @@ function readTest(host: Tree, options: ModuleOptions) {
   }
 
 
-
   result.relativePath = buildRelativePath(options.module || '', componentPath);
   result.classifiedName = stringUtils.classify(`${options.name}Component`);
-  // if (options.secondLevel && !options.dialog) {
-  //   result.classifiedName = stringUtils.classify(`${options.name} ${(options.parentName || '')}Component`);
-  // } else {
-  //   result.classifiedName = stringUtils.classify(`${options.name}Component`);
-  // }
 
   return result;
 }
@@ -319,8 +365,28 @@ function addServiceDeclaration(host: Tree, options: OptionsInterface) {
     host.commitUpdate(declarationRecorder);
 }
 
-function addResolverDeclaration(host: Tree, options: OptionsInterface) {
+function addResolveDeclaration(host: Tree, options: OptionsInterface) {
   const context = createResolverToModuleContext(host, options);
+  const modulePath = options.module || '';
+
+  const declarationChanges = addProviderToModule(
+    context.source,
+    modulePath,
+    context.classifiedName,
+    context.relativePath
+  );
+
+  const declarationRecorder = host.beginUpdate(modulePath);
+  for (const change of declarationChanges) {
+    if (change instanceof InsertChange) {
+      declarationRecorder.insertLeft(change.pos, change.toAdd);
+    }
+  }
+  host.commitUpdate(declarationRecorder);
+}
+
+function addResolverDeclarationRouting(host: Tree, options: OptionsInterface) {
+  const context = createResolverToRoutingContext(host, options);
 
   const routingModulePath = options.routingModule || '';
 
@@ -376,7 +442,7 @@ function addModuleDeclaration(host: Tree, options: ModuleOptions) {
 }
 
 function addDialogToComponent(host: Tree, options: ModuleOptions) {
-  const componentFullPath = `${options.path}/${options.parentName}.component.ts`;
+  const componentFullPath = `${options.path}/${options.parentName}/${options.parentName}.component.ts`;
 
   const text = host.read(componentFullPath);
 
@@ -429,7 +495,8 @@ function addExport(host: Tree, options: ModuleOptions) {
   const context = createAddToModuleContext(host, options);
   const modulePath = options.module || '';
 
-  const exportChanges = addExportToModule(context.source,
+  const exportChanges = addExportToModule(
+    context.source,
     modulePath,
     context.classifiedName,
     context.relativePath);
@@ -442,5 +509,31 @@ function addExport(host: Tree, options: ModuleOptions) {
     }
   }
   host.commitUpdate(exportRecorder);
+}
+
+export function updateIndexFile(options: ModuleOptions, expansionType: ExpansionType) {
+  return (host: Tree) => {
+    const context = createUpdatingIndexContext(host, options, expansionType);
+    const targetPath = options.path + '/index.ts';
+
+    const exportChanges = [insertExport(
+      context.source,
+      targetPath,
+      options.name,
+      context.relativePath
+    )];
+
+    const exportRecorder = host.beginUpdate(targetPath);
+
+    for (const change of exportChanges) {
+      if (change instanceof InsertChange) {
+        exportRecorder.insertLeft(change.pos, change.toAdd);
+      }
+    }
+
+    host.commitUpdate(exportRecorder);
+
+    return host;
+  };
 }
 

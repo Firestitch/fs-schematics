@@ -12,11 +12,12 @@ import {
   url,
   template,
   externalSchematic,
-  DirEntry
+  DirEntry, noop
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
-import { addProviderToNgModule } from '../../utils/ng-module-utils';
+import { addServiceProviderToNgModule, updateIndexFile} from '../../utils/ng-module-utils';
+import { ExpansionType } from '../../utils/models/expansion-type';
 
 export function getWorkspacePath(host: Tree): string {
   const possibleFiles = [ '/angular.json', '/.angular.json' ];
@@ -47,8 +48,8 @@ function filterTemplates(options: any): Rule {
 export function create(options: any): Rule {
 
   return (tree: Tree, _context: SchematicContext) => {
-    const serviceRe = /\.service\.ts$/;
     const subDir: DirEntry | null = tree.getDir(`${options.path}${options.subdirectory}`);
+    const indexFileExists = tree.exists(`${subDir.path}/index.ts`);
 
     const workspace = getWorkspace(tree);
     if (!options.project) {
@@ -60,6 +61,7 @@ export function create(options: any): Rule {
 
     const templateSource = apply(url('./files'), [
       filterTemplates(options),
+      indexFileExists ? filter(path => path.indexOf('index.ts') === -1) : noop(),
       template({
         ...strings,
         ...options
@@ -68,40 +70,11 @@ export function create(options: any): Rule {
       move(subDir.path)
     ]);
 
-    const extrenalSchematics: any = [];
-
-    const indexFileExists = tree.exists(`${subDir.path}/index.ts`);
-    if (indexFileExists) {
-      tree.delete(`${subDir.path}/index.ts`);
-    }
-
-    const files = subDir.subfiles
-      .filter(p => serviceRe.test(p))
-      .map((file) => file.replace('.ts', ''));  // for correct import
-
-    files.push((`${options.name}.service` as any));
-
-    const childSchematicOptions = {
-      project: options.project,
-      path: options.path,
-      module: options.module,
-      subdirectory: options.subdirectory,
-      files
-    };
-
-    extrenalSchematics.push(
-      externalSchematic(
-        '@firestitch/schematics',
-        'index-control',
-        childSchematicOptions
-      )
-    );
-
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
-        ...extrenalSchematics,
-        addProviderToNgModule(options),
+        addServiceProviderToNgModule(options),
+        indexFileExists ? updateIndexFile(options, ExpansionType.Service) : noop(),
       ]))
     ]);
 

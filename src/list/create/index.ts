@@ -16,10 +16,10 @@ import {
 import { strings} from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import { parseName } from '../../utils/parse-name';
-import { addDeclarationToNgModule, addDeclarationToRoutingModule } from '../../utils/ng-module-utils';
+import {addDeclarationToNgModule, addDeclarationToRoutingModule, updateIndexFile} from '../../utils/ng-module-utils';
 import { buildRelativePath, findModuleFromOptions } from '../../schematics-angular-utils/find-module';
 import { dasherize } from '@angular-devkit/core/src/utils/strings';
-import { isAbsolute } from 'path';
+import {ExpansionType} from '../../utils/models/expansion-type';
 
 
 export function getWorkspacePath(host: Tree): string {
@@ -71,16 +71,19 @@ export function createOrEdit(options: any): Rule {
       options.path = `/${project.root}/src/${projectDirName}`;
     }
 
+    const indexFileExists = tree.exists(`${options.path}/index.ts`);
     options.module = findModuleFromOptions(tree, options, true);
     options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
     options.isRouting = tree.exists(options.routingModule);
     // options.routingModule = `${options.path}/${options.routingModule}`;
     // options.module = `${options.path}/${options.module}`;
 
-
     const parsedPath = parseName(options.path, options.name);
     options.name = parsedPath.name;
     options.path = parsedPath.path;
+
+    const componentPosition = getComponentPosition(tree, options);
+    options.path = componentPosition.path;
 
     if (!options.relativeServicePath) {
       options.relativeServicePath = buildRelativePathForService(options);
@@ -124,6 +127,7 @@ export function createOrEdit(options: any): Rule {
         mergeWith(templateSource),
         addDeclarationToNgModule(options, false),
         options.isRouting ? addDeclarationToRoutingModule(options) : noop(),
+        indexFileExists ? updateIndexFile(options, ExpansionType.Component) : noop(),
         ...externalSchematics,
       ]))
     ]);
@@ -138,4 +142,13 @@ function buildRelativePathForService(options) {
     `${options.path}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
     `${options.servicePath}/${options.service}`
   ).replace('.ts', '');
+}
+
+function getComponentPosition(tree: Tree, options): { path: string } {
+  const dir = tree.getDir(`${options.path}`);
+  const isComponentFolderExists = (dir.subdirs as string[]).indexOf('components') !== -1;
+
+  const path = options.path + ( isComponentFolderExists ? '/components' : '');
+
+  return { path };
 }

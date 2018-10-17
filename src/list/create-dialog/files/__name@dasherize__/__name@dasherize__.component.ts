@@ -8,7 +8,8 @@ import { <%= classify(service) %>Service } from '<%= relativeServicePath %>';
   templateUrl: './<%=dasherize(name)%>.component.html',
   styleUrls: ['./<%=dasherize(name)%>.component.scss']
 })
-export class <%= classify(name) %>Dialog implements OnInit {
+export class <%= classify(name) %>Component implements OnInit {
+  public <%= camelize(singleModel) %> = {};
 
   constructor(private dialogRef: MatDialogRef<<%= classify(name) %>Component>,
               private fsMessage: FsMessage,
@@ -18,25 +19,25 @@ export class <%= classify(name) %>Dialog implements OnInit {
 
   public ngOnInit() {
     new Promise((resolve) => {
-      if (!this.data.id) {
+      if (!this.data.<%= camelize(singleModel) %>.id) {
         return resolve();
       }
 
-      this.<%= camelize(service) %>Service.get(this.data.id)
+      this.<%= camelize(service) %>Service.get(this.data.<%= camelize(singleModel) %>.id)
         .subscribe(<%= camelize(singleModel) %> => {
         resolve(<%= camelize(singleModel) %>);
       });
 
     }).then((<%= camelize(singleModel) %>) => {
-      this.data = <%= camelize(singleModel) %> || {};
+      this.<%= camelize(singleModel) %> = <%= camelize(singleModel) %> || {};
     });
   }
 
   public save() {
-    this.<%= camelize(service) %>Service.save(this.data)
+    this.<%= camelize(service) %>Service.save(this.<%= camelize(singleModel) %>)
       .subscribe(<%= camelize(singleModel) %> => {
-      this.fsMessage.success('Saved Changes');
-      this.dialogRef.close();
+        this.fsMessage.success('Saved Changes');
+        this.dialogRef.close();
     });
   }
 }

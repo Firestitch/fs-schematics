@@ -544,7 +544,7 @@ export function addDialogToComponentMetadata(
       source,
       componentPath || '',
       `${classify(singleName)}Component`,
-      `./${singleName}`,
+      `../${singleName}`,
       false,
     ),
   );
