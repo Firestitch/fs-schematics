@@ -1,9 +1,9 @@
 <form (fsForm)="save()">
   <div fxLayout="column">
     <mat-form-field>
-      <input matInput placeholder="Name" [(ngModel)]="data.name" name="name">
+      <input matInput placeholder="Name" [(ngModel)]="<%= camelize(singleModel) %>.name" name="name">
     </mat-form-field>
   </div>
-  <button mat-raised-button type="submit" color="primary">{{data.id ? 'Save' : 'Create'}}</button>
+  <button mat-raised-button type="submit" color="primary">{{<%= camelize(singleModel) %>.id ? 'Save' : 'Create'}}</button>
   <button mat-button color="primary" [mat-dialog-close]="true">Close</button>
 </form>

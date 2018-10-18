@@ -14,7 +14,8 @@ import {
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
-import { addDeclarationToNgModule, addDeclarationToRoutingModule } from '../../utils/ng-module-utils';
+import { addDeclarationToNgModule, addDeclarationToRoutingModule, updateIndexFile } from '../../utils/ng-module-utils';
+import { ExpansionType } from '../../utils/models/expansion-type';
 
 
 export function getWorkspacePath(host: Tree): string {
@@ -63,6 +64,10 @@ export function base(options: any): Rule {
     options.module = `${options.path}/${options.module}`;
     options.routingModule = `${options.path}/${options.routingModule}`;
 
+    const componentPosition = getComponentPosition(tree, options);
+    const indexFileExists = tree.exists(`${options.path}/index.ts`);
+    options.path = componentPosition.path;
+
     const templateSource = apply(url('./files'), [
       filterTemplates(options),
       template({
@@ -79,9 +84,19 @@ export function base(options: any): Rule {
         mergeWith(templateSource),
         addDeclarationToNgModule(options, false),
         isRoutingExists ? addDeclarationToRoutingModule(options) : noop(),
+        indexFileExists ? updateIndexFile(options, ExpansionType.Component) : noop(),
       ]))
     ]);
 
     return rule(tree, _context);
   };
+}
+
+function getComponentPosition(tree: Tree, options): { path: string } {
+  const dir = tree.getDir(`${options.path}`);
+  const isComponentFolderExists = (dir.subdirs as string[]).indexOf('components') !== -1;
+
+  const path = options.path + ( isComponentFolderExists ? '/components' : '');
+
+  return { path };
 }

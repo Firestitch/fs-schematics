@@ -529,7 +529,7 @@ export function addDialogToComponentMetadata(
   const toInsert = `\n\n  public ${dialogMethodName}(${camelize(singleName)}) {
     const dialogRef = this.${dialogVarName}.open(${classify(singleName)}Component, {
       width: '700px',
-      data: { data: ${camelize(singleName)} }
+      data: { ${camelize(singleName)}: ${camelize(singleName)} }
     });
 
     dialogRef.afterClosed().subscribe(result => {

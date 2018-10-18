@@ -59,7 +59,6 @@ function filterTemplates(options: any): Rule {
 // per file.
 export function list(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
-    const indexFileExists = tree.exists(`${options.path}/index.ts`);
     const workspace = getWorkspace(tree);
     if (!options.project) {
       options.project = Object.keys(workspace.projects)[0];
@@ -81,6 +80,7 @@ export function list(options: any): Rule {
     options.edit = options.edit || false;
 
     const componentPosition = getComponentPosition(tree, options);
+    const indexFileExists = tree.exists(`${options.path}/index.ts`);
     options.path = componentPosition.path;
 
     options.relativeServicePath = buildRelativePathForService(options);

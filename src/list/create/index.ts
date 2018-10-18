@@ -71,7 +71,6 @@ export function createOrEdit(options: any): Rule {
       options.path = `/${project.root}/src/${projectDirName}`;
     }
 
-    const indexFileExists = tree.exists(`${options.path}/index.ts`);
     options.module = findModuleFromOptions(tree, options, true);
     options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
     options.isRouting = tree.exists(options.routingModule);
@@ -83,6 +82,7 @@ export function createOrEdit(options: any): Rule {
     options.path = parsedPath.path;
 
     const componentPosition = getComponentPosition(tree, options);
+    const indexFileExists = tree.exists(`${options.path}/index.ts`);
     options.path = componentPosition.path;
 
     if (!options.relativeServicePath) {

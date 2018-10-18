@@ -116,7 +116,7 @@ function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModu
   }
 
   if (isParentIndexExists) {
-    componentPath = options.path
+    componentPath = options.path + '/index.ts'
   } else if (hasIndexExportsFile) {
     componentPath = `${options.path}/`
       + stringUtils.dasherize(options.name)
@@ -128,6 +128,9 @@ function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModu
   }
 
   result.relativePath = buildRelativePath(options.module, componentPath);
+  if (result.relativePath.endsWith('/index.ts')) {
+    result.relativePath = result.relativePath.replace('/index.ts', '');
+  }
   result.classifiedName = stringUtils.classify(`${options.name}Component`);
 
   return result;
@@ -272,7 +275,7 @@ function readTest(host: Tree, options: ModuleOptions) {
   }
 
   if (isParentIndexExists) {
-    componentPath = options.path
+    componentPath = options.path + '/index.ts'
   } else if (hasIndexExportsFile) {
     componentPath = `${options.path}/`
       + stringUtils.dasherize(options.name)
@@ -283,10 +286,12 @@ function readTest(host: Tree, options: ModuleOptions) {
       + '.component';
   }
 
-
   result.relativePath = buildRelativePath(options.module || '', componentPath);
-  result.classifiedName = stringUtils.classify(`${options.name}Component`);
+  if (result.relativePath.endsWith('/index.ts')) {
+    result.relativePath = result.relativePath.replace('/index.ts', '');
+  }
 
+  result.classifiedName = stringUtils.classify(`${options.name}Component`);
   return result;
 }
 
@@ -441,7 +446,7 @@ function addModuleDeclaration(host: Tree, options: ModuleOptions) {
   host.commitUpdate(recorder);
 }
 
-function addDialogToComponent(host: Tree, options: ModuleOptions) {
+function addDialogToComponent(host: Tree, options: OptionsInterface) {
   const componentFullPath = `${options.path}/${options.parentName}/${options.parentName}.component.ts`;
 
   const text = host.read(componentFullPath);
@@ -457,7 +462,7 @@ function addDialogToComponent(host: Tree, options: ModuleOptions) {
     source,
     componentFullPath,
     options.parentName || '',
-    options.singleName || options.name || '');
+    options.singleModel || options.name || '');
 
   const declarationRecorder = host.beginUpdate(componentFullPath);
   for (const change of changes) {
