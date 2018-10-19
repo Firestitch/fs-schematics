@@ -12,7 +12,7 @@ export class <%= classify(name) %>Service {
   }
 
   public gets(data = {}, config = {}): Observable<any> {
-      return this._fsApi.request('GET', '<%= pluralName %>', data, Object.assign({ key: '<%= name %>' }, config));
+      return this._fsApi.request('GET', '<%= pluralName %>', data, Object.assign({ key: '<%= pluralName %>' }, config));
   }
 
   public put(<%= name %>, config = {}): Observable<any> {
