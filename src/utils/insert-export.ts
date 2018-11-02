@@ -7,7 +7,7 @@ export function insertExport(source: ts.SourceFile, fileToEdit: string, symbolNa
 
   const rootNode = source;
   const allExports = findNodes(rootNode, ts.SyntaxKind.ExportDeclaration);
-  let prevImports: any;
+  let prevExports: any;
 
   existingChanges.some((change, index) => {
     const text = change.toAdd;
@@ -15,13 +15,13 @@ export function insertExport(source: ts.SourceFile, fileToEdit: string, symbolNa
       && text.indexOf('*') === -1
       && text.indexOf(fileName) > -1
     ) {
-      const importsArray = text.match(/{(.*)}/im);
+      const exportsArray = text.match(/{(.*)}/im);
 
-      if (importsArray) {
-        importsArray.shift();
-        prevImports = {};
-        prevImports.text = importsArray[0].trim();
-        prevImports.coma = (prevImports.text.lastIndexOf(',') === prevImports.text.length - 1) ? '' : ',';
+      if (exportsArray) {
+        exportsArray.shift();
+        prevExports = {};
+        prevExports.text = exportsArray[0].trim();
+        prevExports.coma = (prevExports.text.lastIndexOf(',') === prevExports.text.length - 1) ? '' : ',';
       }
 
       existingChanges.splice(index, 1);
@@ -33,46 +33,46 @@ export function insertExport(source: ts.SourceFile, fileToEdit: string, symbolNa
   });
 
   // get nodes that map to import statements from the file fileName
-  const relevantImports = allExports.filter(node => {
+  const relevantExports = allExports.filter(node => {
     // StringLiteral of the ImportDeclaration is the import file (fileName in this case).
-    const importFiles = node.getChildren()
+    const exportFiles = node.getChildren()
       .filter(child => child.kind === ts.SyntaxKind.StringLiteral)
       .map(n => (n as ts.StringLiteral).text);
 
-    return importFiles.filter(file => file === fileName).length === 1;
+    return exportFiles.filter(file => file === fileName).length === 1;
   });
 
-  if (relevantImports.length > 0) {
-    let importsAsterisk = false;
+  if (relevantExports.length > 0) {
+    let exportsAsterisk = false;
     // imports from import file
-    const imports: ts.Node[] = [];
-    relevantImports.forEach(n => {
-      Array.prototype.push.apply(imports, findNodes(n, ts.SyntaxKind.Identifier));
+    const exports: ts.Node[] = [];
+    relevantExports.forEach(n => {
+      Array.prototype.push.apply(exports, findNodes(n, ts.SyntaxKind.Identifier));
       if (findNodes(n, ts.SyntaxKind.AsteriskToken).length > 0) {
-        importsAsterisk = true;
+        exportsAsterisk = true;
       }
     });
 
     // if imports * from fileName, don't add symbolName
-    if (importsAsterisk) {
+    if (exportsAsterisk) {
       return new NoopChange();
     }
 
-    const importTextNodes = imports.filter(n => (n as ts.Identifier).text === symbolName);
+    const exportTextNodes = exports.filter(n => (n as ts.Identifier).text === symbolName);
 
     // insert import if it's not there
-    if (importTextNodes.length === 0) {
+    if (exportTextNodes.length === 0) {
       const fallbackPos =
-        findNodes(relevantImports[0], ts.SyntaxKind.CloseBraceToken)[0].getStart() ||
-        findNodes(relevantImports[0], ts.SyntaxKind.FromKeyword)[0].getStart();
+        findNodes(relevantExports[0], ts.SyntaxKind.CloseBraceToken)[0].getStart() ||
+        findNodes(relevantExports[0], ts.SyntaxKind.FromKeyword)[0].getStart();
 
       let insertText = `, ${symbolName}`;
 
-      if (prevImports) {
-        insertText = `, ${prevImports.text}${prevImports.coma} ${symbolName}`
+      if (prevExports) {
+        insertText = `, ${prevExports.text}${prevExports.coma} ${symbolName}`
       }
 
-      return insertAfterLastOccurrence(imports, insertText, fileToEdit, fallbackPos);
+      return insertAfterLastOccurrence(exports, insertText, fileToEdit, fallbackPos);
     }
 
     return new NoopChange();
@@ -94,8 +94,8 @@ export function insertExport(source: ts.SourceFile, fileToEdit: string, symbolNa
   let toInsert = `${separator}export *` +
     ` from '${fileName}'${insertAtBeginning ? ';\n' : ''}`;
 
-  if (prevImports) {
-    toInsert = `${separator}export ${open}${prevImports.text}${prevImports.coma} ${symbolName}${close}` +
+  if (prevExports) {
+    toInsert = `${separator}export ${open}${prevExports.text}${prevExports.coma} ${symbolName}${close}` +
       ` from '${fileName}'${insertAtBeginning ? ';\n' : ''}`;
   }
 
