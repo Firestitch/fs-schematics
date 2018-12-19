@@ -6,7 +6,7 @@
     </mat-form-field>
   </div>
   <div mat-dialog-actions>
-    <button mat-raised-button type="submit" color="primary">{{<%= camelize(singleModel) %>.id ? 'Save' : 'Create'}}</button>
-    <button mat-button color="primary" [mat-dialog-close]="true">Close</button>
+    <button mat-button type="submit" color="primary">{{<%= camelize(singleModel) %>.id ? 'Save' : 'Create'}}</button>
+    <button mat-button [mat-dialog-close]="true">Close</button>
   </div>
 </form>
