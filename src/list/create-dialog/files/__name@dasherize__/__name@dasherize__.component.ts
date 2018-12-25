@@ -1,6 +1,11 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { FsMessage } from '@firestitch/message';
+
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+
+import { of } from 'rxjs';
+
+import { FsMessage } from '@firestitch/message';
+
 import { <%= classify(service) %>Service } from '<%= relativeServicePath %>';
 
 @Component({
@@ -18,19 +23,8 @@ export class <%= classify(name) %>Component implements OnInit {
   }
 
   public ngOnInit() {
-    new Promise((resolve) => {
-      if (!this.data.<%= camelize(singleModel) %>.id) {
-        return resolve();
-      }
-
-      this.<%= camelize(service) %>Service.get(this.data.<%= camelize(singleModel) %>.id)
-        .subscribe(<%= camelize(singleModel) %> => {
-        resolve(<%= camelize(singleModel) %>);
-      });
-
-    }).then((<%= camelize(singleModel) %>) => {
-      this.<%= camelize(singleModel) %> = <%= camelize(singleModel) %> || {};
-    });
+    (this.data.<%= camelize(singleModel) %>.id ?  this.<%= camelize(service) %>Service.get(this.data.<%= camelize(singleModel) %>.id) : of(this.data.<%= camelize(singleModel) %>))
+      .subscribe(response => this.<%= camelize(singleModel) %> = Object.assign({}, this.<%= camelize(service) %>Service.create(response)));
   }
 
   public save() {

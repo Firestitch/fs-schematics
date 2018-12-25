@@ -1,6 +1,6 @@
 {
   "name": "@firestitch/schematics",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "",
   "scripts": {
     "build": "tsc -p tsconfig.json",

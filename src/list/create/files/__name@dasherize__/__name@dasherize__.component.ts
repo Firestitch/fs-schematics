@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { FsMessage } from '@firestitch/message';
-import { FsNavRouteHandleService } from '@firestitch/nav';
+import { FsNavService } from '@firestitch/nav';
 import { RouteObserver } from '@firestitch/core';
 
 import { <%= classify(service) %>Service } from '<%= relativeServicePath %>';
@@ -14,13 +14,13 @@ import { <%= classify(service) %>Service } from '<%= relativeServicePath %>';
 export class <%= classify(name) %>Component implements OnInit {
 
   public <%= camelize(singleModel) %>: any = {};
-  public routeObserver = new RouteObserver(this.route);
+  public routeObserver = new RouteObserver(this.route, '<%= dasherize(name) %>');
 
   constructor(private route: ActivatedRoute,
               private router: Router,
               private <%= camelize(service) %>Service: <%= classify(service) %>Service,
               private fsMessage: FsMessage,
-              private navRouteHandleService: FsNavRouteHandleService) {
+              private fsNavService: FsNavService) {
 
   }
 
@@ -28,8 +28,8 @@ export class <%= classify(name) %>Component implements OnInit {
     this.routeObserver
       .subscribe(<%= camelize(singleModel) %> => {
         this.<%= camelize(singleModel) %> = <%= camelize(singleModel) %> || {};
-        this.navRouteHandleService.setTitle(this.<%= camelize(singleModel) %>.id ? 'Edit <%= capitalize(singleModel)%>' : 'Create <%= capitalize(singleModel)%>');
-      }, '<%= dasherize(name) %>');
+        this.setTitle();
+      });
   }
 
   public save() {
@@ -40,5 +40,9 @@ export class <%= classify(name) %>Component implements OnInit {
           this.router.navigate([<%= camelize(singleModel)%>.id], { relativeTo: this.route });
         }
     })
+  }
+
+  private setTitle() {
+    this.fsNavService.setTitle(this.<%= camelize(singleModel) %>.id ? 'Edit <%= capitalize(singleModel)%>' : 'Create <%= capitalize(singleModel)%>');
   }
 }

@@ -25,10 +25,6 @@
       "description": "A blank schematic service.",
       "factory": "./list/service/index#create"
     },
-    "index-control": {
-      "description": "A blank schematic.",
-      "factory": "./list/index-control/index#create"
-    },
     "module": {
       "description": "A blank schematic.",
       "factory": "./list/module/index#create"
