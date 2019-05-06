@@ -1,6 +1,6 @@
 {
   "name": "@firestitch/schematics",
-  "version": "0.0.24",
+  "version": "7.0.0",
   "description": "",
   "scripts": {
     "build": "tsc -p tsconfig.json",
@@ -16,8 +16,8 @@
   "license": "MIT",
   "schematics": "./src/collection.json",
   "dependencies": {
-    "@angular-devkit/core": "^0.6.8",
-    "@angular-devkit/schematics": "^0.6.8",
+    "@angular-devkit/core": "^7.3.8",
+    "@angular-devkit/schematics": "^7.3.8",
     "@types/jasmine": "^2.6.0",
     "@types/node": "^8.0.31",
     "jasmine": "^2.8.0",

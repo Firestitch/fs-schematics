@@ -103,9 +103,9 @@ function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModu
   let hasIndexExportsFile = false;
   let componentPath;
 
-  const isParentIndexExists = host.exists(`${options.path}/index.ts`);
+  const isParentIndexExists = host.exists(`${options.componentPath}/index.ts`);
 
-  const indexPath = `${options.path}/${stringUtils.dasherize(options.name)}/index.ts`;
+  const indexPath = `${options.componentPath}/${stringUtils.dasherize(options.name)}/index.ts`;
   const isIndexExists = host.exists(indexPath);
   if (isIndexExists) {
     const fileContent = host.read(indexPath);
@@ -118,10 +118,10 @@ function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModu
   if (isParentIndexExists) {
     componentPath = options.path + '/index.ts'
   } else if (hasIndexExportsFile) {
-    componentPath = `${options.path}/`
+    componentPath = `${options.componentPath}/`
       + stringUtils.dasherize(options.name)
   } else {
-    componentPath = `${options.path}/`
+    componentPath = `${options.componentPath}/`
       + stringUtils.dasherize(options.name) + '/'
       + stringUtils.dasherize(options.name)
       + '.component';
@@ -190,7 +190,7 @@ function createResolverToRoutingContext(host: Tree, options: ModuleOptions) {
   const text = host.read(options.routingModule);
 
   if (text === null) {
-    throw new SchematicsException(`File ${options.routingModule} does not exist!`);
+    throw new SchematicsException(`File Fuck does not exist!`);
   }
   const sourceText = text.toString('utf-8');
   result.source = ts.createSourceFile(options.routingModule, sourceText, ts.ScriptTarget.Latest, true);
@@ -224,10 +224,10 @@ function createResolverToModuleContext(host: Tree, options: ModuleOptions) {
 
 function createUpdatingIndexContext(host: Tree, options: ModuleOptions, expansionType: ExpansionType) {
   const targetPath = options.path + '/index.ts';
-  let filePath = `${options.path}/${options.name}.${expansionType}`;
+  let filePath = `${options.componentPath}/${options.name}.${expansionType}`;
 
   if (expansionType == ExpansionType.Component) {
-    filePath = `${options.path}/${stringUtils.dasherize(options.name)}`;
+    filePath = `${options.componentPath}/${stringUtils.dasherize(options.name)}`;
   }
 
   const result = new AddToModuleContext();
@@ -447,7 +447,7 @@ function addModuleDeclaration(host: Tree, options: ModuleOptions) {
 }
 
 function addDialogToComponent(host: Tree, options: OptionsInterface) {
-  const componentFullPath = `${options.path}/${options.parentName}/${options.parentName}.component.ts`;
+  const componentFullPath = `${options.componentPath}/${options.parentName}/${options.parentName}.component.ts`;
 
   const text = host.read(componentFullPath);
 

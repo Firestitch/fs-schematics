@@ -22,6 +22,7 @@ export interface ModuleOptions {
   dialog?: boolean;
   mode?: string;
   singleName?: string;
+  componentPath?: string;
 }
 
 

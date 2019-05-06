@@ -16,10 +16,14 @@ import {
 import { strings} from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import { parseName } from '../../utils/parse-name';
-import {addDeclarationToNgModule, addDeclarationToRoutingModule, updateIndexFile} from '../../utils/ng-module-utils';
+import { addDeclarationToNgModule, addDeclarationToRoutingModule, updateIndexFile } from '../../utils/ng-module-utils';
 import { buildRelativePath, findModuleFromOptions } from '../../schematics-angular-utils/find-module';
-import { dasherize } from '@angular-devkit/core/src/utils/strings';
-import {ExpansionType} from '../../utils/models/expansion-type';
+import { ExpansionType } from '../../utils/models/expansion-type';
+import {
+  buildRelativePathForService,
+  getComponentPath,
+  getRootPath
+} from '../../utils/build-correct-path';
 
 
 export function getWorkspacePath(host: Tree): string {
@@ -81,9 +85,14 @@ export function createOrEdit(options: any): Rule {
     options.name = parsedPath.name;
     options.path = parsedPath.path;
 
-    const componentPosition = getComponentPosition(tree, options);
+    const componentPosition = getRootPath(tree, options);
     const indexFileExists = tree.exists(`${options.path}/index.ts`);
     options.path = componentPosition.path;
+
+    if (!options.componentPath) {
+      const componentPath = getComponentPath(tree, options);
+      options.componentPath = componentPath.path;
+    }
 
     if (!options.relativeServicePath) {
       options.relativeServicePath = buildRelativePathForService(options);
@@ -96,8 +105,8 @@ export function createOrEdit(options: any): Rule {
         ...strings,
         ...options
       }),
-      () => { console.debug('path', parsedPath.path )},
-      move(parsedPath.path)
+      () => { console.debug('path', options.componentPath )},
+      move(options.componentPath)
     ]);
 
     const externalSchematics: any = [];
@@ -135,20 +144,4 @@ export function createOrEdit(options: any): Rule {
 
     return rule(tree, _context);
   };
-}
-
-function buildRelativePathForService(options) {
-  return buildRelativePath(
-    `${options.path}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
-    `${options.servicePath}/${options.service}`
-  ).replace('.ts', '');
-}
-
-function getComponentPosition(tree: Tree, options): { path: string } {
-  const dir = tree.getDir(`${options.path}`);
-  const isComponentFolderExists = (dir.subdirs as string[]).indexOf('components') !== -1;
-
-  const path = options.path + ( isComponentFolderExists ? '/components' : '');
-
-  return { path };
 }

@@ -43,8 +43,8 @@ export function create(options: any): Rule {
     if (!options.project) {
       options.project = Object.keys(workspace.projects)[0];
     }
-
-    options.routing = options.routing === 'true';
+    console.debug(options);
+    // options.routing = options.routing === 'true';
 
     const templateSource = apply(url('./files'), [
       options.routing ? noop() : filter(path => !path.endsWith('-routing.module.ts')),
