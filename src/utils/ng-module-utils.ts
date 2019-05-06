@@ -103,7 +103,7 @@ function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModu
   let hasIndexExportsFile = false;
   let componentPath;
 
-  const isParentIndexExists = host.exists(`${options.componentPath}/index.ts`);
+  const isParentIndexExists = host.exists(`${options.path}/index.ts`);
 
   const indexPath = `${options.componentPath}/${stringUtils.dasherize(options.name)}/index.ts`;
   const isIndexExists = host.exists(indexPath);
@@ -116,7 +116,7 @@ function createAddToModuleContext(host: Tree, options: ModuleOptions): AddToModu
   }
 
   if (isParentIndexExists) {
-    componentPath = options.path + '/index.ts'
+    componentPath = options.componentPath + '/index.ts'
   } else if (hasIndexExportsFile) {
     componentPath = `${options.componentPath}/`
       + stringUtils.dasherize(options.name)
@@ -264,7 +264,7 @@ function readTest(host: Tree, options: ModuleOptions) {
 
   const isParentIndexExists = host.exists(`${options.path}/index.ts`);
 
-  const indexPath = `${options.path}/${stringUtils.dasherize(options.name)}/index.ts`;
+  const indexPath = `${options.componentPath}/${stringUtils.dasherize(options.name)}/index.ts`;
   const isIndexExists = host.exists(indexPath);
   if (isIndexExists) {
     const fileContent = host.read(indexPath);
@@ -275,12 +275,12 @@ function readTest(host: Tree, options: ModuleOptions) {
   }
 
   if (isParentIndexExists) {
-    componentPath = options.path + '/index.ts'
+    componentPath = options.componentPath + '/index.ts'
   } else if (hasIndexExportsFile) {
-    componentPath = `${options.path}/`
+    componentPath = `${options.componentPath}/`
       + stringUtils.dasherize(options.name)
   } else {
-    componentPath = `${options.path}/`
+    componentPath = `${options.componentPath}/`
       + stringUtils.dasherize(options.name) + '/'
       + stringUtils.dasherize(options.name)
       + '.component';
