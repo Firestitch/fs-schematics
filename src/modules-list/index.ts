@@ -73,7 +73,17 @@ export function list(options: any): Rule {
       options.path = `${project.root}/src/${projectDirName}`;
     }
 
-    console.log(JSON.stringify(findAllModules(tree, options.path)));
+    // Application modules
+    const modulesList = [ ...findAllModules(tree, options.path)];
+
+    // Library modules
+    const libsPath = options.path = `${project.root}/src/libs`;
+    const libsMods = findAllModules(tree, libsPath);
+
+    // Merge different module types
+    modulesList.push(...libsMods);
+
+    console.log(JSON.stringify(modulesList));
     return tree;
   };
 }

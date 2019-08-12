@@ -59,6 +59,7 @@ export function base(options: any): Rule {
     if (!options.project) {
       options.project = Object.keys(workspace.projects)[0];
     }
+    debugger;
 
     if (options.dialog === void 0) {
       options.dialog = false;
@@ -68,7 +69,7 @@ export function base(options: any): Rule {
 
     options.module = `${options.path}/${options.module}`;
     options.routingModule = `${options.path}/${options.routingModule}`;
-
+debugger;
     const componentPosition = getRootPath(tree, options);
     const indexFileExists = tree.exists(`${options.path}/index.ts`);
     options.path = componentPosition.path;
@@ -83,7 +84,7 @@ export function base(options: any): Rule {
         ...options
       }),
       () => { console.debug('path', options.componentPath )},
-      move(options.componentPath)
+      move(options.path)
     ]);
 
     const isRoutingExists = tree.exists(options.routingModule);

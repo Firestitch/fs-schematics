@@ -3,7 +3,7 @@ import { findAllModules } from '../schematics-angular-utils/find-module';
 
 export function findAllServices(host: Tree, generateDir: string) {
   const modules = findAllModules(host, generateDir);
-  let services: any[] = [];
+  const services: any[] = [];
 
   modules.forEach((module) => {
     const group: { module: string, services: any[] } = { module: module.moduleName, services: [] };
@@ -30,9 +30,9 @@ function findServices(host: Tree, path: string, services: any = []) {
   const moduleRe = /\.module\.ts$/;
   const routingModuleRe = /-routing\.module\.ts/;
 
-  if (dir.subdirs) {
+  if (dir.subdirs.length) {
     dir.subdirs.forEach((subDir) => {
-      services.push(...findServices(host, `${path}/${subDir}`, services));
+      findServices(host, `${path}/${subDir}`, services);
     })
   }
 
@@ -44,9 +44,7 @@ function findServices(host: Tree, path: string, services: any = []) {
   const matches = dir.subfiles.filter(p => serviceRe.test(p));
 
   if (matches.length) {
-    return [
-      ...services,
-      ...matches.reduce((acc: any, match) => {
+    return matches.reduce((acc: any, match) => {
         const serviceInfo = {
           singularName: match,
           servicePath: path,
@@ -54,8 +52,7 @@ function findServices(host: Tree, path: string, services: any = []) {
         acc.push(serviceInfo);
 
         return acc;
-      }, [])
-    ]
+      }, services);
   }
 
   return services;

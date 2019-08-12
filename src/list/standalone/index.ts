@@ -79,11 +79,12 @@ export function list(options: any): Rule {
     // const parsedPath = parseName(options.path, options.name);
     // options.name = parsedPath.name;
     // options.path = parsedPath.path;
+    debugger;
     options.create = options.create || false;
     options.edit = options.edit || false;
-    const componentPosition = getRootPath(tree, options);
+    // const componentPosition = getRootPath(tree, options);
     const indexFileExists = tree.exists(`${options.path}/index.ts`);
-    options.path = componentPosition.path;
+    // options.path = componentPosition.path;
 
     const componentPath = getComponentPath(tree, options);
     options.componentPath = componentPath.path;

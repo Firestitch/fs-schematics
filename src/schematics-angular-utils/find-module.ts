@@ -134,22 +134,19 @@ export function findAllModules(host: Tree, generateDir: string) {
   const matches = dir.subfiles.filter(p => moduleRe.test(p) && !routingModuleRe.test(p));
 
   if (matches.length > 0) {
-    return [
-      ...modules,
-      ...matches.reduce((acc: any, match) => {
-        const moduleInfo = {
-          modulePath: join((dir as any).path),
-          moduleFullPath: join((dir as any).path, match),
-          moduleName: match
-        };
-        acc.push(moduleInfo);
+    return matches.reduce((acc: any, match) => {
+      const moduleInfo = {
+        modulePath: join((dir as any).path),
+        moduleFullPath: join((dir as any).path, match),
+        moduleName: match
+      };
+      acc.push(moduleInfo);
 
-        return acc;
-      }, [])
-    ]
+      return acc;
+    }, modules);
   }
 
-  return [];
+  return modules;
 }
 
 
@@ -158,6 +155,10 @@ export function findAllModules(host: Tree, generateDir: string) {
  */
 export function buildRelativePath(from: string, to: string): string {
   from = normalize(from);
+
+  if (to && to[0] !== '/') {
+    to = '/' + to;
+  }
   to = normalize(to);
 
   // Convert to arrays.

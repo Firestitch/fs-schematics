@@ -164,17 +164,18 @@ function createServiceToModuleContext(host: Tree, options: OptionsInterface): Ad
       }
     });
 
+  debugger;
   let componentPath;
   // @todo !!!
   // if (hasIndexExportsFile) {
-    componentPath = `${options.path}/`;
+    options.componentPath = `${options.path}/`;
   // } else {
   //   componentPath = `${options.path}${options.subdirectory}/`
   //     + stringUtils.dasherize(options.name)
   //     + '.service';
   // }
 
-  result.relativePath = buildRelativePath(`${options.module}`, componentPath);
+  result.relativePath = buildRelativePath(`${options.module}`, options.componentPath);
   result.classifiedName = stringUtils.classify(`${options.name}Service`);
 
   return result;

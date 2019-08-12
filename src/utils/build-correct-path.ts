@@ -9,7 +9,7 @@ import { Tree } from '@angular-devkit/schematics';
  */
 export function buildRelativePathForService(options): string {
   return buildRelativePath(
-    `${options.componentPath}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
+    `${options.path}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
     `${options.servicePath}/${options.service}`
   ).replace('.ts', '');
 }
@@ -23,11 +23,18 @@ export function buildRelativePathForService(options): string {
  */
 export function getRootPath(tree: Tree, options): { path: string } {
   const dir = tree.getDir(`${options.path}`);
-  const isComponentFolderExists = (dir.subdirs as string[]).indexOf('components') !== -1;
 
-  const path = options.path + ( isComponentFolderExists ? '/components' : '');
+  if (options.type && options.type === 'view') {
+    const isViewsFolderExists = (dir.subdirs as string[]).indexOf('views') !== -1;
+    const path = options.path + ( isViewsFolderExists ? '/views' : '');
 
-  return { path };
+    return { path };
+  } else {
+    const isComponentFolderExists = (dir.subdirs as string[]).indexOf('components') !== -1;
+    const path = options.path + ( isComponentFolderExists ? '/components' : '');
+
+    return { path };
+  }
 }
 
 /**
@@ -37,8 +44,22 @@ export function getRootPath(tree: Tree, options): { path: string } {
  * @returns {{path}}
  */
 export function getComponentPath(tree: Tree, options): { path: string } {
-  const nestedPath = options.nestedPath === 'null' ? '' : options.nestedPath;
-  const path = options.path + nestedPath;
+  const dir = tree.getDir(`${options.path}`);
+  let path = options.path;
+
+  if (options.type && options.type === 'view') {
+    const isViewsFolderNotExists = (dir.subdirs as string[]).indexOf('views') === -1;
+
+    if (isViewsFolderNotExists) {
+      path += '/views';
+    }
+  } else {
+    const isComponentFolderNotExists = (dir.subdirs as string[]).indexOf('components') === -1;
+
+    if (isComponentFolderNotExists) {
+      path += '/components';
+    }
+  }
 
   return { path };
 }

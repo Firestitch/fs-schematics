@@ -1,28 +1,10 @@
 import {
-  apply,
-  branchAndMerge,
-  chain,
-  filter,
-  mergeWith,
-  move,
   Rule,
   SchematicContext,
   SchematicsException,
   Tree,
-  url,
-  template,
-  externalSchematic
 } from '@angular-devkit/schematics';
-import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
-import { parseName } from '../utils/parse-name';
-import { addDeclarationToNgModule, addDeclarationToRoutingModule } from '../utils/ng-module-utils';
-import {
-  findAllModules,
-  findModuleFromOptions,
-  findRoutingModuleFromOptions
-} from '../schematics-angular-utils/find-module';
-import { findModule } from '../schematics-angular-utils/find-module';
 import { findAllServices } from '../utils/find-service';
 
 
