@@ -164,8 +164,7 @@ function createServiceToModuleContext(host: Tree, options: OptionsInterface): Ad
       }
     });
 
-  debugger;
-  let componentPath;
+
   // @todo !!!
   // if (hasIndexExportsFile) {
     options.componentPath = `${options.path}/`;
@@ -224,7 +223,7 @@ function createResolverToModuleContext(host: Tree, options: ModuleOptions) {
 }
 
 function createUpdatingIndexContext(host: Tree, options: ModuleOptions, expansionType: ExpansionType) {
-  const targetPath = options.path + '/index.ts';
+  const targetPath = options.componentPath + '/index.ts';
   let filePath = `${options.componentPath}/${options.name}.${expansionType}`;
 
   if (expansionType == ExpansionType.Component) {
@@ -235,7 +234,7 @@ function createUpdatingIndexContext(host: Tree, options: ModuleOptions, expansio
 
   const text = host.read(targetPath);
   if (text === null) {
-    throw new SchematicsException(`File ${options.routingModule} does not exist!`);
+    throw new SchematicsException(`File ${targetPath} does not exist!`);
   }
 
   const sourceText = text.toString('utf-8');
@@ -448,7 +447,7 @@ function addModuleDeclaration(host: Tree, options: ModuleOptions) {
 }
 
 function addDialogToComponent(host: Tree, options: OptionsInterface) {
-  const componentFullPath = `${options.componentPath}/${options.parentName}/${options.parentName}.component.ts`;
+  const componentFullPath = `${options.componentPath}/${options.parentName}.component.ts`;
 
   const text = host.read(componentFullPath);
 
@@ -463,7 +462,7 @@ function addDialogToComponent(host: Tree, options: OptionsInterface) {
     source,
     componentFullPath,
     options.parentName || '',
-    options.singleModel || options.name || '');
+    options.name || '');
 
   const declarationRecorder = host.beginUpdate(componentFullPath);
   for (const change of changes) {
@@ -519,8 +518,13 @@ function addExport(host: Tree, options: ModuleOptions) {
 
 export function updateIndexFile(options: ModuleOptions, expansionType: ExpansionType) {
   return (host: Tree) => {
+    const targetPath = options.componentPath + '/index.ts';
+
+    if (!host.exists(targetPath)) {
+      host.create(targetPath, '');
+    }
+
     const context = createUpdatingIndexContext(host, options, expansionType);
-    const targetPath = options.path + '/index.ts';
 
     const exportChanges = [insertExport(
       context.source,

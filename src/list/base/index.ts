@@ -7,37 +7,24 @@ import {
   move,
   Rule,
   SchematicContext,
-  SchematicsException,
   Tree,
   url,
-  template, noop,
+  template,
+  noop,
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
-import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
+
 import {
   addDeclarationToNgModule,
   addDeclarationToRoutingModule,
   updateIndexFile,
 } from '../../utils/ng-module-utils';
-import { getRootPath, getComponentPath } from '../../utils/build-correct-path';
+
+import { Config } from './config';
+import { getComponentPath } from '../../utils/build-correct-path';
 import { ExpansionType } from '../../utils/models/expansion-type';
+import { getWorkspace } from '../../utils/get-workspace';
 
-
-export function getWorkspacePath(host: Tree): string {
-  const possibleFiles = [ '/angular.json', '/.angular.json' ];
-  return possibleFiles.filter(path => host.exists(path))[0];
-}
-
-export function getWorkspace(host: Tree): WorkspaceSchema {
-  const path = getWorkspacePath(host);
-  const configBuffer = host.read(path);
-  if (configBuffer === null) {
-    throw new SchematicsException(`Could not find (${path})`);
-  }
-  const config = configBuffer.toString();
-
-  return JSON.parse(config);
-}
 
 function filterTemplates(options: any): Rule {
   if (!options.create) {
@@ -56,44 +43,42 @@ function filterTemplates(options: any): Rule {
 export function base(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     const workspace = getWorkspace(tree);
-    if (!options.project) {
-      options.project = Object.keys(workspace.projects)[0];
-    }
-    debugger;
+    const config: Config = { ...options };
 
-    if (options.dialog === void 0) {
-      options.dialog = false;
+    if (!config.project) {
+      config.project = Object.keys(workspace.projects)[0];
     }
 
-    options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
+    if (config.dialog === void 0) {
+      config.dialog = false;
+    }
 
-    options.module = `${options.path}/${options.module}`;
-    options.routingModule = `${options.path}/${options.routingModule}`;
-debugger;
-    const componentPosition = getRootPath(tree, options);
-    const indexFileExists = tree.exists(`${options.path}/index.ts`);
-    options.path = componentPosition.path;
+    config.routingModule = config.module.replace('.module.ts', '-routing.module.ts');
+    config.module = `${config.path}/${config.module}`;
+    config.routingModule = `${config.path}/${config.routingModule}`;
 
-    const componentPath = getComponentPath(tree, options);
-    options.componentPath = componentPath.path;
+    const indexFileExists = tree.exists(`${config.path}/index.ts`);
+
+    config.componentPath = getComponentPath(tree, config).path;
 
     const templateSource = apply(url('./files'), [
-      filterTemplates(options),
+      filterTemplates(config),
       template({
         ...strings,
-        ...options
+        ...config
       }),
-      () => { console.debug('path', options.componentPath )},
-      move(options.path)
+      () => { console.debug('path', config.componentPath )},
+      move(config.componentPath)
     ]);
 
-    const isRoutingExists = tree.exists(options.routingModule);
+
+    const isRoutingExists = tree.exists(config.routingModule);
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
-        addDeclarationToNgModule(options, false),
-        isRoutingExists ? addDeclarationToRoutingModule(options) : noop(),
-        indexFileExists ? updateIndexFile(options, ExpansionType.Component) : noop(),
+        addDeclarationToNgModule(config, false),
+        isRoutingExists ? addDeclarationToRoutingModule(config) : noop(),
+        indexFileExists ? updateIndexFile(config, ExpansionType.Component) : noop(),
       ]))
     ]);
 

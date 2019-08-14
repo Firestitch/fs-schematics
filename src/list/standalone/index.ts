@@ -5,33 +5,31 @@ import {
   filter,
   mergeWith,
   move,
+  noop,
   Rule,
+  schematic,
   SchematicContext,
   SchematicsException,
-  Tree,
-  url,
   template,
-  externalSchematic,
-  noop, DirEntry
+  Tree,
+  url
 } from '@angular-devkit/schematics';
-import {isAbsolute, strings} from '@angular-devkit/core';
+import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import {
   addDeclarationToNgModule,
   addDeclarationToRoutingModule,
   updateIndexFile
 } from '../../utils/ng-module-utils';
-import {dasherize} from '@angular-devkit/core/src/utils/strings';
-import {ExpansionType} from '../../utils/models/expansion-type';
-import {
-  buildRelativePathForService,
-  getComponentPath,
-  getRootPath
-} from '../../utils/build-correct-path';
+import { dasherize } from '@angular-devkit/core/src/utils/strings';
+import { ExpansionType } from '../../utils/models/expansion-type';
+import { buildRelativePathForService, getComponentPath } from '../../utils/build-correct-path';
+import { ListOptions } from './schema';
+import { Config } from './config';
 
 
 export function getWorkspacePath(host: Tree): string {
-  const possibleFiles = [ '/angular.json', '/.angular.json' ];
+  const possibleFiles = ['/angular.json', '/.angular.json'];
   return possibleFiles.filter(path => host.exists(path))[0];
 }
 
@@ -60,90 +58,86 @@ function filterTemplates(options: any): Rule {
 
 // You don't have to export the function as default. You can also have more than one rule factory
 // per file.
-export function list(options: any): Rule {
+export function list(options: ListOptions): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     const workspace = getWorkspace(tree);
-    if (!options.project) {
-      options.project = Object.keys(workspace.projects)[0];
+    const config: Config = { ...options };
+
+    if (!config.project) {
+      config.project = Object.keys(workspace.projects)[0];
     }
 
-    if (options.dialog === void 0) {
-      options.dialog = false;
+    config.routingModule = config.module.replace('.module.ts', '-routing.module.ts');
+
+    if (config.dialog === void 0) {
+      config.dialog = false;
     }
 
-    options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
+    config.module = `${config.path}/${config.module}`;
+    config.routingModule = `${config.path}/${config.routingModule}`;
+    config.mode = config.mode || null;
 
-    options.module = `${options.path}/${options.module}`;
-    options.routingModule = `${options.path}/${options.routingModule}`;
-    options.mode = options.mode || false;
-    // const parsedPath = parseName(options.path, options.name);
-    // options.name = parsedPath.name;
-    // options.path = parsedPath.path;
-    debugger;
-    options.create = options.create || false;
-    options.edit = options.edit || false;
-    // const componentPosition = getRootPath(tree, options);
-    const indexFileExists = tree.exists(`${options.path}/index.ts`);
-    // options.path = componentPosition.path;
+    config.create = config.create || false;
+    config.edit = config.edit || false;
 
-    const componentPath = getComponentPath(tree, options);
-    options.componentPath = componentPath.path;
+    config.componentPath = getComponentPath(tree, config).path;
 
-    options.relativeServicePath = buildRelativePathForService(options);
-    options.service = options.service.replace('.service.ts', '');
+    config.relativeServicePath = buildRelativePathForService(config);
+    config.service = config.service.replace('.service.ts', '');
 
     const templateSource = apply(url('./files'), [
-      filterTemplates(options),
+      filterTemplates(config),
       template({
         ...strings,
-        ...options
+        ...config
       }),
-      () => { console.debug('path', options.componentPath )},
-      move(options.componentPath)
+      () => {
+        console.debug('path', config.componentPath)
+      },
+      move(config.componentPath)
     ]);
 
     const extrenalSchematics: any = [];
 
     const childSchematicOptions = {
-      project: options.project,
-      path: options.path,
-      module: options.module,
-      mode: options.mode,
-      name: options.singleName,
-      service: options.service,
-      servicePath: options.servicePath,
-      parentName: dasherize(options.name),
-      relativeServicePath: options.relativeServicePath,
-      singleModel: options.singleModel,
-      pluralModel: options.pluralModel,
+      project: config.project,
+      path: config.path,
+      module: config.module,
+      mode: config.mode,
+      name: config.singleName,
+      service: config.service,
+      servicePath: config.servicePath,
+      parentName: dasherize(config.name),
+      relativeServicePath: config.relativeServicePath,
+      singleModel: config.singleModel,
+      pluralModel: config.pluralModel,
       secondLevel: true,
-      nestedPath: options.nestedPath,
+      nestedPath: config.nestedPath,
     };
 
-    if (options.mode === 'full') {
+
+    if (config.mode === 'full') {
       extrenalSchematics.push(
-        externalSchematic(
-          '@firestitch/schematics',
+        schematic(
           'list-create',
           childSchematicOptions
         )
       )
-    } else if (options.mode === 'dialog') {
+    } else if (config.mode === 'dialog') {
       extrenalSchematics.push(
-        externalSchematic(
-          '@firestitch/schematics',
+        schematic(
           'list-create-dialog',
           childSchematicOptions
         ));
     }
 
-    const isRoutingExists = tree.exists(options.routingModule);
+    const isRoutingExists = tree.exists(config.routingModule);
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
-        addDeclarationToNgModule(options, false),
-        isRoutingExists ? addDeclarationToRoutingModule(options) : noop(),
-        indexFileExists ? updateIndexFile(options, ExpansionType.Component) : noop(),
+        addDeclarationToNgModule(config, false),
+        isRoutingExists ? addDeclarationToRoutingModule(config) : noop(),
+        updateIndexFile(config, ExpansionType.Component),
         ...extrenalSchematics,
       ]))
     ]);

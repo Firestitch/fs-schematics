@@ -7,33 +7,16 @@ import {
   move,
   Rule,
   SchematicContext,
-  SchematicsException,
   Tree,
   url,
   template,
-  externalSchematic,
   DirEntry, noop
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
-import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import { addServiceProviderToNgModule, updateIndexFile} from '../../utils/ng-module-utils';
 import { ExpansionType } from '../../utils/models/expansion-type';
+import { getWorkspace } from '../../utils/get-workspace';
 
-export function getWorkspacePath(host: Tree): string {
-  const possibleFiles = [ '/angular.json', '/.angular.json' ];
-  return possibleFiles.filter(path => host.exists(path))[0];
-}
-
-export function getWorkspace(host: Tree): WorkspaceSchema {
-  const path = getWorkspacePath(host);
-  const configBuffer = host.read(path);
-  if (configBuffer === null) {
-    throw new SchematicsException(`Could not find (${path})`);
-  }
-  const config = configBuffer.toString();
-
-  return JSON.parse(config);
-}
 
 function filterTemplates(options: any): Rule {
   if (!options.menuService) {

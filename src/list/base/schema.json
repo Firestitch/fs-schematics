@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/schema",
-  "id": "SchemanticsForList",
-  "title": "List Schema",
+  "id": "SchematicForEmptyComponent",
+  "title": "Create empty component",
   "type": "object",
   "properties": {
     "path": {
@@ -20,23 +20,6 @@
     "name": {
       "type": "string",
       "description": "Name of component for create"
-    },
-    "service": {
-      "type": "string",
-      "description": "Name of service"
-    },
-    "servicePath": {
-      "type": "string",
-      "format": "path",
-      "description": "Path for service"
-    },
-    "singleModel": {
-      "type": "string",
-      "description": ""
-    },
-    "pluralModel": {
-      "type": "string",
-      "description": ""
     }
   }
 }

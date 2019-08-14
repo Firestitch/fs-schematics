@@ -7,10 +7,10 @@
  */
 import * as ts from 'typescript';
 import { Change, InsertChange } from './change';
-import { insertImport, checkIfRouteExists, addRoutesArrayDeclaration } from './route-utils';
+import { insertImport, addRoutesArrayDeclaration } from './route-utils';
 import { camelize, classify } from '@angular-devkit/core/src/utils/strings';
 import { ModuleOptions } from './find-module';
-import { ClassLikeDeclarationBase } from 'typescript';
+
 
 /**
  * Find all nodes from the AST in the subtree of node of SyntaxKind kind.
@@ -526,7 +526,7 @@ export function addDialogToComponentMetadata(
       source,
       componentPath || '',
       `${classify(singleName)}Component`,
-      `../${singleName}`,
+      `./${singleName}`,
       false,
     ),
   );

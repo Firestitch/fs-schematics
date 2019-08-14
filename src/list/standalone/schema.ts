@@ -4,4 +4,11 @@ export interface ListOptions {
   edit: boolean;
   ordering: boolean;
   dialog: boolean;
+  module?: string;
+  mode?: string;
+  path?: string;
+  singleModel?: string;
+  pluralModel?: string;
+  servicePath?: string;
+  singleName?: string;
 }

@@ -9,42 +9,27 @@ import {
   template,
   Rule,
   SchematicContext,
-  SchematicsException,
   Tree, noop,
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
-import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
-import { parseName } from '../../utils/parse-name';
+
 import {
-  addDeclarationToNgModule, addDialogToParentComponent,
-  addEntryComponentDeclarationToNgModule, updateIndexFile
+  addDeclarationToNgModule,
+  addDialogToParentComponent,
+  addEntryComponentDeclarationToNgModule,
+  updateIndexFile,
 } from '../../utils/ng-module-utils';
-import { buildRelativePath, findModuleFromOptions } from '../../schematics-angular-utils/find-module';
+
+import { findModuleFromOptions } from '../../schematics-angular-utils/find-module';
+
 import {ExpansionType} from '../../utils/models/expansion-type';
+
 import {
   buildRelativePathForService,
   getComponentPath,
-  getRootPath
 } from '../../utils/build-correct-path';
+import { getWorkspace } from '../../utils/get-workspace';
 
-
-export function getWorkspacePath(host: Tree): string {
-  const possibleFiles = [ '/angular.json', '/.angular.json' ];
-  const path = possibleFiles.filter(path => host.exists(path))[0];
-
-  return path;
-}
-
-export function getWorkspace(host: Tree): WorkspaceSchema {
-  const path = getWorkspacePath(host);
-  const configBuffer = host.read(path);
-  if (configBuffer === null) {
-    throw new SchematicsException(`Could not find (${path})`);
-  }
-  const config = configBuffer.toString();
-
-  return JSON.parse(config);
-}
 
 function filterTemplates(options: any): Rule {
   /*if (!options.menuService) {
@@ -70,34 +55,21 @@ export function createOrEdit(options: any): Rule {
     if (!options.project) {
       options.project = Object.keys(workspace.projects)[0];
     }
-    const project = workspace.projects[options.project];
-
-    if (options.path === undefined) {
-      const projectDirName = project.projectType === 'application' ? 'app' : 'lib';
-      options.path = `/${project.root}/src/${projectDirName}`;
-    }
 
     options.module = findModuleFromOptions(tree, options, true);
     options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
 
+    options.componentPath = getComponentPath(tree, options).path;
 
-    const parsedPath = parseName(options.path, options.name);
-    options.name = parsedPath.name;
-    options.path = parsedPath.path;
-
-    const componentPosition = getRootPath(tree, options);
-    const indexFileExists = tree.exists(`${options.path}/index.ts`);
-    options.path = componentPosition.path;
-
-    if (!options.componentPath) {
-      const componentPath = getComponentPath(tree, options);
-      options.componentPath = componentPath.path;
+    if (options.parentName) {
+      options.componentPath = `${options.componentPath}/${options.parentName}`;
     }
 
     if (!options.relativeServicePath) {
       options.relativeServicePath = buildRelativePathForService(options);
       options.service = options.service.replace('.service.ts', '');
     }
+
 
     // When we are do generate Component name for insert into module declaration
     // we must do it without parent component name
@@ -111,7 +83,7 @@ export function createOrEdit(options: any): Rule {
         ...strings,
         ...options
       }),
-      () => { console.debug('path', options.componentPath )},
+      () => { console.debug('Move to path', options.componentPath )},
       move(options.componentPath)
     ]);
 
@@ -121,7 +93,7 @@ export function createOrEdit(options: any): Rule {
         addDeclarationToNgModule(customOptions, false),
         addEntryComponentDeclarationToNgModule(customOptions, false),
         options.parentName ? addDialogToParentComponent(options) : noop(),
-        indexFileExists ? updateIndexFile(options, ExpansionType.Component) : noop(),
+        updateIndexFile(options, ExpansionType.Component),
       ]))
     ]);
 

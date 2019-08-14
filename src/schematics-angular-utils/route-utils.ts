@@ -389,7 +389,7 @@ export function addRouteToExistingRoutes(
 
     return (pathProperty && pathProperty.initializer.text === '**') || false
   });
-  debugger;
+
   if (wildCardRoute) {
     insertPosition = wildCardRoute.getFullStart() + 1;
   } else {

@@ -7,32 +7,15 @@ import {
   move,
   Rule,
   SchematicContext,
-  SchematicsException,
   Tree,
   url,
   template,
-  externalSchematic,
-  DirEntry, noop
+  noop
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
-import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import { addModuleDeclarationToNgModule } from '../../utils/ng-module-utils';
+import { getWorkspace } from '../../utils/get-workspace';
 
-export function getWorkspacePath(host: Tree): string {
-  const possibleFiles = [ '/angular.json', '/.angular.json' ];
-  return possibleFiles.filter(path => host.exists(path))[0];
-}
-
-export function getWorkspace(host: Tree): WorkspaceSchema {
-  const path = getWorkspacePath(host);
-  const configBuffer = host.read(path);
-  if (configBuffer === null) {
-    throw new SchematicsException(`Could not find (${path})`);
-  }
-  const config = configBuffer.toString();
-
-  return JSON.parse(config);
-}
 
 // You don't have to export the function as default. You can also have more than one rule factory
 // per file.
@@ -43,8 +26,6 @@ export function create(options: any): Rule {
     if (!options.project) {
       options.project = Object.keys(workspace.projects)[0];
     }
-    console.debug(options);
-    // options.routing = options.routing === 'true';
 
     const templateSource = apply(url('./files'), [
       options.routing ? noop() : filter(path => !path.endsWith('-routing.module.ts')),

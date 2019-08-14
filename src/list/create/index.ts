@@ -10,28 +10,21 @@ import {
   Rule,
   SchematicContext,
   SchematicsException,
-  externalSchematic,
-  Tree, noop,
+  Tree,
+  noop,
+  schematic,
 } from '@angular-devkit/schematics';
 import { strings} from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
-import { parseName } from '../../utils/parse-name';
 import { addDeclarationToNgModule, addDeclarationToRoutingModule, updateIndexFile } from '../../utils/ng-module-utils';
-import { buildRelativePath, findModuleFromOptions } from '../../schematics-angular-utils/find-module';
+import { findModuleFromOptions } from '../../schematics-angular-utils/find-module';
 import { ExpansionType } from '../../utils/models/expansion-type';
 import {
   buildRelativePathForService,
   getComponentPath,
-  getRootPath
 } from '../../utils/build-correct-path';
+import { getWorkspacePath } from '../../utils/get-workspace-path';
 
-
-export function getWorkspacePath(host: Tree): string {
-  const possibleFiles = [ '/angular.json', '/.angular.json' ];
-  const path = possibleFiles.filter(path => host.exists(path))[0];
-
-  return path;
-}
 
 export function getWorkspace(host: Tree): WorkspaceSchema {
   const path = getWorkspacePath(host);
@@ -45,9 +38,6 @@ export function getWorkspace(host: Tree): WorkspaceSchema {
 }
 
 function filterTemplates(options: any): Rule {
-  /*if (!options.menuService) {
-    return filter(path => !path.match(/\.service\.ts$/) && !path.match(/-item\.ts$/) && !path.match(/\.bak$/));
-  }*/
   if (!options.create) {
     return filter(path => !path.match(/\.bak$/) && !path.match(/create\/.+\.(ts|html)$/));
   }
@@ -68,30 +58,14 @@ export function createOrEdit(options: any): Rule {
       options.project = Object.keys(workspace.projects)[0];
     }
 
-    const project = workspace.projects[options.project];
-
-    if (options.path === undefined) {
-      const projectDirName = project.projectType === 'application' ? 'app' : 'lib';
-      options.path = `/${project.root}/src/${projectDirName}`;
-    }
-
     options.module = findModuleFromOptions(tree, options, true);
     options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
     options.isRouting = tree.exists(options.routingModule);
-    // options.routingModule = `${options.path}/${options.routingModule}`;
-    // options.module = `${options.path}/${options.module}`;
 
-    const parsedPath = parseName(options.path, options.name);
-    options.name = parsedPath.name;
-    options.path = parsedPath.path;
+    options.componentPath = getComponentPath(tree, options).path;
 
-    const componentPosition = getRootPath(tree, options);
-    const indexFileExists = tree.exists(`${options.path}/index.ts`);
-    options.path = componentPosition.path;
-
-    if (!options.componentPath) {
-      const componentPath = getComponentPath(tree, options);
-      options.componentPath = componentPath.path;
+    if (options.parentName) {
+      options.componentPath = `${options.componentPath}/${options.parentName}`;
     }
 
     if (!options.relativeServicePath) {
@@ -122,13 +96,12 @@ export function createOrEdit(options: any): Rule {
 
 
     if (options.isRouting) {
-      externalSchematics.push(
-        externalSchematic(
-          '@firestitch/schematics',
-          'resolver',
-          childSchematicOptions
-        )
-      );
+      // externalSchematics.push(
+      //   schematic(
+      //     'resolver',
+      //     childSchematicOptions
+      //   )
+      // );
     }
 
     const rule = chain([
@@ -136,7 +109,7 @@ export function createOrEdit(options: any): Rule {
         mergeWith(templateSource),
         addDeclarationToNgModule(options, false),
         options.isRouting ? addDeclarationToRoutingModule(options) : noop(),
-        indexFileExists ? updateIndexFile(options, ExpansionType.Component) : noop(),
+        updateIndexFile(options, ExpansionType.Component),
         ...externalSchematics,
       ]))
     ]);

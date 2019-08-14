@@ -9,7 +9,7 @@ import { Tree } from '@angular-devkit/schematics';
  */
 export function buildRelativePathForService(options): string {
   return buildRelativePath(
-    `${options.path}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
+    `${options.componentPath}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
     `${options.servicePath}/${options.service}`
   ).replace('.ts', '');
 }
@@ -48,17 +48,9 @@ export function getComponentPath(tree: Tree, options): { path: string } {
   let path = options.path;
 
   if (options.type && options.type === 'view') {
-    const isViewsFolderNotExists = (dir.subdirs as string[]).indexOf('views') === -1;
-
-    if (isViewsFolderNotExists) {
-      path += '/views';
-    }
+    path += '/views';
   } else {
-    const isComponentFolderNotExists = (dir.subdirs as string[]).indexOf('components') === -1;
-
-    if (isComponentFolderNotExists) {
-      path += '/components';
-    }
+    path += '/components';
   }
 
   return { path };

@@ -2,7 +2,7 @@
   "$schema": "../node_modules/@angular-devkit/schematics/collection-schema.json",
   "schematics": {
     "list": {
-      "description": "A blank schematic.",
+      "description": "Create simple list component",
       "factory": "./list/standalone/index#list"
     },
     "list-create": {
@@ -12,14 +12,6 @@
     "list-create-dialog": {
       "description": "A blank schematic.",
       "factory": "./list/create-dialog/index#createOrEdit"
-    },
-    "modules-list": {
-      "description": "A blank schematic.",
-      "factory": "./modules-list/index#list"
-    },
-    "services-list": {
-      "description": "A blank schematic.",
-      "factory": "./services-list/index#list"
     },
     "service": {
       "description": "A blank schematic service.",
