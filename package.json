@@ -1,9 +1,11 @@
 {
   "name": "@firestitch/schematics",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "description": "",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "package": "npm run build && npm run test",
+    "package:publish": "npm publish",
     "test": "nyc mocha src/**/*.test.ts --require ts-node/register --require source-map-support/register"
   },
   "keywords": [
