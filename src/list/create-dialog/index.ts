@@ -52,6 +52,7 @@ export function createOrEdit(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     const workspace = getWorkspace(tree);
 
+
     if (!options.project) {
       options.project = Object.keys(workspace.projects)[0];
     }
@@ -93,7 +94,7 @@ export function createOrEdit(options: any): Rule {
         addDeclarationToNgModule(customOptions, false),
         addEntryComponentDeclarationToNgModule(customOptions, false),
         options.parentName ? addDialogToParentComponent(options) : noop(),
-        updateIndexFile(options, ExpansionType.Component),
+        // updateIndexFile(options, ExpansionType.Component),
       ]))
     ]);
 

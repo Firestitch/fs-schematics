@@ -67,6 +67,7 @@ export function list(options: ListOptions): Rule {
       config.project = Object.keys(workspace.projects)[0];
     }
 
+
     config.routingModule = config.module.replace('.module.ts', '-routing.module.ts');
 
     if (config.dialog === void 0) {
@@ -105,6 +106,7 @@ export function list(options: ListOptions): Rule {
       module: config.module,
       mode: config.mode,
       name: config.singleName,
+      type: config.type,
       service: config.service,
       servicePath: config.servicePath,
       parentName: dasherize(config.name),
@@ -139,7 +141,7 @@ export function list(options: ListOptions): Rule {
         isRoutingExists ? addDeclarationToRoutingModule(config) : noop(),
         updateIndexFile(config, ExpansionType.Component),
         ...extrenalSchematics,
-      ]))
+      ])),
     ]);
 
     return rule(tree, _context);

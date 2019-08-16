@@ -55,7 +55,7 @@ const runner = new SchematicTestRunner('schematics', collectionPath);
 
 let appTree: UnitTestTree;
 
-describe('Schematic: List with Create dialog3', () => {
+describe('Schematic: List with Create dialog', () => {
   before(async () => {
     appTree = await runner
       .runExternalSchematicAsync(

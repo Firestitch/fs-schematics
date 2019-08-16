@@ -102,7 +102,7 @@ describe('Schematic: Standalone', () => {
   });
 });
 
-describe('Schematic: List with Create dialog', () => {
+describe('Schematic: List with Create dialog from standalone', () => {
   before(async () => {
     appTree = await runner
       .runExternalSchematicAsync(
@@ -136,7 +136,7 @@ describe('Schematic: List with Create dialog', () => {
 });
 
 
-describe('Schematic: List with Create dialog2', () => {
+describe('Schematic: List with Create page from standalone', () => {
   before(async () => {
     appTree = await runner
       .runExternalSchematicAsync(
@@ -176,6 +176,6 @@ describe('Schematic: List with Create dialog2', () => {
   it('should be imported into module', async () => {
     const content = appTree.readContent(BASE_PATH + '/src/app/app.module.ts');
 
-    assert(content.indexOf("import { CreateListComponent } from './components/create-list/create-list.component'") > -1);
+    assert(content.indexOf("import { CreateListComponent } from './components/list/create-list'") > -1);
   });
 });
