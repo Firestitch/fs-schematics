@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicForEmptyComponent",
+  "title": "Create empty component",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "Path to the module desctination"
+    },
+    "module": {
+      "type": "string",
+      "description": "Name of module file"
+    },
+    "keys": {
+      "type": "array",
+      "description": "Array of keys"
+    },
+    "values": {
+      "type": "array",
+      "description": "Array of values"
+    }
+  }
+}

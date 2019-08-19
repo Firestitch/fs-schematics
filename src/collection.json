@@ -25,6 +25,10 @@
       "description": "A basic empty component",
       "factory": "./list/base/index#base"
     },
+    "enum": {
+      "description": "Generate enum",
+      "factory": "./enums/enum/index#base"
+    },
     "resolver": {
       "description": "A basic description",
       "factory": "./list/resolver/index#create"

@@ -97,7 +97,6 @@ describe('Schematic: Standalone', () => {
       .toPromise();
 
     const content = tree.readContent(BASE_PATH + '/src/app/components/list/list.component.ts');
-    console.log('content', content);
     assert(content.indexOf('public list: FsListComponent;') > -1);
   });
 });
