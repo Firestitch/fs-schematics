@@ -15,6 +15,18 @@ export function buildRelativePathForService(options): string {
 }
 
 /**
+ * Build right services's path for correct component
+ * @param options
+ * @returns {string}
+ */
+export function buildRelativePathForEnum(options): string {
+  return buildRelativePath(
+    `${options.componentPath}/${dasherize(options.name)}.const.ts`,
+    `${options.enumPath}`
+  ).replace('.ts', '');
+}
+
+/**
  * Get index.ts file position for component
  * It can be module's root or /components folder (if it exists)
  * @param {Tree} tree

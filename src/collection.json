@@ -29,6 +29,10 @@
       "description": "Generate enum",
       "factory": "./enums/enum/index#base"
     },
+    "const": {
+      "description": "Generate const",
+      "factory": "./consts/const/index#base"
+    },
     "resolver": {
       "description": "A basic description",
       "factory": "./list/resolver/index#create"
