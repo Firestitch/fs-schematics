@@ -5,24 +5,27 @@
 // import { addDeclarationToModule, addExportToModule } from "@schematics/angular/utility/ast-utils";
 // import { InsertChange } from "@schematics/angular/utility/change";
 // Option B: Using a fork of the private APIs b/c they can change
-import { Rule, Tree, SchematicsException } from '@angular-devkit/schematics';
+import { Rule, SchematicsException, Tree } from '@angular-devkit/schematics';
 import { AddToModuleContext } from './add-to-module-context';
 import * as ts from 'typescript';
-import {normalize, strings} from '@angular-devkit/core';
-
-const { dasherize, classify } = strings;
-
+import { normalize, strings } from '@angular-devkit/core';
 // Referencing forked and copied private APIs
-import { ModuleOptions, buildRelativePath } from '../schematics-angular-utils/find-module';
+import { buildRelativePath, ModuleOptions } from '../schematics-angular-utils/find-module';
 import {
-  addDeclarationToModule, addDialogToComponentMetadata, addEntryComponentToModule,
-  addExportToModule, addSymbolToNgModuleRoutingMetadata, addProviderToModule, addImportToModule
+  addDeclarationToModule,
+  addDialogToComponentMetadata,
+  addEntryComponentToModule,
+  addExportToModule,
+  addImportToModule,
+  addProviderToModule,
+  addSymbolToNgModuleRoutingMetadata
 } from '../schematics-angular-utils/ast-utils';
 import { InsertChange } from '../schematics-angular-utils/change';
-import { OptionsInterface } from './models/';
-import {insertImport} from '../schematics-angular-utils/route-utils';
-import {insertExport} from './insert-export';
-import {ExpansionType} from './models/expansion-type';
+import { ExpansionType, OptionsInterface } from './models/';
+import { insertImport } from '../schematics-angular-utils/route-utils';
+import { insertExport } from './insert-export';
+
+const { dasherize, classify } = strings;
 
 const stringUtils = { dasherize, classify };
 
@@ -226,7 +229,7 @@ function createUpdatingIndexContext(host: Tree, options: ModuleOptions, expansio
   const targetPath = options.componentPath + '/index.ts';
   let filePath = `${options.componentPath}/${options.name}.${expansionType}`;
 
-  if (expansionType == ExpansionType.Component) {
+  if (expansionType == ExpansionType.Component || expansionType === ExpansionType.Enum) {
     filePath = `${options.componentPath}/${stringUtils.dasherize(options.name)}`;
   }
 
@@ -526,11 +529,17 @@ export function updateIndexFile(options: ModuleOptions, expansionType: Expansion
 
     const context = createUpdatingIndexContext(host, options, expansionType);
 
+    let exportPath = context.relativePath;
+
+    if (expansionType === ExpansionType.Enum) {
+      exportPath += '.enum';
+    }
+
     const exportChanges = [insertExport(
       context.source,
       targetPath,
       options.name,
-      context.relativePath
+      exportPath
     )];
 
     const exportRecorder = host.beginUpdate(targetPath);

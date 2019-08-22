@@ -65,7 +65,7 @@ export function base(options: any): Rule {
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
-        updateIndexFile(config, ExpansionType.Component)
+        updateIndexFile(config, ExpansionType.Enum)
       ]))
     ]);
 

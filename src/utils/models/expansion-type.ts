@@ -1,5 +1,6 @@
 export enum ExpansionType {
   Service = 'service',
   Resolve = 'resolve',
-  Component = 'component'
+  Component = 'component',
+  Enum = 'enum',
 }
