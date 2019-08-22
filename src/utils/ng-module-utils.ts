@@ -229,7 +229,10 @@ function createUpdatingIndexContext(host: Tree, options: ModuleOptions, expansio
   const targetPath = options.componentPath + '/index.ts';
   let filePath = `${options.componentPath}/${options.name}.${expansionType}`;
 
-  if (expansionType == ExpansionType.Component || expansionType === ExpansionType.Enum) {
+  if (expansionType == ExpansionType.Component
+    || expansionType === ExpansionType.Enum
+    || expansionType === ExpansionType.Const
+  ) {
     filePath = `${options.componentPath}/${stringUtils.dasherize(options.name)}`;
   }
 
@@ -531,8 +534,14 @@ export function updateIndexFile(options: ModuleOptions, expansionType: Expansion
 
     let exportPath = context.relativePath;
 
-    if (expansionType === ExpansionType.Enum) {
-      exportPath += '.enum';
+    switch (expansionType) {
+      case ExpansionType.Enum: {
+        exportPath += '.enum';
+      } break;
+
+      case ExpansionType.Const: {
+        exportPath += '.const';
+      } break;
     }
 
     const exportChanges = [insertExport(

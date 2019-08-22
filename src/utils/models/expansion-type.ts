@@ -3,4 +3,5 @@ export enum ExpansionType {
   Resolve = 'resolve',
   Component = 'component',
   Enum = 'enum',
+  Const = 'const',
 }
