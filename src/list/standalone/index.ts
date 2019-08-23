@@ -141,7 +141,7 @@ export function list(options: ListOptions): Rule {
       branchAndMerge(chain([
         mergeWith(templateSource),
         addDeclarationToNgModule(config, false),
-        isRoutingExists ? addDeclarationToRoutingModule(config) : noop(),
+        isRoutingExists && config.type === 'view' ? addDeclarationToRoutingModule(config) : noop(),
         updateIndexFile(config, ExpansionType.Component),
         ...extrenalSchematics,
       ])),

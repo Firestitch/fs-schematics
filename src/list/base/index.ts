@@ -77,7 +77,7 @@ export function base(options: any): Rule {
       branchAndMerge(chain([
         mergeWith(templateSource),
         addDeclarationToNgModule(config, false),
-        isRoutingExists ? addDeclarationToRoutingModule(config) : noop(),
+        isRoutingExists && config.type === 'view' ? addDeclarationToRoutingModule(config) : noop(),
         indexFileExists ? updateIndexFile(config, ExpansionType.Component) : noop(),
       ]))
     ]);

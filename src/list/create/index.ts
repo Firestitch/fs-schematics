@@ -113,7 +113,7 @@ export function createOrEdit(options: any): Rule {
       branchAndMerge(chain([
         mergeWith(templateSource),
         addDeclarationToNgModule(options, false),
-        options.isRouting ? addDeclarationToRoutingModule(options) : noop(),
+        options.isRouting && options.type === 'view' ? addDeclarationToRoutingModule(options) : noop(),
         updateIndexFile(options, ExpansionType.Component),
         ...externalSchematics,
       ]))
