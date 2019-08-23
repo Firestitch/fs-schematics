@@ -42,6 +42,12 @@ export function create(options: any): Rule {
     options.module = `${options.path}/${options.module}`;
     options.path = `${options.path}${options.subdirectory}`;
 
+    if (options.subdirectory === '/services') {
+      options.type = 'service';
+    } else {
+      options.type = 'data';
+    }
+
     const templateSource = apply(url('./files'), [
       filterTemplates(options),
       indexFileExists ? filter(path => path.indexOf('index.ts') === -1) : noop(),
@@ -53,11 +59,13 @@ export function create(options: any): Rule {
       move(subDir.path)
     ]);
 
+    const expansionType = options.type === 'service' ? ExpansionType.Service : ExpansionType.Data;
+
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
         addServiceProviderToNgModule(options),
-        indexFileExists ? updateIndexFile(options, ExpansionType.Service) : noop(),
+        indexFileExists ? updateIndexFile(options, expansionType) : noop(),
       ]))
     ]);
 

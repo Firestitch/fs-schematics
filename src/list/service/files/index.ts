@@ -1,1 +1,1 @@
-export * from './<%=dasherize(name)%>.service';
+export * from './<%=dasherize(name)%>.<% if (type === 'service'){ %>service<%} else {%>data<%}%>';

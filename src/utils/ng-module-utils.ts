@@ -178,7 +178,13 @@ function createServiceToModuleContext(host: Tree, options: OptionsInterface): Ad
   // }
 
   result.relativePath = buildRelativePath(`${options.module}`, options.componentPath);
-  result.classifiedName = stringUtils.classify(`${options.name}Service`);
+  result.classifiedName = stringUtils.classify(options.name);
+
+  if (options.type === 'service') {
+    result.classifiedName += 'Service';
+  } else {
+    result.classifiedName += 'Data';
+  }
 
   return result;
 }
@@ -529,6 +535,7 @@ export function updateIndexFile(options: ModuleOptions, expansionType: Expansion
     if (!host.exists(targetPath)) {
       host.create(targetPath, '');
     }
+
 
     const context = createUpdatingIndexContext(host, options, expansionType);
 

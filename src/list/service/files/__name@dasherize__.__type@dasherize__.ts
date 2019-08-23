@@ -3,7 +3,7 @@ import { Observable } from 'rxjs';
 import { FsApi } from '@firestitch/api';
 
 @Injectable()
-export class <%= classify(name) %>Service {
+export class <%= classify(name) %><% if (type === 'service'){ %>Service<%} else {%>Data<%}%> {
   constructor(private _fsApi: FsApi) {
   }
 
