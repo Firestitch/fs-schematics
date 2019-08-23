@@ -445,7 +445,12 @@ export function addDialogToComponentMetadata(
       dialogVarName = existingDialog.name.text
     } else {
       const position = classConstructor.parameters.end;
-      let declaration = classConstructor.parameters.length ? ',\n' : '';
+      let declaration = '';
+
+      if (classConstructor.parameters.length) {
+        declaration += classConstructor.parameters.hasTrailingComma ? '\n' : ',\n';
+      }
+
       declaration += `public ${dialogVarName}: MatDialog`;
 
       changes.push(

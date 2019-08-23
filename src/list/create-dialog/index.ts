@@ -98,7 +98,7 @@ export function createOrEdit(options: any): Rule {
         addDeclarationToNgModule(customOptions, false),
         addEntryComponentDeclarationToNgModule(customOptions, false),
         options.parentName ? addDialogToParentComponent(options) : noop(),
-        // updateIndexFile(options, ExpansionType.Component),
+        updateIndexFile(options, ExpansionType.Component),
       ]))
     ]);
 
