@@ -1,7 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';<% if (mode === 'full') { %>
 import { Router, ActivatedRoute } from '@angular/router';<% } %>
 
+import { map } from 'rxjs/operators';
+
 import { FsListComponent, FsListConfig } from '@firestitch/list';
+import { ItemType } from '@firestitch/filter';
 import { FsNavService } from '@firestitch/nav';
 
 import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
@@ -31,7 +34,7 @@ export class <%= classify(name) %>Component implements OnInit {
       filters: [
         {
           name: 'keyword',
-          type: 'text',
+          type: ItemType.Keyword,
           label: 'Search'
         }
       ],
@@ -59,7 +62,9 @@ export class <%= classify(name) %>Component implements OnInit {
       ],
       fetch: (query) => {
         return this._<%= camelize(serviceName) %>.gets(query, { key: null })
-          .map(response => ({ data: response.<%= pluralModel %>, paging: response.paging }));
+          .pipe(
+            map(response => ({ data: response.<%= pluralModel %>, paging: response.paging }))
+          );
       },
       restore: {
         query: {state: 'deleted'},
