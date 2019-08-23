@@ -29,6 +29,7 @@ import {
   getComponentPath,
 } from '../../utils/build-correct-path';
 import { getWorkspace } from '../../utils/get-workspace';
+import { getServiceClassName } from '../../utils/get-service-class-name';
 
 
 function filterTemplates(options: any): Rule {
@@ -52,7 +53,6 @@ export function createOrEdit(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     const workspace = getWorkspace(tree);
 
-
     if (!options.project) {
       options.project = Object.keys(workspace.projects)[0];
     }
@@ -64,6 +64,10 @@ export function createOrEdit(options: any): Rule {
 
     if (options.parentName) {
       options.componentPath = `${options.componentPath}/${options.parentName}`;
+    }
+
+    if (!options.serviceName) {
+      options.serviceName = getServiceClassName(tree, options.servicePath + '/' + options.service);
     }
 
     if (!options.relativeServicePath) {

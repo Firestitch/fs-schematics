@@ -41,12 +41,21 @@ const optionsForComponent = {
   type: 'component',
   // parentName: 'list',
   name: 'create-list',
-  service: 'account-data.service.ts',
-  servicePath: BASE_PATH + '/src/app/core/data',
+  service: 'test.service.ts',
+  servicePath: BASE_PATH + '/src/app/services',
   singleModel: 'model',
   pluralModel: 'models',
   secondLevel: true,
   mode: 'dialog'
+};
+
+const optionsForService = {
+  path: BASE_PATH + '/src/app',
+  module: 'app.module.ts',
+  name: 'test',
+  subdirectory: '/services',
+  pluralName: 'tests',
+  menuService: true,
 };
 
 const collectionPath = path.join(__dirname, '../../collection.json');
@@ -69,6 +78,14 @@ describe('Schematic: List with Create dialog', () => {
         '@schematics/angular',
         'application',
         appOptions,
+        appTree
+      )
+      .toPromise();
+
+    appTree = await runner
+      .runSchematicAsync(
+        'service',
+        optionsForService,
         appTree
       )
       .toPromise();

@@ -24,6 +24,7 @@ import {
   getComponentPath,
 } from '../../utils/build-correct-path';
 import { getWorkspacePath } from '../../utils/get-workspace-path';
+import { getServiceClassName } from '../../utils/get-service-class-name';
 
 
 export function getWorkspace(host: Tree): WorkspaceSchema {
@@ -66,6 +67,10 @@ export function createOrEdit(options: any): Rule {
 
     if (options.parentName) {
       options.componentPath = `${options.componentPath}/${options.parentName}`;
+    }
+
+    if (!options.serviceName) {
+      options.serviceName = getServiceClassName(tree, options.servicePath + '/' + options.service);
     }
 
     if (!options.relativeServicePath) {

@@ -26,6 +26,7 @@ import { ExpansionType } from '../../utils/models/expansion-type';
 import { buildRelativePathForService, getComponentPath } from '../../utils/build-correct-path';
 import { ListOptions } from './schema';
 import { Config } from './config';
+import { getServiceClassName } from '../../utils/get-service-class-name';
 
 
 export function getWorkspacePath(host: Tree): string {
@@ -67,7 +68,6 @@ export function list(options: ListOptions): Rule {
       config.project = Object.keys(workspace.projects)[0];
     }
 
-
     config.routingModule = config.module.replace('.module.ts', '-routing.module.ts');
 
     if (config.dialog === void 0) {
@@ -82,6 +82,8 @@ export function list(options: ListOptions): Rule {
     config.edit = config.edit || false;
 
     config.componentPath = getComponentPath(tree, config).path;
+
+    config.serviceName = getServiceClassName(tree, config.servicePath + '/' + config.service) || '';
 
     config.relativeServicePath = buildRelativePathForService(config);
     config.service = config.service.replace('.service.ts', '');
@@ -109,8 +111,9 @@ export function list(options: ListOptions): Rule {
       type: config.type,
       service: config.service,
       servicePath: config.servicePath,
+      serviceName: config.serviceName,
       parentName: dasherize(config.name),
-      relativeServicePath: config.relativeServicePath,
+      relativeServicePath: '../' + config.relativeServicePath,
       singleModel: config.singleModel,
       pluralModel: config.pluralModel,
       secondLevel: true,

@@ -4,7 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';<% } %>
 import { FsListComponent, FsListConfig } from '@firestitch/list';
 import { FsNavService } from '@firestitch/nav';
 
-import { <%= classify(service) %>Service } from '<%= relativeServicePath %>';
+import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 
 
 
@@ -18,10 +18,10 @@ export class <%= classify(name) %>Component implements OnInit {
   public list: FsListComponent;
   public config: FsListConfig;
 
-  constructor(private <%= camelize(service) %>Service: <%= classify(service) %>Service,
-              private fsNavService: FsNavService, <% if (mode === 'full') { %>
-              private route: ActivatedRoute,
-              private router: Router,<% } %>
+  constructor(private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
+              private _fsNavService: FsNavService,<% if (mode === 'full') { %>
+              private _route: ActivatedRoute,
+              private _router: Router,<% } %>
   ) {}
 
   public ngOnInit() {
@@ -39,7 +39,7 @@ export class <%= classify(name) %>Component implements OnInit {
         {
           label: 'Create <%= capitalize(singleModel) %>',
           click: (event) => {<% if (mode === 'full') { %>
-            this.router.navigate(['../<%= dasherize(singleName) %>'], { relativeTo: this.route }); <% } if (mode === 'dialog') { %>
+            this._router.navigate(['../<%= dasherize(singleName) %>'], { relativeTo: this._route }); <% } if (mode === 'dialog') { %>
             this.openDialog({})<%}%>
           }
         }
@@ -47,7 +47,7 @@ export class <%= classify(name) %>Component implements OnInit {
       rowActions: [
         {
           click: data => {
-            return this.<%= camelize(service) %>Service.delete(data);
+            return this._<%= camelize(serviceName) %>.delete(data);
           },
           remove: {
             title: 'Confirm',
@@ -58,7 +58,7 @@ export class <%= classify(name) %>Component implements OnInit {
         }
       ],
       fetch: (query) => {
-        return this.<%= camelize(service) %>Service.gets(query, { key: null })
+        return this._<%= camelize(serviceName) %>.gets(query, { key: null })
           .map(response => ({ data: response.<%= pluralModel %>, paging: response.paging }));
       },
       restore: {
@@ -67,14 +67,14 @@ export class <%= classify(name) %>Component implements OnInit {
         menuLabel: 'Restore',
         reload: true,
         click: (row) => {
-          return this.<%= camelize(service) %>Service.put({id: row.id, state: 'active'})
+          return this._<%= camelize(serviceName) %>.put({id: row.id, state: 'active'})
         }
       }
     };
   }
 
   private setTitle() {
-    this.fsNavService.setTitle('<%= capitalize(name) %>');
+    this._fsNavService.setTitle('<%= capitalize(name) %>');
   }
 
 }

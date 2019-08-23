@@ -40,8 +40,8 @@ const optionsForComponent = {
   module: 'app.module.ts',
   type: 'component',
   name: 'list',
-  service: 'account-data.service.ts',
-  servicePath: BASE_PATH + '/src/app/core/data',
+  service: 'test.service.ts',
+  servicePath: BASE_PATH + '/src/app/services',
   singleModel: 'model',
   pluralModel: 'models'
 };
@@ -52,10 +52,19 @@ const optionsForView = {
   module: 'app.module.ts',
   type: 'view',
   name: 'list',
-  service: 'account-data.service.ts',
-  servicePath: BASE_PATH + '/src/app/core/data',
+  service: 'test.service.ts',
+  servicePath: BASE_PATH + '/src/app/services',
   singleModel: 'model',
   pluralModel: 'models'
+};
+
+const optionsForService = {
+  path: BASE_PATH + '/src/app',
+  module: 'app.module.ts',
+  name: 'test',
+  subdirectory: '/services',
+  pluralName: 'tests',
+  menuService: true,
 };
 
 const collectionPath = path.join(__dirname, '../../collection.json');
@@ -78,6 +87,14 @@ describe('Schematic: Standalone', () => {
         '@schematics/angular',
         'application',
         appOptions,
+        appTree
+      )
+      .toPromise();
+
+    appTree = await runner
+      .runSchematicAsync(
+        'service',
+        optionsForService,
         appTree
       )
       .toPromise();
@@ -118,6 +135,14 @@ describe('Schematic: List with Create dialog from standalone', () => {
         appTree
       )
       .toPromise();
+
+    appTree = await runner
+      .runSchematicAsync(
+        'service',
+        optionsForService,
+        appTree
+      )
+      .toPromise();
   });
 
   it('should create list dialog', async () => {
@@ -149,6 +174,14 @@ describe('Schematic: List with Create page from standalone', () => {
         '@schematics/angular',
         'application',
         appOptions,
+        appTree
+      )
+      .toPromise();
+
+    appTree = await runner
+      .runSchematicAsync(
+        'service',
+        optionsForService,
         appTree
       )
       .toPromise();
