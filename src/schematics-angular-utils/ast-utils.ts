@@ -8,8 +8,8 @@
 import * as ts from 'typescript';
 import { Change, InsertChange } from './change';
 import { insertImport, addRoutesArrayDeclaration } from './route-utils';
-import { camelize, classify } from '@angular-devkit/core/src/utils/strings';
-import { ModuleOptions } from './find-module';
+import { camelize, classify, dasherize } from '@angular-devkit/core/src/utils/strings';
+import { buildRelativePath, ModuleOptions } from './find-module';
 
 
 /**
@@ -423,6 +423,8 @@ export function addDialogToComponentMetadata(
   componentPath: string,
   name: string,
   singleName: string,
+  singleModelName: string,
+  relativePathToComponent: string
 ): any {
 
   const changes: any = [];
@@ -451,7 +453,7 @@ export function addDialogToComponentMetadata(
         declaration += classConstructor.parameters.hasTrailingComma ? '\n' : ',\n';
       }
 
-      declaration += `public ${dialogVarName}: MatDialog`;
+      declaration += `private _${dialogVarName}: MatDialog`;
 
       changes.push(
         new InsertChange(componentPath, position, declaration),
@@ -470,7 +472,7 @@ export function addDialogToComponentMetadata(
     }).pop();
 
     let position = null;
-    const toInsertConstructor = `\n\n  constructor(public ${dialogVarName}: MatDialog) {}\n`;
+    const toInsertConstructor = `\n\n  constructor(private _${dialogVarName}: MatDialog) {}\n`;
 
     if (firstMethod) {
       position = firstMethod.getFullStart()
@@ -513,10 +515,9 @@ export function addDialogToComponentMetadata(
     insertPosition = componentClass.getEnd() - 1;
   }
 
-  const toInsert = `\n\n  public ${dialogMethodName}(${camelize(singleName)}) {
-    const dialogRef = this.${dialogVarName}.open(${classify(singleName)}Component, {
-      width: '700px',
-      data: { ${camelize(singleName)}: ${camelize(singleName)} }
+  const toInsert = `\n\n  public ${dialogMethodName}(${camelize(singleModelName)}) {
+    const dialogRef = this._${dialogVarName}.open(${classify(singleName)}Component, {
+      data: { ${camelize(singleModelName)}: ${camelize(singleModelName)} }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -531,7 +532,7 @@ export function addDialogToComponentMetadata(
       source,
       componentPath || '',
       `${classify(singleName)}Component`,
-      `./${singleName}`,
+      relativePathToComponent,
       false,
     ),
   );

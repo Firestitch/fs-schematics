@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
-@Component({
-  selector: 'app-<%=dasherize(name)%>',
+@Component({<%if(type==='component'){%>
+  selector: 'app-<%=dasherize(name)%>',<%}%>
   templateUrl: './<%=dasherize(name)%>.component.html',
   styleUrls: ['./<%=dasherize(name)%>.component.scss']
 })

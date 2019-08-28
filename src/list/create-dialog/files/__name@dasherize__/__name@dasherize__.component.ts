@@ -9,12 +9,11 @@ import { FsMessage } from '@firestitch/message';
 import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 
 @Component({
-  selector: 'app-<%=dasherize(name)%>-create',
   templateUrl: './<%=dasherize(name)%>.component.html',
   styleUrls: ['./<%=dasherize(name)%>.component.scss']
 })
 export class <%= classify(name) %>Component implements OnInit {
-  public <%= camelize(singleModel) %> = {};
+  public <%= camelize(singleModel) %> = null;
 
   constructor(private _dialogRef: MatDialogRef<<%= classify(name) %>Component>,
               private _fsMessage: FsMessage,

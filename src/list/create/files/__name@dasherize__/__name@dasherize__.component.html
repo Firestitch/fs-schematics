@@ -1,10 +1,12 @@
 <mat-card>
-  <form (fsForm)="save()" [fsSkeletonForm]="routeObserver.loaded">
-    <div fxLayout="column">
-      <mat-form-field>
-        <input matInput placeholder="Name" [(ngModel)]="<%= camelize(singleModel) %>.name" name="name">
-      </mat-form-field>
-    </div>
-    <button mat-raised-button type="submit" color="primary">{{<%= camelize(singleModel) %>.id ? 'Save' : 'Create'}}</button>
+  <form (fsForm)="save()" [fsSkeletonForm]="<%= camelize(singleModel) %>">
+    <ng-container  *ngIf="<%= camelize(singleModel) %>">
+      <div fxLayout="column">
+        <mat-form-field>
+          <input matInput placeholder="Name" [(ngModel)]="<%= camelize(singleModel) %>.name" name="name">
+        </mat-form-field>
+      </div>
+      <button mat-raised-button type="submit" color="primary">{{<%= camelize(singleModel) %>.id ? 'Save' : 'Create'}}</button>
+    </ng-container>
   </form>
 </mat-card>

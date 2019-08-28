@@ -155,7 +155,7 @@ describe('Schematic: List with Create dialog from standalone', () => {
       .runSchematicAsync('list', options, appTree)
       .toPromise();
 
-    assert(tree.files.includes(BASE_PATH + '/src/app/components/list/create-list/create-list.component.ts'));
+    assert(tree.files.includes(BASE_PATH + '/src/app/components/create-list/create-list.component.ts'));
   });
 });
 
@@ -197,17 +197,17 @@ describe('Schematic: List with Create page from standalone', () => {
       .runSchematicAsync('list', options, appTree)
       .toPromise();
 
-    assert(tree.files.includes(BASE_PATH + '/src/app/components/list/create-list/create-list.component.ts'));
+    assert(tree.files.includes(BASE_PATH + '/src/app/views/create-list/create-list.component.ts'));
   });
 
   it('should export create/edit list component', async () => {
-    const content = appTree.readContent(BASE_PATH + '/src/app/components/list/create-list/index.ts');
+    const content = appTree.readContent(BASE_PATH + '/src/app/views/create-list/index.ts');
     assert(content.indexOf("export * from './create-list.component';") > -1);
   });
 
   it('should be imported into module', async () => {
     const content = appTree.readContent(BASE_PATH + '/src/app/app.module.ts');
 
-    assert(content.indexOf("import { CreateListComponent } from './components/list/create-list'") > -1);
+    assert(content.indexOf("import { CreateListComponent } from './views/create-list'") > -1);
   });
 });

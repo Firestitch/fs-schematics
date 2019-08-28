@@ -459,7 +459,8 @@ function addModuleDeclaration(host: Tree, options: ModuleOptions) {
 }
 
 function addDialogToComponent(host: Tree, options: OptionsInterface) {
-  const componentFullPath = `${options.componentPath}/${options.parentName}.component.ts`;
+  const componentPath = options.parentType === 'component' ? 'components' : 'views';
+  const componentFullPath = `${options.path}/${componentPath}/${options.parentName}/${options.parentName}.component.ts`;
 
   const text = host.read(componentFullPath);
 
@@ -469,12 +470,18 @@ function addDialogToComponent(host: Tree, options: OptionsInterface) {
   const sourceText = text.toString('utf-8');
   const source = ts.createSourceFile(componentFullPath, sourceText, ts.ScriptTarget.Latest, true);
 
+  const relativePathToComponent = options.parentType === 'component'
+    ? `../${options.name}`
+    : '../../components';
 
   const changes = addDialogToComponentMetadata(
     source,
     componentFullPath,
     options.parentName || '',
-    options.name || '');
+    options.name || '',
+    options.singleModel,
+    relativePathToComponent
+  );
 
   const declarationRecorder = host.beginUpdate(componentFullPath);
   for (const change of changes) {

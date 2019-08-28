@@ -13,7 +13,7 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 })
 export class <%= classify(name) %>Component implements OnInit {
 
-  public <%= camelize(singleModel) %>: any = {};
+  public <%= camelize(singleModel) %>: any = null;
   public routeObserver = new RouteObserver(this._route, '<%= dasherize(name) %>');
 
   constructor(private _route: ActivatedRoute,
@@ -33,7 +33,7 @@ export class <%= classify(name) %>Component implements OnInit {
   }
 
   public save() {
-    this.<%= camelize(serviceName) %>.save(this.<%= camelize(singleModel) %>)
+    this._<%= camelize(serviceName) %>.save(this.<%= camelize(singleModel) %>)
       .subscribe(<%= camelize(singleModel) %> => {
         this._fsMessage.success('Saved Changes');
         if (!this.<%= camelize(singleModel) %>.id) {

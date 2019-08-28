@@ -62,9 +62,9 @@ export function createOrEdit(options: any): Rule {
 
     options.componentPath = getComponentPath(tree, options).path;
 
-    if (options.parentName) {
-      options.componentPath = `${options.componentPath}/${options.parentName}`;
-    }
+    // if (options.parentName) {
+    //   options.componentPath = `${options.componentPath}/${options.parentName}`;
+    // }
 
     if (!options.serviceName) {
       options.serviceName = getServiceClassName(tree, options.servicePath + '/' + options.service);
@@ -97,7 +97,7 @@ export function createOrEdit(options: any): Rule {
         mergeWith(templateSource),
         addDeclarationToNgModule(customOptions, false),
         addEntryComponentDeclarationToNgModule(customOptions, false),
-        options.parentName ? addDialogToParentComponent(options) : noop(),
+        options.parentName && options.parentType ? addDialogToParentComponent(options) : noop(),
         updateIndexFile(options, ExpansionType.Component),
       ]))
     ]);

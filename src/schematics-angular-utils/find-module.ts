@@ -23,6 +23,7 @@ export interface ModuleOptions {
   mode?: string;
   singleName?: string;
   componentPath?: string;
+  parentType?: string;
 }
 
 

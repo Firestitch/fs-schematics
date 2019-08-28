@@ -56,7 +56,6 @@ export function getRootPath(tree: Tree, options): { path: string } {
  * @returns {{path}}
  */
 export function getComponentPath(tree: Tree, options): { path: string } {
-  const dir = tree.getDir(`${options.path}`);
   let path = options.path;
 
   if (options.type && options.type === 'view') {
