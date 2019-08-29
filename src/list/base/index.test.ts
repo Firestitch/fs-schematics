@@ -36,7 +36,7 @@ const optionsForComponent = {
   ...defaultOptions,
   path: '/projects/application/src/app',
   module: 'app.module.ts',
-  type: 'component',
+  routableComponent: false,
   name: 'test',
 };
 
@@ -44,7 +44,7 @@ const optionsForView = {
   ...defaultOptions,
   path: '/projects/application/src/app',
   module: 'app.module.ts',
-  type: 'view',
+  routableComponent: true,
   name: 'test',
 };
 

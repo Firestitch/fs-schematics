@@ -56,10 +56,13 @@ export function base(options: any): Rule {
     config.routingModule = config.module.replace('.module.ts', '-routing.module.ts');
     config.module = `${config.path}/${config.module}`;
     config.routingModule = `${config.path}/${config.routingModule}`;
+    config.type = config.routableComponent === 'true' || config.routableComponent === true
+      ? 'view'
+      : 'component';
 
     const indexFileExists = tree.exists(`${config.path}/index.ts`);
 
-    config.componentPath = getComponentPath(tree, config).path;
+    config.componentPath = getComponentPath(options.path, options.routableComponent);
 
     const templateSource = apply(url('./files'), [
       filterTemplates(config),

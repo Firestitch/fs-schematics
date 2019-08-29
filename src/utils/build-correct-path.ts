@@ -51,18 +51,17 @@ export function getRootPath(tree: Tree, options): { path: string } {
 
 /**
  * Get current component's location (include nestedPath)
- * @param {Tree} tree
- * @param options
+ * @param path
+ * @param routable
  * @returns {{path}}
  */
-export function getComponentPath(tree: Tree, options): { path: string } {
-  let path = options.path;
+export function getComponentPath(path: string, routable: string | boolean): string {
 
-  if (options.type && options.type === 'view') {
+  if (routable === 'true' || routable === true) {
     path += '/views';
   } else {
     path += '/components';
   }
 
-  return { path };
+  return path ;
 }

@@ -37,6 +37,10 @@
     "pluralModel": {
       "type": "string",
       "description": ""
+    },
+    "routableComponent": {
+      "type": "boolean",
+      "description": "If true then move component to /views"
     }
   }
 }

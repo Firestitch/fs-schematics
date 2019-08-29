@@ -13,8 +13,8 @@
       "type": "string",
       "description": "Name of module file"
     },
-    "type": {
-      "type": "string",
+    "routableComponent": {
+      "type": "boolean",
       "description": "Component or View type"
     },
     "name": {

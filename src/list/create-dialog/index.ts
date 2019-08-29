@@ -60,7 +60,7 @@ export function createOrEdit(options: any): Rule {
     options.module = findModuleFromOptions(tree, options, true);
     options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
 
-    options.componentPath = getComponentPath(tree, options).path;
+    options.componentPath = getComponentPath(options.path, options.routableCreateComponent);
 
     // if (options.parentName) {
     //   options.componentPath = `${options.componentPath}/${options.parentName}`;

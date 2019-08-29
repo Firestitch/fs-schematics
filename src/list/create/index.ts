@@ -63,7 +63,11 @@ export function createOrEdit(options: any): Rule {
     options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
     options.isRouting = tree.exists(options.routingModule);
 
-    options.componentPath = options.path + '/views';
+    options.type = options.routableComponent === 'true' || options.routableComponent === true
+      ? 'view'
+      : 'component';
+
+    options.componentPath = getComponentPath(options.path, options.routableCreateComponent);
 
     // if (options.parentName) {
     //   options.componentPath = `${options.componentPath}/${options.parentName}`;

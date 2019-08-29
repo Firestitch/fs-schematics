@@ -38,19 +38,7 @@ const optionsForComponent = {
   ...defaultOptions,
   path: BASE_PATH + '/src/app',
   module: 'app.module.ts',
-  type: 'component',
-  name: 'list',
-  service: 'test.service.ts',
-  servicePath: BASE_PATH + '/src/app/services',
-  singleModel: 'model',
-  pluralModel: 'models'
-};
-
-const optionsForView = {
-  ...defaultOptions,
-  path: BASE_PATH + '/src/app',
-  module: 'app.module.ts',
-  type: 'view',
+  routableComponent: false,
   name: 'list',
   service: 'test.service.ts',
   servicePath: BASE_PATH + '/src/app/services',
@@ -191,7 +179,8 @@ describe('Schematic: List with Create page from standalone', () => {
     const options = {
       ...optionsForComponent,
       mode: 'full',
-      singleName: 'create-list'
+      singleName: 'create-list',
+      routableCreateComponent: true,
     };
     const tree = await runner
       .runSchematicAsync('list', options, appTree)

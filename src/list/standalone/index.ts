@@ -81,7 +81,11 @@ export function list(options: ListOptions): Rule {
     config.create = config.create || false;
     config.edit = config.edit || false;
 
-    config.componentPath = getComponentPath(tree, config).path;
+    config.type = config.routableComponent === 'true' || config.routableComponent === true
+      ? 'view'
+      : 'component';
+
+    config.componentPath = getComponentPath(options.path, options.routableComponent);
 
     config.serviceName = getServiceClassName(tree, config.servicePath + '/' + config.service) || '';
 
@@ -118,6 +122,7 @@ export function list(options: ListOptions): Rule {
       pluralModel: config.pluralModel,
       secondLevel: true,
       nestedPath: config.nestedPath,
+      routableCreateComponent: config.routableCreateComponent,
     };
 
 

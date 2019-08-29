@@ -11,4 +11,6 @@ export interface ListOptions {
   pluralModel?: string;
   servicePath?: string;
   singleName?: string;
+  routableComponent?: string | boolean;
+  routableCreateComponent?: string | boolean
 }
