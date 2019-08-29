@@ -92,12 +92,14 @@ export function createOrEdit(options: any): Rule {
       move(options.componentPath)
     ]);
 
+    const addToParent = options.parentName && options.parentType && options.parentType !== 'none';
+
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
         addDeclarationToNgModule(customOptions, false),
         addEntryComponentDeclarationToNgModule(customOptions, false),
-        options.parentName && options.parentType ? addDialogToParentComponent(options) : noop(),
+        addToParent ? addDialogToParentComponent(options) : noop(),
         updateIndexFile(options, ExpansionType.Component),
       ]))
     ]);
