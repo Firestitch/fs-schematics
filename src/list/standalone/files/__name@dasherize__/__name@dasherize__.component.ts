@@ -17,12 +17,12 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 })
 export class <%= classify(name) %>Component implements OnInit {
   @ViewChild('<%=classify(name)%>List')
+  public <%=camelize(name)%>List: FsListComponent;
 
-  public list: FsListComponent;
   public config: FsListConfig;
 
   constructor(private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
-              private _fsNavService: FsNavService,<% if (mode === 'full') { %>
+              private _navService: FsNavService,<% if (mode === 'full') { %>
               private _route: ActivatedRoute,
               private _router: Router,<% } %>
   ) {}
@@ -42,7 +42,7 @@ export class <%= classify(name) %>Component implements OnInit {
         {
           label: 'Create <%= capitalize(singleModel) %>',
           click: (event) => {<% if (mode === 'full') { %>
-            this._router.navigate(['../<%= dasherize(singleName) %>'], { relativeTo: this._route }); <% } if (mode === 'dialog') { %>
+            this._router.navigate(['../<%= dasherize(singleName) %>'], { relativeTo: this._route });<%} if (mode === 'dialog') {%>
             this.openDialog({})<%}%>
           }
         }
@@ -79,7 +79,7 @@ export class <%= classify(name) %>Component implements OnInit {
   }
 
   private setTitle() {
-    this._fsNavService.setTitle('<%= capitalize(name) %>');
+    this._navService.setTitle('<%= capitalize(name) %>');
   }
 
 }

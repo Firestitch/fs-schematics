@@ -30,7 +30,7 @@ export class <%= classify(name) %>Component implements OnInit {
     this._<%= camelize(serviceName) %>.save(this.<%= camelize(singleModel) %>)
       .subscribe(<%= camelize(singleModel) %> => {
         this._message.success('Saved Changes');
-        this._dialogRef.close();
+        this._dialogRef.close(<%= camelize(singleModel) %>);
     });
   }
 }

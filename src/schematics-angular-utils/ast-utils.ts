@@ -520,8 +520,19 @@ export function addDialogToComponentMetadata(
       data: { ${camelize(singleModelName)}: ${camelize(singleModelName)} }
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(response => {
+      let update = false;
 
+      if (response) {
+        update = this.${camelize(name)}List.updateData(response,
+          (data: any) => {
+            return data.id === response.id;
+          });
+      }
+
+      if (!update) {
+        this.${camelize(name)}List.reload();
+      }
     });
   }\n
 `;
@@ -545,7 +556,8 @@ export function addDialogToComponentMetadata(
  * into NgModule declarations. It also imports the component.
  */
 export function addDeclarationToModule(source: ts.SourceFile,
-                                       modulePath: string, classifiedName: string,
+                                       modulePath: string,
+                                       classifiedName: string,
                                        importPath: string): Change[] {
   return addSymbolToNgModuleMetadata(
     source, modulePath, 'declarations', classifiedName, importPath);
