@@ -16,7 +16,7 @@ export class <%= classify(name) %>Component implements OnInit {
   public <%= camelize(singleModel) %> = null;
 
   constructor(private _dialogRef: MatDialogRef<<%= classify(name) %>Component>,
-              private _fsMessage: FsMessage,
+              private _message: FsMessage,
               private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
               @Inject(MAT_DIALOG_DATA) public data) {
   }
@@ -29,7 +29,7 @@ export class <%= classify(name) %>Component implements OnInit {
   public save() {
     this._<%= camelize(serviceName) %>.save(this.<%= camelize(singleModel) %>)
       .subscribe(<%= camelize(singleModel) %> => {
-        this._fsMessage.success('Saved Changes');
+        this._message.success('Saved Changes');
         this._dialogRef.close();
     });
   }

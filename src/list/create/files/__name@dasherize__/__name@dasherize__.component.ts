@@ -19,8 +19,8 @@ export class <%= classify(name) %>Component implements OnInit {
   constructor(private _route: ActivatedRoute,
               private _router: Router,
               private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
-              private _fsMessage: FsMessage,
-              private _fsNavService: FsNavService) {
+              private _message: FsMessage,
+              private _navService: FsNavService) {
 
   }
 
@@ -35,14 +35,14 @@ export class <%= classify(name) %>Component implements OnInit {
   public save() {
     this._<%= camelize(serviceName) %>.save(this.<%= camelize(singleModel) %>)
       .subscribe(<%= camelize(singleModel) %> => {
-        this._fsMessage.success('Saved Changes');
+        this._message.success('Saved Changes');
         if (!this.<%= camelize(singleModel) %>.id) {
-          this._router.navigate([<%= camelize(singleModel)%>.id], { relativeTo: this.route });
+          this._router.navigate([<%= camelize(singleModel)%>.id], { relativeTo: this._route });
         }
     })
   }
 
   private setTitle() {
-    this._fsNavService.setTitle(this.<%= camelize(singleModel) %>.id ? 'Edit <%= capitalize(singleModel)%>' : 'Create <%= capitalize(singleModel)%>');
+    this._navService.setTitle(this.<%= camelize(singleModel) %>.id ? 'Edit <%= capitalize(singleModel)%>' : 'Create <%= capitalize(singleModel)%>');
   }
 }
