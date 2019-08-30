@@ -2,8 +2,6 @@ import { Component, Inject, OnInit } from '@angular/core';
 
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
-import { of } from 'rxjs';
-
 import { FsMessage } from '@firestitch/message';
 
 import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
@@ -15,15 +13,22 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 export class <%= classify(name) %>Component implements OnInit {
   public <%= camelize(singleModel) %> = null;
 
-  constructor(private _dialogRef: MatDialogRef<<%= classify(name) %>Component>,
-              private _message: FsMessage,
-              private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
-              @Inject(MAT_DIALOG_DATA) public data) {
-  }
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data,
+    private _dialogRef: MatDialogRef<<%= classify(name) %>Component>,
+    private _message: FsMessage,
+    private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
+  ) {}
 
   public ngOnInit() {
-    (this.data.<%= camelize(singleModel) %>.id ?  this._<%= camelize(serviceName) %>.get(this.data.<%= camelize(singleModel) %>.id) : of(this.data.<%= camelize(singleModel) %>))
-      .subscribe(response => this.<%= camelize(singleModel) %> = Object.assign({}, this._<%= camelize(serviceName) %>.create(response)));
+    if (this.data.<%= camelize(singleModel) %>.id) {
+      this._<%= camelize(serviceName) %>.get(this.data.<%= camelize(singleModel) %>.id)
+        .subscribe((response) => {
+          this.<%= camelize(singleModel) %> = response;
+        });
+    } else {
+      this.<%= camelize(singleModel) %> = Object.assign({}, this.data.<%= camelize(singleModel) %>);
+    }
   }
 
   public save() {
@@ -31,6 +36,6 @@ export class <%= classify(name) %>Component implements OnInit {
       .subscribe(<%= camelize(singleModel) %> => {
         this._message.success('Saved Changes');
         this._dialogRef.close(<%= camelize(singleModel) %>);
-    });
+      });
   }
 }

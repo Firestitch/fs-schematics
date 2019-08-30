@@ -16,13 +16,13 @@ export class <%= classify(name) %>Component implements OnInit {
   public <%= camelize(singleModel) %>: any = null;
   public routeObserver = new RouteObserver(this._route, '<%= dasherize(name) %>');
 
-  constructor(private _route: ActivatedRoute,
-              private _router: Router,
-              private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
-              private _message: FsMessage,
-              private _navService: FsNavService) {
-
-  }
+  constructor(
+    private _route: ActivatedRoute,
+    private _router: Router,
+    private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
+    private _message: FsMessage,
+    private _navService: FsNavService,
+  ) {}
 
   public ngOnInit() {
     this.routeObserver

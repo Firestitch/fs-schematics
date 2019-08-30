@@ -21,10 +21,11 @@ export class <%= classify(name) %>Component implements OnInit {
 
   public config: FsListConfig;
 
-  constructor(private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
-              private _navService: FsNavService,<% if (mode === 'full') { %>
-              private _route: ActivatedRoute,
-              private _router: Router,<% } %>
+  constructor(
+    private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
+    private _navService: FsNavService,<% if (mode === 'full') { %>
+    private _route: ActivatedRoute,
+    private _router: Router,<% } %>
   ) {}
 
   public ngOnInit() {
