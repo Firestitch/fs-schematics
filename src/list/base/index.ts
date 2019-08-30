@@ -24,6 +24,7 @@ import { Config } from './config';
 import { getComponentPath } from '../../utils/build-correct-path';
 import { ExpansionType } from '../../utils/models/expansion-type';
 import { getWorkspace } from '../../utils/get-workspace';
+import { addResolverSchematic } from '../../utils/add-resolver-schematic';
 
 
 function filterTemplates(options: any): Rule {
@@ -76,12 +77,15 @@ export function base(options: any): Rule {
 
 
     const isRoutingExists = tree.exists(config.routingModule);
+    const routable = config.routableComponent === 'true' || config.routableComponent === true;
+
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
         addDeclarationToNgModule(config, false),
         isRoutingExists && config.type === 'view' ? addDeclarationToRoutingModule(config) : noop(),
         indexFileExists ? updateIndexFile(config, ExpansionType.Component) : noop(),
+        routable ? addResolverSchematic(config) : noop(),
       ]))
     ]);
 

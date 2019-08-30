@@ -24,20 +24,25 @@ import {
 import { buildRelativePath } from '../../schematics-angular-utils/find-module';
 import { ExpansionType } from '../../utils/models/expansion-type';
 import { getWorkspace } from '../../utils/get-workspace';
+import { getServiceClassName } from '../../utils/get-service-class-name';
 
 export function create(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
-    const resolveFolder = '/shared/resolves';
+    const resolveFolder = '/resolves';
     const workspace = getWorkspace(tree);
     if (!options.project) {
       options.project = Object.keys(workspace.projects)[0];
     }
 
-    options.path = options.path + resolveFolder;
+    options.componentPath = options.path + resolveFolder;
     options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
     options.relativeServicePath = buildRelativePathForService(options);
+    options.serviceName = getServiceClassName(
+      tree,
+      options.servicePath + '/' + options.service + '.service.ts'
+    ) || '';
 
-    const isIndexFileExists = tree.exists(`${options.path}/index.ts`);
+    const isIndexFileExists = tree.exists(`${options.componentPath}/index.ts`);
 
     const templateSource = apply(url('./files'), [
       isIndexFileExists ? filter((path) => path.indexOf('index.ts') === -1) : noop(),
@@ -46,9 +51,9 @@ export function create(options: any): Rule {
         ...options
       }),
       () => {
-        console.debug('path', options.path)
+        console.debug('path', options.componentPath)
       },
-      move(options.path)
+      move(options.componentPath)
     ]);
 
     const isRoutingExists = tree.exists(options.routingModule);
@@ -67,7 +72,7 @@ export function create(options: any): Rule {
 }
 
 function buildRelativePathForService(options) {
-  const resolverFile = `${options.path}/${dasherize(options.name)}.resolve.ts`;
+  const resolverFile = `${options.componentPath}/${dasherize(options.name)}.resolve.ts`;
   const serviceFile = `${options.servicePath}/${options.service}.service.ts`;
 
   return buildRelativePath(resolverFile, serviceFile).replace('.ts', '');

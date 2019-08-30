@@ -27,6 +27,7 @@ import { buildRelativePathForService, getComponentPath } from '../../utils/build
 import { ListOptions } from './schema';
 import { Config } from './config';
 import { getServiceClassName } from '../../utils/get-service-class-name';
+import { addResolverSchematic } from '../../utils/add-resolver-schematic';
 
 
 export function getWorkspacePath(host: Tree): string {
@@ -142,12 +143,15 @@ export function list(options: ListOptions): Rule {
     }
 
     const isRoutingExists = tree.exists(config.routingModule);
+    const routable = options.routableComponent === 'true' || options.routableComponent === true;
+
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
         addDeclarationToNgModule(config, false),
         isRoutingExists && config.type === 'view' ? addDeclarationToRoutingModule(config) : noop(),
         updateIndexFile(config, ExpansionType.Component),
+        routable ? addResolverSchematic(config) : noop(),
         ...extrenalSchematics,
       ])),
     ]);

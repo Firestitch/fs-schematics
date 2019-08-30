@@ -30,6 +30,7 @@ import {
 } from '../../utils/build-correct-path';
 import { getWorkspace } from '../../utils/get-workspace';
 import { getServiceClassName } from '../../utils/get-service-class-name';
+import { addResolverSchematic } from '../../utils/add-resolver-schematic';
 
 
 function filterTemplates(options: any): Rule {
@@ -93,6 +94,7 @@ export function createOrEdit(options: any): Rule {
     ]);
 
     const addToParent = options.parentName && options.parentType && options.parentType !== 'none';
+    const routable = options.routableCreateComponent === 'true' || options.routableCreateComponent === true;
 
     const rule = chain([
       branchAndMerge(chain([
@@ -101,6 +103,7 @@ export function createOrEdit(options: any): Rule {
         addEntryComponentDeclarationToNgModule(customOptions, false),
         addToParent ? addDialogToParentComponent(options) : noop(),
         updateIndexFile(options, ExpansionType.Component),
+        routable ? addResolverSchematic(options) : noop(),
       ]))
     ]);
 

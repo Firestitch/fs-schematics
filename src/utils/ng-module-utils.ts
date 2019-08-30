@@ -204,7 +204,7 @@ function createResolverToRoutingContext(host: Tree, options: ModuleOptions) {
   const sourceText = text.toString('utf-8');
   result.source = ts.createSourceFile(options.routingModule, sourceText, ts.ScriptTarget.Latest, true);
 
-  const resolverPath = options.path;
+  const resolverPath = options.componentPath;
   result.relativePath = buildRelativePath(options.module || '', resolverPath);
   result.classifiedName = stringUtils.classify(`${options.name}Resolve`);
   return result;
@@ -225,7 +225,7 @@ function createResolverToModuleContext(host: Tree, options: ModuleOptions) {
   const sourceText = text.toString('utf-8');
   result.source = ts.createSourceFile(options.module, sourceText, ts.ScriptTarget.Latest, true);
 
-  const resolverPath = options.path;
+  const resolverPath = options.componentPath;
   result.relativePath = buildRelativePath(options.module || '', resolverPath);
   result.classifiedName = stringUtils.classify(`${options.name}Resolve`);
   return result;

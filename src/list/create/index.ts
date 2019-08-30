@@ -25,6 +25,7 @@ import {
 } from '../../utils/build-correct-path';
 import { getWorkspacePath } from '../../utils/get-workspace-path';
 import { getServiceClassName } from '../../utils/get-service-class-name';
+import { addResolverSchematic } from '../../utils/add-resolver-schematic';
 
 
 export function getWorkspace(host: Tree): WorkspaceSchema {
@@ -92,26 +93,7 @@ export function createOrEdit(options: any): Rule {
       move(options.componentPath)
     ]);
 
-    // const externalSchematics: any = [];
-
-    // const childSchematicOptions = {
-    //   project: options.project,
-    //   path: options.path,
-    //   module: options.module,
-    //   name: options.name,
-    //   service: options.service,
-    //   servicePath: options.servicePath,
-    // };
-
-
-    // if (options.isRouting) {
-    //   // externalSchematics.push(
-    //   //   schematic(
-    //   //     'resolver',
-    //   //     childSchematicOptions
-    //   //   )
-    //   // );
-    // }
+    const routable = options.routableCreateComponent === 'true' || options.routableCreateComponent === true;
 
     const rule = chain([
       branchAndMerge(chain([
@@ -119,7 +101,7 @@ export function createOrEdit(options: any): Rule {
         addDeclarationToNgModule(options, false),
         options.isRouting && options.type === 'view' ? addDeclarationToRoutingModule(options) : noop(),
         updateIndexFile(options, ExpansionType.Component),
-        // ...externalSchematics,
+        routable ? addResolverSchematic(options) : noop(),
       ]))
     ]);
 

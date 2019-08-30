@@ -3,19 +3,23 @@ import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
 
 import { RouteSubject } from '@firestitch/core';
 
-import { <%= classify(service) %>Service } from '<%= relativeServicePath %>';
+import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 
 
 @Injectable()
 export class <%= classify(name) %>Resolve implements Resolve<any> {
 
-  constructor(private <%= camelize(service) %>Service: <%= classify(service) %>Service,) {}
+  constructor(private _<%= camelize(serviceName)%>: <%= classify(serviceName) %>) {}
 
   public resolve(route: ActivatedRouteSnapshot) {
     const routeSubject = new RouteSubject();
+
     if (!route.params.id) {
       return routeSubject.next({});
     }
-    return routeSubject.observe(this.<%= camelize(service) %>Service.get(route.params.id));
+
+    const query = {};
+
+    return routeSubject.observe(this._<%= camelize(serviceName) %>.get(route.params.id, query));
   }
 }
