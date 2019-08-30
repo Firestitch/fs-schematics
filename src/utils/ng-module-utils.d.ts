@@ -1,0 +1,12 @@
+import { Rule } from '@angular-devkit/schematics';
+import { ModuleOptions } from '../schematics-angular-utils/find-module';
+import { ExpansionType, OptionsInterface } from './models/';
+export declare function addDeclarationToNgModule(options: ModuleOptions, exports: boolean): Rule;
+export declare function addModuleDeclarationToNgModule(options: ModuleOptions): Rule;
+export declare function addEntryComponentDeclarationToNgModule(options: ModuleOptions, exports: boolean): Rule;
+export declare function addDeclarationToRoutingModule(options: ModuleOptions): Rule;
+export declare function addServiceProviderToNgModule(options: OptionsInterface): Rule;
+export declare function addResolveDeclarationToNgModule(options: OptionsInterface): Rule;
+export declare function addDialogToParentComponent(options: ModuleOptions): Rule;
+export declare function addResolverToRouting(options: ModuleOptions): Rule;
+export declare function updateIndexFile(options: ModuleOptions, expansionType: ExpansionType): (host: import("../../../../../../../../Users/basters/dev/frontend/firestitch/schematics/node_modules/@angular-devkit/schematics/src/tree/interface").Tree) => import("../../../../../../../../Users/basters/dev/frontend/firestitch/schematics/node_modules/@angular-devkit/schematics/src/tree/interface").Tree;
