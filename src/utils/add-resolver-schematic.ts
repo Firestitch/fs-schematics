@@ -5,7 +5,7 @@ export function addResolverSchematic(options) {
     project: options.project,
     path: options.path,
     module: options.module,
-    name: options.name,
+    name: options.singleModel,
     service: options.service,
     servicePath: options.servicePath,
   };

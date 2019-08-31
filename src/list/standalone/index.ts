@@ -143,7 +143,6 @@ export function list(options: ListOptions): Rule {
     }
 
     const isRoutingExists = tree.exists(config.routingModule);
-    const routable = options.routableComponent === 'true' || options.routableComponent === true;
 
     const rule = chain([
       branchAndMerge(chain([
@@ -151,7 +150,7 @@ export function list(options: ListOptions): Rule {
         addDeclarationToNgModule(config, false),
         isRoutingExists && config.type === 'view' ? addDeclarationToRoutingModule(config) : noop(),
         updateIndexFile(config, ExpansionType.Component),
-        routable ? addResolverSchematic(config) : noop(),
+        // config.routableCreateComponent ? addResolverSchematic(config) : noop(),
         ...extrenalSchematics,
       ])),
     ]);
