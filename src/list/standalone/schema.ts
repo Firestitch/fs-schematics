@@ -3,7 +3,7 @@ export interface ListOptions {
   create: boolean;
   edit: boolean;
   ordering: boolean;
-  dialog: boolean;
+  dialog?: boolean;
   module?: string;
   mode?: string;
   path?: string;

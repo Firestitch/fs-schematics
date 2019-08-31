@@ -1,1 +1,0 @@
-export declare function addResolverSchematic(options: any): import("../../../../../../../../Users/basters/dev/frontend/firestitch/schematics/node_modules/@angular-devkit/schematics/src/engine/interface").Rule;

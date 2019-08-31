@@ -39,7 +39,7 @@ export function create(options: any): Rule {
     options.relativeServicePath = buildRelativePathForService(options);
     options.serviceName = getServiceClassName(
       tree,
-      options.servicePath + '/' + options.service + '.service.ts'
+      options.servicePath + '/' + options.service
     ) || '';
 
     const isIndexFileExists = tree.exists(`${options.componentPath}/index.ts`);
@@ -73,7 +73,7 @@ export function create(options: any): Rule {
 
 function buildRelativePathForService(options) {
   const resolverFile = `${options.componentPath}/${dasherize(options.name)}.resolve.ts`;
-  const serviceFile = `${options.servicePath}/${options.service}.service.ts`;
+  const serviceFile = `${options.servicePath}/${options.service}`;
 
   return buildRelativePath(resolverFile, serviceFile).replace('.ts', '');
 }
