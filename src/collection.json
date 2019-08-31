@@ -5,13 +5,13 @@
       "description": "Create simple list component",
       "factory": "./list/standalone/index#list"
     },
-    "list-create": {
+    "create-edit-page": {
       "description": "A blank schematic.",
-      "factory": "./list/create/index#createOrEdit"
+      "factory": "./list/create-edit-page/index#createOrEdit"
     },
-    "list-create-dialog": {
+    "create-edit-dialog": {
       "description": "A blank schematic.",
-      "factory": "./list/create-dialog/index#createOrEdit"
+      "factory": "./list/create-edit-dialog/index#createOrEdit"
     },
     "service": {
       "description": "A blank schematic service.",

@@ -130,14 +130,14 @@ export function list(options: ListOptions): Rule {
     if (config.mode === 'full') {
       extrenalSchematics.push(
         schematic(
-          'list-create',
+          'create-edit-page',
           childSchematicOptions
         )
       )
     } else if (config.mode === 'dialog') {
       extrenalSchematics.push(
         schematic(
-          'list-create-dialog',
+          'create-edit-dialog',
           childSchematicOptions
         ));
     }
