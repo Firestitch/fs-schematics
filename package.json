@@ -3,7 +3,8 @@
   "version": "7.3.0",
   "description": "",
   "scripts": {
-    "build": "npm-run-all compile copy:collection copy:files",
+    "build": "npm-run-all clean:dist compile copy:collection copy:files",
+    "clean:dist": "npx rimraf -- dist",
     "compile": "tsc -p tsconfig.json",
     "package": "npm run build && npm run test",
     "package:publish": "npm publish",
@@ -27,14 +28,15 @@
     "@types/jasmine": "^3.4.0",
     "@types/mocha": "^5.2.7",
     "@types/node": "^10.14.8",
+    "copyfiles": "^2.1.1",
     "jasmine": "^3.4.0",
     "mocha": "^6.2.0",
     "npm-run-all": "^4.1.5",
     "nyc": "^14.1.1",
+    "rimraf": "^3.0.0",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
-    "typescript": "^2.5.2",
-    "copyfiles": "^2.1.1"
+    "typescript": "^2.5.2"
   },
   "peerDependencies": {
     "@angular-devkit/core": "^7.3.8",
