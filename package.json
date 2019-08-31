@@ -9,7 +9,7 @@
     "package:publish": "npm publish",
     "copy:collection": "copyfiles -f src/collection.json ./dist",
     "copy:files": "copyfiles --up 1 src/**/files/**/* ./dist",
-    "test": "nyc mocha dist/**/*.test.ts --require ts-node/register --require source-map-support/register"
+    "test": "nyc mocha dist/**/*.test.js --require ts-node/register --require source-map-support/register"
   },
   "keywords": [
     "schematics"
