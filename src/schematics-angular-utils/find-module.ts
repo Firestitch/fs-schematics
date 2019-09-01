@@ -101,7 +101,6 @@ export function findModule(host: Tree, generateDir: string): Path {
   const routingModuleRe = /-routing\.module\.ts/;
 
   while (dir) {
-    console.log('dir ', dir.path);
 
     const matches = dir.subfiles.filter(p => moduleRe.test(p) && !routingModuleRe.test(p));
 

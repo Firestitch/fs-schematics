@@ -27,7 +27,6 @@ import { buildRelativePathForService, getComponentPath } from '../../utils/build
 import { ListOptions } from './schema';
 import { Config } from './config';
 import { getServiceClassName } from '../../utils/get-service-class-name';
-import { addResolverSchematic } from '../../utils/add-resolver-schematic';
 
 
 export function getWorkspacePath(host: Tree): string {
@@ -122,6 +121,7 @@ export function list(options: ListOptions): Rule {
       singleModel: config.singleModel,
       pluralModel: config.pluralModel,
       secondLevel: true,
+      titledCreateComponent: config.titledCreateComponent,
       nestedPath: config.nestedPath,
       routableCreateComponent: config.routableCreateComponent,
     };
@@ -150,7 +150,6 @@ export function list(options: ListOptions): Rule {
         addDeclarationToNgModule(config, false),
         isRoutingExists && config.type === 'view' ? addDeclarationToRoutingModule(config) : noop(),
         updateIndexFile(config, ExpansionType.Component),
-        // config.routableCreateComponent ? addResolverSchematic(config) : noop(),
         ...extrenalSchematics,
       ])),
     ]);

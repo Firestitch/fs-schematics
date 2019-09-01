@@ -41,6 +41,10 @@
     "routableComponent": {
       "type": "boolean",
       "description": "If true then move component to /views"
+    },
+    "titledComponent": {
+      "type": "boolean",
+      "description": "If true then add the setTitle() function"
     }
   }
 }

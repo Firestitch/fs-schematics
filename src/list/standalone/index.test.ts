@@ -186,7 +186,6 @@ describe('Schematic: List with Create page from standalone', () => {
       .runSchematicAsync('list', options, appTree)
       .toPromise();
 
-    console.log('fffssss', tree.files);
     assert(tree.files.includes(BASE_PATH + '/src/app/views/create-list/create-list.component.ts'));
   });
 

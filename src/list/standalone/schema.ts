@@ -13,4 +13,5 @@ export interface ListOptions {
   singleName?: string;
   routableComponent?: string | boolean;
   routableCreateComponent?: string | boolean
+  titledComponent?: boolean;
 }

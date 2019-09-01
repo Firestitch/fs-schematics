@@ -14,12 +14,13 @@ export class <%= classify(name) %>Resolve implements Resolve<any> {
   public resolve(route: ActivatedRouteSnapshot) {
     const routeSubject = new RouteSubject();
 
-    if (!route.params.id) {
+    if (!route.params.<%= name %>_id) {
       return routeSubject.next({});
     }
 
     const query = {};
-
-    return routeSubject.observe(this._<%= camelize(serviceName) %>.get(route.params.id, query));
+    return routeSubject.observe(this._<%= camelize(serviceName) %>.get(route.params.<%= name %>_id, query));
   }
 }
+
+

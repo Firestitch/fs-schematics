@@ -107,7 +107,6 @@ export function createOrEdit(options: any): Rule {
       ]))
     ]);
 
-
     return rule(tree, _context);
   };
 }

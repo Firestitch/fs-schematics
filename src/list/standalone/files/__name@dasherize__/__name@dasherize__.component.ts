@@ -4,11 +4,10 @@ import { Router, ActivatedRoute } from '@angular/router';<% } %>
 import { map } from 'rxjs/operators';
 
 import { FsListComponent, FsListConfig } from '@firestitch/list';
-import { ItemType } from '@firestitch/filter';
+import { ItemType } from '@firestitch/filter';<% if (titledComponent) { %>
 import { FsNavService } from '@firestitch/nav';
-
+<% } %>
 import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
-
 
 
 @Component({
@@ -16,21 +15,22 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
   styleUrls: ['./<%=dasherize(name)%>.component.scss']
 })
 export class <%= classify(name) %>Component implements OnInit {
+
   @ViewChild('<%=classify(name)%>List')
   public <%=camelize(name)%>List: FsListComponent;
 
   public config: FsListConfig;
 
   constructor(
-    private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
-    private _navService: FsNavService,<% if (mode === 'full') { %>
+    private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,<% if (titledComponent) { %>
+    private _navService: FsNavService,<% } %><% if (mode === 'full') { %>
     private _route: ActivatedRoute,
     private _router: Router,<% } %>
   ) {}
 
-  public ngOnInit() {
-    this.setTitle();
-
+  public ngOnInit() {<% if (titledComponent) { %>
+    this._setTitle();
+<% } %>
     this.config = {
       filters: [
         {
@@ -77,10 +77,9 @@ export class <%= classify(name) %>Component implements OnInit {
         }
       }
     };
-  }
+  }<% if (titledComponent) { %>
 
-  private setTitle() {
+  private _setTitle() {
     this._navService.setTitle('<%= capitalize(name) %>');
-  }
-
+  }<% } %>
 }
