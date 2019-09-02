@@ -1,11 +1,11 @@
 <mat-card>
-  <form (fsForm)="save()" [fsSkeletonForm]="<%= camelize(singleModel) %>">
-    <ng-container *ngIf="<%= camelize(singleModel) %>">
+  <form (fsForm)="save()" [fsSkeletonForm]="<%= underscore(singleModel) %>">
+    <ng-container *ngIf="<%= underscore(singleModel) %>">
 
       <div fxLayout="column">
         <!-- <mat-form-field>
           <mat-select
-            [(ngModel)]="<%= camelize(singleModel) %>._id"
+            [(ngModel)]="<%= underscore(singleModel) %>._id"
             placeholder="Select"
             name="select">
               <mat-option
@@ -17,11 +17,11 @@
         </mat-form-field> -->
 
         <mat-form-field>
-          <input matInput placeholder="Name" [(ngModel)]="<%= camelize(singleModel) %>.name" name="name">
+          <input matInput placeholder="Name" [(ngModel)]="<%= underscore(singleModel) %>.name" name="name">
         </mat-form-field>
       </div>
 
-      <button mat-raised-button type="submit" color="primary">{{<%= camelize(singleModel) %>.id ? 'Save' : 'Create'}}</button>
+      <button mat-raised-button type="submit" color="primary">{{<%= underscore(singleModel) %>.id ? 'Save' : 'Create'}}</button>
     </ng-container>
   </form>
 </mat-card>

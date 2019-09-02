@@ -13,8 +13,8 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 })
 export class <%= classify(name) %>Component implements OnInit {
 
-  public <%= camelize(singleModel) %>: any = null;
-  public routeObserver = new RouteObserver(this._route, '<%= dasherize(name) %>');
+  public <%= underscore(singleModel) %>: any = null;
+  public routeObserver = new RouteObserver(this._route, '<%= underscore(singleModel) %>');
 
   constructor(
     private _route: ActivatedRoute,
@@ -26,23 +26,23 @@ export class <%= classify(name) %>Component implements OnInit {
 
   public ngOnInit() {
     this.routeObserver
-      .subscribe(<%= camelize(singleModel) %> => {
-        this.<%= camelize(singleModel) %> = <%= camelize(singleModel) %> || {};<% if(titledCreateComponent) { %>
+      .subscribe(response => {
+        this.<%= underscore(singleModel) %> = response || {};<% if(titledCreateComponent) { %>
         this._setTitle();<% } %>
       });
   }
 
   public save() {
-    this._<%= camelize(serviceName) %>.save(this.<%= camelize(singleModel) %>)
-      .subscribe(<%= camelize(singleModel) %> => {
+    this._<%= camelize(serviceName) %>.save(this.<%= underscore(singleModel) %>)
+      .subscribe(response => {
         this._message.success('Saved Changes');
-        if (!this.<%= camelize(singleModel) %>.id) {
-          this._router.navigate([<%= camelize(singleModel)%>.id], { relativeTo: this._route });
+        if (!this.<%= underscore(singleModel) %>.id) {
+          this._router.navigate(['../', response.id], { relativeTo: this._route });
         }
     })
   }
 <% if(titledCreateComponent) { %>
   private _setTitle() {
-    this._navService.setTitle(this.<%= camelize(singleModel) %>.id ? 'Edit <%= capitalize(singleModel)%>' : 'Create <%= capitalize(singleModel)%>');
+    this._navService.setTitle(this.<%= underscore(singleModel) %>.id ? 'Edit <%= capitalize(singleModel)%>' : 'Create <%= capitalize(singleModel)%>');
   }<% } %>
 }

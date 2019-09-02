@@ -11,7 +11,7 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
   styleUrls: ['./<%=dasherize(name)%>.component.scss']
 })
 export class <%= classify(name) %>Component implements OnInit {
-  public <%= camelize(singleModel) %> = null;
+  public <%= underscore(singleModel) %> = null;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data,
@@ -21,21 +21,21 @@ export class <%= classify(name) %>Component implements OnInit {
   ) {}
 
   public ngOnInit() {
-    if (this.data.<%= camelize(singleModel) %>.id) {
-      this._<%= camelize(serviceName) %>.get(this.data.<%= camelize(singleModel) %>.id)
+    if (this.data.<%= underscore(singleModel) %>.id) {
+      this._<%= underscore(serviceName) %>.get(this.data.<%= underscore(singleModel) %>.id)
         .subscribe((response) => {
-          this.<%= camelize(singleModel) %> = response;
+          this.<%= underscore(singleModel) %> = response;
         });
     } else {
-      this.<%= camelize(singleModel) %> = Object.assign({}, this.data.<%= camelize(singleModel) %>);
+      this.<%= underscore(singleModel) %> = Object.assign({}, this.data.<%= underscore(singleModel) %>);
     }
   }
 
   public save() {
-    this._<%= camelize(serviceName) %>.save(this.<%= camelize(singleModel) %>)
-      .subscribe(<%= camelize(singleModel) %> => {
+    this._<%= camelize(serviceName) %>.save(this.<%= underscore(singleModel) %>)
+      .subscribe(response => {
         this._message.success('Saved Changes');
-        this._dialogRef.close(<%= camelize(singleModel) %>);
+        this._dialogRef.close(response);
       });
   }
 }

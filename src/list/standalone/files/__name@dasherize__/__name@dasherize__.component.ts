@@ -41,9 +41,9 @@ export class <%= classify(name) %>Component implements OnInit {
       ],
       actions: [
         {
-          label: 'Create <%= capitalize(singleModel) %>',
+          label: 'Create',
           click: (event) => {<% if (mode === 'full') { %>
-            this._router.navigate(['../<%= dasherize(singleName) %>'], { relativeTo: this._route });<%} if (mode === 'dialog') {%>
+            this._router.navigate(['create'], { relativeTo: this._route });<%} if (mode === 'dialog') {%>
             this.openDialog({})<%}%>
           }
         }
@@ -64,7 +64,7 @@ export class <%= classify(name) %>Component implements OnInit {
       fetch: (query) => {
         return this._<%= camelize(serviceName) %>.gets(query, { key: null })
           .pipe(
-            map(response => ({ data: response.<%= pluralModel %>, paging: response.paging }))
+            map((response: any) => ({ data: response.<%= pluralModel %>, paging: response.paging }))
           );
       },
       restore: {

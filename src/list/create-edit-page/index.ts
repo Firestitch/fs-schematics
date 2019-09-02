@@ -14,7 +14,7 @@ import {
   noop,
   schematic,
 } from '@angular-devkit/schematics';
-import { strings} from '@angular-devkit/core';
+import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import { addDeclarationToNgModule, addDeclarationToRoutingModule, updateIndexFile } from '../../utils/ng-module-utils';
 import { findModuleFromOptions } from '../../schematics-angular-utils/find-module';

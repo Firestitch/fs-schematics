@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
-
+import { toNumber } from 'lodash-es';
 import { RouteSubject } from '@firestitch/core';
 
 import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
@@ -14,7 +14,7 @@ export class <%= classify(name) %>Resolve implements Resolve<any> {
   public resolve(route: ActivatedRouteSnapshot) {
     const routeSubject = new RouteSubject();
 
-    if (!route.params.<%= name %>_id) {
+    if (!toNumber(route.params.<%= name %>_id)) {
       return routeSubject.next({});
     }
 

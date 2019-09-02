@@ -5,8 +5,7 @@ import { FsApi } from '@firestitch/api';
 
 @Injectable()
 export class <%= classify(name) %><% if (type === 'service'){ %>Service<%} else {%>Data<%}%> {
-  constructor(private _api: FsApi) {
-  }
+  constructor(private _api: FsApi) {}
 
   public get(<%= name %>_id, query = {}): Observable<any> {
       return this._api.get(`<%= lowercasePluralName %>/${<%= name %>_id}`, query, { key: '<%= snakeCaseName %>' });
@@ -34,5 +33,4 @@ export class <%= classify(name) %><% if (type === 'service'){ %>Service<%} else 
     }
     return this.post(data);
   }
-
 }
