@@ -1,10 +1,31 @@
-<form (fsForm)="save()" [fsSkeleton]="<%= camelize(singleModel) %>">
+<form (fsForm)="save()" [fsSkeletonForm]="<%= camelize(singleModel) %>">
   <fs-dialog *ngIf="<%= camelize(singleModel) %>">
     <h1 mat-dialog-title>{{<%= camelize(singleModel) %>.id ? 'Edit <%= capitalize(singleModel) %>' : 'Create <%= capitalize(singleModel) %>'}}</h1>
     <div mat-dialog-content>
-      <mat-form-field>
-        <input matInput placeholder="Name" [(ngModel)]="<%= camelize(singleModel) %>.name" name="name">
-      </mat-form-field>
+
+      <div fxLayout="column">
+        <!-- <mat-form-field>
+          <mat-select
+            [(ngModel)]="<%= camelize(singleModel) %>._id"
+            placeholder="Select"
+            name="select">
+              <mat-option
+                *ngFor="let item of items"
+                [value]="item.id">
+                  {{ item.name }}
+              </mat-option>
+          </mat-select>
+        </mat-form-field> -->
+
+        <mat-form-field>
+          <input
+            matInput
+            placeholder="Name"
+            [(ngModel)]="<%= camelize(singleModel) %>.name"
+            name="name">
+        </mat-form-field>
+
+      </div>
     </div>
     <div mat-dialog-actions>
       <button mat-button type="submit" color="primary">{{<%= camelize(singleModel) %>.id ? 'Save' : 'Create'}}</button>
