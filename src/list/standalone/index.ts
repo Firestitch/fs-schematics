@@ -90,7 +90,6 @@ export function list(options: ListOptions): Rule {
     config.serviceName = getServiceClassName(tree, config.servicePath + '/' + config.service) || '';
 
     config.relativeServicePath = buildRelativePathForService(config);
-    config.service = config.service.replace('.service.ts', '');
 
     const templateSource = apply(url('./files'), [
       filterTemplates(config),
@@ -125,7 +124,6 @@ export function list(options: ListOptions): Rule {
       nestedPath: config.nestedPath,
       routableCreateComponent: config.routableCreateComponent,
     };
-
 
     if (config.mode === 'full') {
       extrenalSchematics.push(

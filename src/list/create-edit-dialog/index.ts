@@ -73,7 +73,6 @@ export function createOrEdit(options: any): Rule {
 
     if (!options.relativeServicePath) {
       options.relativeServicePath = buildRelativePathForService(options);
-      options.service = options.service.replace('.service.ts', '');
     }
 
 

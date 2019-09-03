@@ -12,7 +12,6 @@ import {
   SchematicsException,
   Tree,
   noop,
-  schematic,
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
 import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
@@ -80,7 +79,6 @@ export function createOrEdit(options: any): Rule {
 
     if (!options.relativeServicePath) {
       options.relativeServicePath = buildRelativePathForService(options);
-      options.service = options.service.replace('.service.ts', '');
     }
 
     const templateSource = apply(url('./files'), [

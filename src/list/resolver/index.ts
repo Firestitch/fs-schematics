@@ -8,13 +8,11 @@ import {
   noop,
   Rule,
   SchematicContext,
-  SchematicsException,
   template,
   Tree,
   url
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
-import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
 import { dasherize } from '@angular-devkit/core/src/utils/strings';
 import {
   addResolveDeclarationToNgModule,
@@ -41,6 +39,12 @@ export function create(options: any): Rule {
       tree,
       options.servicePath + '/' + options.service
     ) || '';
+
+    const isResolverExists = tree.exists(`${options.componentPath}/${options.name}.resolve.ts`);
+
+    if (isResolverExists) {
+      return noop();
+    }
 
     const isIndexFileExists = tree.exists(`${options.componentPath}/index.ts`);
 
