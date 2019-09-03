@@ -562,7 +562,7 @@ export function updateIndexFile(options: ModuleOptions, expansionType: Expansion
       context.source,
       targetPath,
       options.name,
-      exportPath
+      dasherize(exportPath)
     )];
 
     const exportRecorder = host.beginUpdate(targetPath);
