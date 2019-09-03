@@ -417,17 +417,17 @@ export function addRouteToExistingRoutes(
   const endComa = wildCardRoute ? ',' : '';
 
   const toInsert = ((options.mode === 'full') && options.secondLevel)
-    ? `  { path: '${url}', pathMatch: 'full', component: ${componentName},\n` +
+    ? `  { path: '', pathMatch: 'full', component: ${componentName},\n` +
       `    resolve: {\n ` +
       `      ${camelize(url)}: ${resolverName}\n` +
       `     }\n` +
       `  },\n` +
-      `  { path: '${url}/:id', component: ${componentName},\n` +
+      `  { path: ':id', component: ${componentName},\n` +
       `    resolve: {\n` +
       `     ${camelize(url)}: ${resolverName}\n` +
       `    }\n` +
       `  }${endComa}\n `
-    : `  { path: '${url}', component: ${componentName} }${endComa}\n`;
+    : `  { path: '', component: ${componentName} }${endComa}\n`;
 
   changes.push(
     new InsertChange(ngModulePath || '', insertPosition, toInsert),

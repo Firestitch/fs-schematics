@@ -30,27 +30,22 @@ export function create(options: any): Rule {
     const level = options.path.split('/')
       .filter((val) => !!val).length;
 
-    if (level > 1) {
-      const pathParts = options.path.split('/');
+    const pathParts = options.path.split('/');
 
-      const newPath = pathParts
-        .slice(2, pathParts.length - 1)
-        .reduce((acc, part) => {
-          acc.push(part);
+    const newPath = pathParts
+      .slice(2, pathParts.length - 1)
+      .reduce((acc, part) => {
+        acc.push(part);
+        return acc;
+      }, []);
 
-          return acc;
-        }, []);
-
-      options.path = [
-        'src',
-        ...pathParts.slice(0, 2),
-        ...newPath,
-      ]
-        .filter((part) => !!part)
-        .join('/');
-    } else {
-      options.path = 'src' + options.path;
-    }
+    options.path = [
+      'src',
+      ...pathParts.slice(0, 2),
+      ...newPath,
+    ]
+      .filter((part) => !!part)
+      .join('/');
 
     const templateSource = apply(url('./files'), [
       options.routing ? noop() : filter(path => !path.endsWith('-routing.module.ts')),
