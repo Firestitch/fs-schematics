@@ -27,6 +27,32 @@ export function create(options: any): Rule {
       options.project = Object.keys(workspace.projects)[0];
     }
 
+    const level = options.path.split('/')
+      .filter((val) => !!val).length;
+
+    if (level > 1) {
+      const pathParts = options.path.split('/');
+
+      const newPath = pathParts
+        .slice(2, pathParts.length - 1)
+        .reduce((acc, part) => {
+          acc.push(part);
+          acc.push('modules');
+
+          return acc;
+        }, []);
+
+      options.path = [
+        'src',
+        ...pathParts.slice(0, 2),
+        ...newPath,
+      ]
+        .filter((part) => !!part)
+        .join('/');
+    } else {
+      options.path = 'src' + options.path;
+    }
+
     const templateSource = apply(url('./files'), [
       options.routing ? noop() : filter(path => !path.endsWith('-routing.module.ts')),
       template({
@@ -40,7 +66,7 @@ export function create(options: any): Rule {
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
-        addModuleDeclarationToNgModule(options),
+        // addModuleDeclarationToNgModule(options),
       ]))
     ]);
 
