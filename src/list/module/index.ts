@@ -37,7 +37,6 @@ export function create(options: any): Rule {
         .slice(2, pathParts.length - 1)
         .reduce((acc, part) => {
           acc.push(part);
-          acc.push('modules');
 
           return acc;
         }, []);
