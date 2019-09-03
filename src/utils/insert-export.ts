@@ -1,6 +1,6 @@
 import * as ts from 'typescript';
-import { Change, InsertChange, NoopChange } from '../schematics-angular-utils/change';
-import { findNodes, insertAfterLastOccurrence } from '../schematics-angular-utils/ast-utils';
+import { Change, InsertChange, NoopChange } from './change';
+import { findNodes, insertAfterLastOccurrence } from './ast-utils';
 
 export function insertExport(source: ts.SourceFile, fileToEdit: string, symbolName: string,
                              fileName: string, isDefault = false, existingChanges: InsertChange[] = []): Change {

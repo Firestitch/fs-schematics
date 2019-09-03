@@ -1,5 +1,5 @@
 import { DirEntry, Tree } from '@angular-devkit/schematics';
-import { findAllModules } from '../schematics-angular-utils/find-module';
+import { findAllModules } from './find-module';
 
 export function findAllServices(host: Tree, generateDir: string) {
   const modules = findAllModules(host, generateDir);

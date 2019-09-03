@@ -40,7 +40,7 @@ function filterTemplates(options: any): Rule {
 
 // You don't have to export the function as default. You can also have more than one rule factory
 // per file.
-export function base(options: any): Rule {
+export function create(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     const workspace = getWorkspace(tree);
     const config: Config = { ...options };

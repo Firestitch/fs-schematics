@@ -12,7 +12,7 @@ export function addResolverSchematic(options) {
 
 
   return schematic(
-    'resolver',
+    'resolve',
     childSchematicOptions
   );
 }

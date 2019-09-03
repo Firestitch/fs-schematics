@@ -1,4 +1,4 @@
-import { buildRelativePath } from '../schematics-angular-utils/find-module';
+import { buildRelativePath } from './find-module';
 import { dasherize } from '@angular-devkit/core/src/utils/strings';
 import { Tree } from '@angular-devkit/schematics';
 

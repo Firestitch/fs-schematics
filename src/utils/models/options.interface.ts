@@ -1,4 +1,4 @@
-import { ModuleOptions } from '../../schematics-angular-utils/find-module';
+import { ModuleOptions } from '../find-module';
 
 export interface OptionsInterface extends ModuleOptions {
   subdirectory?: string;

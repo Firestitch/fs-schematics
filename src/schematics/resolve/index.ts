@@ -19,7 +19,7 @@ import {
   addResolverToRouting,
   updateIndexFile
 } from '../../utils/ng-module-utils';
-import { buildRelativePath } from '../../schematics-angular-utils/find-module';
+import { buildRelativePath } from '../../utils/find-module';
 import { ExpansionType } from '../../utils/models/expansion-type';
 import { getWorkspace } from '../../utils/get-workspace';
 import { getServiceClassName } from '../../utils/get-service-class-name';

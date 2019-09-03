@@ -20,7 +20,7 @@ import {
   updateIndexFile,
 } from '../../utils/ng-module-utils';
 
-import { findModuleFromOptions } from '../../schematics-angular-utils/find-module';
+import { findModuleFromOptions } from '../../utils/find-module';
 
 import {ExpansionType} from '../../utils/models/expansion-type';
 
@@ -50,7 +50,7 @@ function filterTemplates(options: any): Rule {
 
 // You don't have to export the function as default. You can also have more than one rule factory
 // per file.
-export function createOrEdit(options: any): Rule {
+export function create(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     const workspace = getWorkspace(tree);
 

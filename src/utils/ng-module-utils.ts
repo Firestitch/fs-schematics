@@ -10,7 +10,7 @@ import { AddToModuleContext } from './add-to-module-context';
 import * as ts from 'typescript';
 import { normalize, strings } from '@angular-devkit/core';
 // Referencing forked and copied private APIs
-import { buildRelativePath, ModuleOptions } from '../schematics-angular-utils/find-module';
+import { buildRelativePath, ModuleOptions } from './find-module';
 import {
   addDeclarationToModule,
   addDialogToComponentMetadata,
@@ -19,10 +19,10 @@ import {
   addImportToModule,
   addProviderToModule,
   addSymbolToNgModuleRoutingMetadata
-} from '../schematics-angular-utils/ast-utils';
-import { InsertChange } from '../schematics-angular-utils/change';
+} from './ast-utils';
+import { InsertChange } from './change';
 import { ExpansionType, OptionsInterface } from './models/';
-import { insertImport } from '../schematics-angular-utils/route-utils';
+import { insertImport } from './route-utils';
 import { insertExport } from './insert-export';
 
 const { dasherize, classify } = strings;

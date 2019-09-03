@@ -3,39 +3,43 @@
   "schematics": {
     "list": {
       "description": "Create simple list component",
-      "factory": "./list/standalone/index#list"
+      "factory": "./schematics/list/index#create"
     },
     "create-edit-page": {
       "description": "A blank schematic.",
-      "factory": "./list/create-edit-page/index#createOrEdit"
+      "factory": "./schematics/create-edit-page/index#create"
     },
     "create-edit-dialog": {
       "description": "A blank schematic.",
-      "factory": "./list/create-edit-dialog/index#createOrEdit"
+      "factory": "./schematics/create-edit-dialog/index#create"
     },
     "service": {
       "description": "A blank schematic service.",
-      "factory": "./list/service/index#create"
+      "factory": "./schematics/service/index#create"
     },
     "module": {
       "description": "A blank schematic.",
-      "factory": "./list/module/index#create"
+      "factory": "./schematics/module/index#create"
     },
-    "base": {
+    "basic": {
       "description": "A basic empty component",
-      "factory": "./list/base/index#base"
+      "factory": "./schematics/basic/index#create"
     },
     "enum": {
       "description": "Generate enum",
-      "factory": "./enums/enum/index#base"
+      "factory": "./schematics/enum/index#create"
     },
     "const": {
       "description": "Generate const",
-      "factory": "./consts/const/index#base"
+      "factory": "./schematics/const/index#create"
     },
-    "resolver": {
+    "resolve": {
       "description": "A basic description",
-      "factory": "./list/resolver/index#create"
+      "factory": "./schematics/resolve/index#create"
+    },
+    "tabs": {
+      "description": "Tab Component",
+      "factory": "./schematics/tabs/index#create"
     }
   }
 }

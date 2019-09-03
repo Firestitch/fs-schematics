@@ -17,9 +17,6 @@ import { Config } from './config';
 import { getWorkspace } from '../../utils/get-workspace';
 import { updateIndexFile } from '../../utils/ng-module-utils';
 import { ExpansionType } from '../../utils/models';
-import {
-  buildRelativePathForEnum,
-} from '../../utils/build-correct-path';
 
 
 function filterTemplates(options: any): Rule {
@@ -28,7 +25,7 @@ function filterTemplates(options: any): Rule {
 
 // You don't have to export the function as default. You can also have more than one rule factory
 // per file.
-export function base(options: any): Rule {
+export function create(options: any): Rule {
   return (tree: Tree, _context: SchematicContext) => {
     const workspace = getWorkspace(tree);
     const config: Config = { ...options };
@@ -44,19 +41,15 @@ export function base(options: any): Rule {
       throw new Error('Key != Values');
     }
 
-    config.name = String(config.name);
     config.enums = [];
-
     keys.forEach((key, index) => {
       config.enums.push({
-        key: String(values[index]),
-        value: String(key),
+        key: key,
+        value: values[index],
       });
     });
 
-    config.componentPath = '/' + config.path + '/consts';
-
-    config.relativeEnumPath = buildRelativePathForEnum(config);
+    config.componentPath = config.path + '/enums';
 
     const templateSource = apply(url('./files'), [
       filterTemplates(config),
@@ -72,7 +65,7 @@ export function base(options: any): Rule {
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
-        updateIndexFile(config, ExpansionType.Const)
+        updateIndexFile(config, ExpansionType.Enum)
       ]))
     ]);
 

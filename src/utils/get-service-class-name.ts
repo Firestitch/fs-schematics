@@ -1,6 +1,6 @@
 import { SchematicsException, Tree } from '@angular-devkit/schematics';
 import * as ts from 'typescript';
-import { findNodes } from '../schematics-angular-utils/ast-utils';
+import { findNodes } from './ast-utils';
 
 export function getServiceClassName(host: Tree, servirePath: string) {
   const source = createServiceClassContext(host, servirePath);
