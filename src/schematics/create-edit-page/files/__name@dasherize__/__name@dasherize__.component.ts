@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -47,7 +47,7 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
         if (!this.<%= underscore(singleModel) %>.id) {
           this._router.navigate(['../', response.id], { relativeTo: this._route });
         }
-    })
+    });
   }
 
   public ngOnDestroy() {
