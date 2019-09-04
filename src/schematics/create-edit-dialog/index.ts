@@ -31,6 +31,7 @@ import {
 import { getWorkspace } from '../../utils/get-workspace';
 import { getServiceClassName } from '../../utils/get-service-class-name';
 import { addResolverSchematic } from '../../utils/add-resolver-schematic';
+import { startCase } from 'lodash';
 
 
 function filterTemplates(options: any): Rule {
@@ -58,6 +59,7 @@ export function create(options: any): Rule {
       options.project = Object.keys(workspace.projects)[0];
     }
 
+    options.startCase = startCase;
     options.module = findModuleFromOptions(tree, options, true);
     options.routingModule = options.module.replace('.module.ts', '-routing.module.ts');
 

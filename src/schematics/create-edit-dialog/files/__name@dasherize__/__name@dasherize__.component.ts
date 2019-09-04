@@ -11,6 +11,7 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
   styleUrls: ['./<%=dasherize(name)%>.component.scss']
 })
 export class <%= classify(name) %>Component implements OnInit {
+
   public <%= underscore(singleModel) %> = null;
 
   constructor(

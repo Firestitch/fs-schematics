@@ -12,7 +12,12 @@
         </mat-form-field>
       </div>
 
-      <button mat-raised-button type="submit" color="primary">{{<%= underscore(singleModel) %>.id ? 'Save' : 'Create'}}</button>
+      <button
+        mat-raised-button
+        type="submit"
+        color="primary">
+        {{<%= underscore(singleModel) %>.id ? 'Save' : 'Create'}}
+      </button>
     </ng-container>
   </form>
 </mat-card>

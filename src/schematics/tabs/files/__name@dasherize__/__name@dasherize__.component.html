@@ -1,5 +1,5 @@
 <mat-card>
-  <mat-card-title>
+  <mat-card-content>
     <nav mat-tab-nav-bar>
       <a mat-tab-link
         *ngFor="let link of links"
@@ -11,8 +11,6 @@
         {{ link.label }}
       </a>
     </nav>
-  </mat-card-title>
-  <mat-card-content>
     <router-outlet></router-outlet>
   </mat-card-content>
 </mat-card>

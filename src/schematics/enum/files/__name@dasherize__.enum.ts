@@ -1,3 +1,3 @@
 export enum <%= classify(name) %> {<%for (let en of enums) {%>
-  <%=classify(en.key)%> = '<%=en.value%>',<%}%>
+  <%=en.key%> = '<%=en.value%>',<%}%>
 }
