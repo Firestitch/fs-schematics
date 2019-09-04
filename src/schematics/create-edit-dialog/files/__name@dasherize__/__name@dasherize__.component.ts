@@ -22,7 +22,7 @@ export class <%= classify(name) %>Component implements OnInit {
 
   public ngOnInit() {
     if (this.data.<%= underscore(singleModel) %>.id) {
-      this._<%= underscore(serviceName) %>.get(this.data.<%= underscore(singleModel) %>.id)
+      this._<%= camelize(serviceName) %>.get(this.data.<%= underscore(singleModel) %>.id)
         .subscribe((response) => {
           this.<%= underscore(singleModel) %> = response;
         });

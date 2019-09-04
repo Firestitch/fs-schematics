@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 import { FsMessage } from '@firestitch/message';<% if(titledCreateComponent) { %>
 import { FsNavService } from '@firestitch/nav';<% } %>
@@ -11,10 +13,12 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
   templateUrl: './<%=dasherize(name)%>.component.html',
   styleUrls: ['./<%=dasherize(name)%>.component.scss']
 })
-export class <%= classify(name) %>Component implements OnInit {
+export class <%= classify(name) %>Component implements OnInit, OnDestroy {
 
   public <%= underscore(singleModel) %>: any = null;
-  public routeObserver = new RouteObserver(this._route, '<%= underscore(singleModel) %>');
+
+  private _routeObserver = new RouteObserver(this._route, '<%= underscore(singleModel) %>');
+  private _destroy$ = new Subject();
 
   constructor(
     private _route: ActivatedRoute,
@@ -25,7 +29,11 @@ export class <%= classify(name) %>Component implements OnInit {
   ) {}
 
   public ngOnInit() {
-    this.routeObserver
+    this._routeObserver
+      .observer$
+      .pipe(
+        takeUntil(this._destroy$)
+      )
       .subscribe(response => {
         this.<%= underscore(singleModel) %> = response || {};<% if(titledCreateComponent) { %>
         this._setTitle();<% } %>
@@ -41,6 +49,12 @@ export class <%= classify(name) %>Component implements OnInit {
         }
     })
   }
+
+  public ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
+  }
+
 <% if(titledCreateComponent) { %>
   private _setTitle() {
     this._navService.setTitle(this.<%= underscore(singleModel) %>.id ? 'Edit <%= capitalize(singleModel)%>' : 'Create <%= capitalize(singleModel)%>');
