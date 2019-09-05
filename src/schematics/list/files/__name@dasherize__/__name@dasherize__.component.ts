@@ -16,7 +16,7 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 })
 export class <%= classify(name) %>Component implements OnInit {
 
-  @ViewChild('<%=classify(name)%>List')
+  @ViewChild('<%=camelize(name)%>List')
   public <%=camelize(name)%>List: FsListComponent;
 
   public config: FsListConfig;
@@ -68,7 +68,7 @@ export class <%= classify(name) %>Component implements OnInit {
           );
       },
       restore: {
-        query: {state: 'deleted'},
+        query: { state: 'deleted' },
         filterLabel: 'Show Deleted',
         menuLabel: 'Restore',
         reload: true,

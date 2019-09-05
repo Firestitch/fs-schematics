@@ -27,12 +27,12 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
   public ngOnInit() {
     this.links = [
       {
-        path: 'patha',
-        label: 'Path A'
+        label: 'Path A',
+        path: 'patha'
       },
       {
-        path: 'pathb',
-        label: 'Path B'
+        label: 'Path B',
+        path: 'pathb'
       }
     ];
   }

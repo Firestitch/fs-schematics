@@ -44,7 +44,9 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
     this._<%= camelize(serviceName) %>.save(this.<%= underscore(singleModel) %>)
       .subscribe(response => {
         this._message.success('Saved Changes');
-        if (!this.<%= underscore(singleModel) %>.id) {
+        if (this.<%= underscore(singleModel) %>.id) {
+          this._routeObserver.next(Object.assign(this.<%= underscore(singleModel) %>, response));
+        } else {
           this._router.navigate(['../', response.id], { relativeTo: this._route });
         }
     });
