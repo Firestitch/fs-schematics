@@ -1,12 +1,12 @@
 {
   "name": "@firestitch/schematics",
-  "version": "7.3.0",
+  "version": "7.3.1",
   "description": "",
   "scripts": {
     "build": "npm-run-all clean:dist compile copy:collection copy:files",
     "clean:dist": "npx rimraf -- dist",
     "compile": "tsc -p tsconfig.json",
-    "package": "npm run build && npm run test",
+    "package": "npm run build",
     "package:publish": "npm publish",
     "copy:collection": "copyfiles -f src/collection.json ./dist",
     "copy:files": "copyfiles --up 1 src/**/files/**/* ./dist",
