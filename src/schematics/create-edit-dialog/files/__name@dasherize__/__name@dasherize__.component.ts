@@ -15,20 +15,20 @@ export class <%= classify(name) %>Component implements OnInit {
   public <%= underscore(singleModel) %> = null;
 
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data,
+    @Inject(MAT_DIALOG_DATA) private _data,
     private _dialogRef: MatDialogRef<<%= classify(name) %>Component>,
     private _message: FsMessage,
     private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
   ) {}
 
   public ngOnInit() {
-    if (this.data.<%= underscore(singleModel) %>.id) {
-      this._<%= camelize(serviceName) %>.get(this.data.<%= underscore(singleModel) %>.id)
+    if (this._data.<%= underscore(singleModel) %>.id) {
+      this._<%= camelize(serviceName) %>.get(this._data.<%= underscore(singleModel) %>.id)
         .subscribe((response) => {
           this.<%= underscore(singleModel) %> = response;
         });
     } else {
-      this.<%= underscore(singleModel) %> = Object.assign({}, this.data.<%= underscore(singleModel) %>);
+      this.<%= underscore(singleModel) %> = Object.assign({}, this._data.<%= underscore(singleModel) %>);
     }
   }
 
