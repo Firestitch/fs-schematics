@@ -96,7 +96,7 @@ export function create(options: any): Rule {
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
-        addDeclarationToNgModule(options, false),
+        addDeclarationToNgModule(options, !!options.includedModuleExports),
         options.isRouting && options.type === 'view' ? addDeclarationToRoutingModule(options) : noop(),
         updateIndexFile(options, ExpansionType.Component),
         routable ? addResolverSchematic(options) : noop(),

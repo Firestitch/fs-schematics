@@ -7,4 +7,5 @@ export interface Config extends Schema {
   type?: string;
   routingModule?: string;
   routableComponent?: boolean | string;
+  includedModuleExports?: boolean | string;
 }

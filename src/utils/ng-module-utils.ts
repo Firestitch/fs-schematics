@@ -39,6 +39,16 @@ export function addDeclarationToNgModule(options: ModuleOptions, exports: boolea
   };
 }
 
+export function addExportsToNgModule(options: ModuleOptions, exports: boolean): Rule {
+  return (host: Tree) => {
+    addDeclaration(host, options);
+    if (exports) {
+      addExport(host, options);
+    }
+    return host;
+  };
+}
+
 export function addModuleDeclarationToNgModule(options: ModuleOptions): Rule {
   return (host: Tree) => {
     addModuleDeclaration(host, options);

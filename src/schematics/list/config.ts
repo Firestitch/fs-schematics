@@ -11,4 +11,5 @@ export interface Config extends ListOptions {
   serviceName?: string;
   nestedPath?: string;
   titledCreateComponent?: boolean;
+  includedModuleExports?: boolean;
 }

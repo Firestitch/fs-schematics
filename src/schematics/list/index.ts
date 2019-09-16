@@ -117,6 +117,7 @@ export function create(options: ListOptions): Rule {
       serviceName: config.serviceName,
       parentName: dasherize(config.name),
       relativeServicePath: config.relativeServicePath,
+      includedModuleExports: config.includedModuleExports,
       singleModel: config.singleModel,
       pluralModel: config.pluralModel,
       secondLevel: true,
@@ -145,7 +146,7 @@ export function create(options: ListOptions): Rule {
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
-        addDeclarationToNgModule(config, false),
+        addDeclarationToNgModule(config, config.includedModuleExports),
         isRoutingExists && config.type === 'view' ? addDeclarationToRoutingModule(config) : noop(),
         updateIndexFile(config, ExpansionType.Component),
         ...extrenalSchematics,

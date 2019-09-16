@@ -80,7 +80,7 @@ export function create(options: any): Rule {
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
-        addDeclarationToNgModule(config, false),
+        addDeclarationToNgModule(config, !!config.includedModuleExports),
         isRoutingExists && config.type === 'view' ? addDeclarationToRoutingModule(config) : noop(),
         indexFileExists ? updateIndexFile(config, ExpansionType.Component) : noop(),
       ]))

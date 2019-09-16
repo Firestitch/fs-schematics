@@ -100,7 +100,7 @@ export function create(options: any): Rule {
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
-        addDeclarationToNgModule(customOptions, false),
+        addDeclarationToNgModule(customOptions, !!options.includedModuleExports),
         addEntryComponentDeclarationToNgModule(customOptions, false),
         addToParent ? addDialogToParentComponent(options) : noop(),
         updateIndexFile(options, ExpansionType.Component),
