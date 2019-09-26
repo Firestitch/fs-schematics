@@ -2,7 +2,7 @@
   <fs-list [config]="config" #<%= camelize(name) %>List>
     <fs-list-column name="name" title="Name" [sortable]="true">
       <ng-template fs-list-cell let-row="row">
-        <a<% if (mode === 'full') { %>[routerLink]="[row.id]"<%} if (mode === 'dialog') { %> (click)="openDialog(row)"<%}%>>{{row.name}}</a>
+        <a<% if (mode === 'full') { %> [routerLink]="[row.id]"<%} if (mode === 'dialog') { %> (click)="openDialog(row)"<%}%>>{{row.name}}</a>
       </ng-template>
     </fs-list-column>
   </fs-list>

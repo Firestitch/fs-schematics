@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "SchematicForEmptyComponent",
+  "title": "Create empty component",
+  "type": "object",
+  "properties": {
+    "path": {
+      "type": "string",
+      "format": "path",
+      "description": "Path to the module desctination"
+    },
+    "module": {
+      "type": "string",
+      "description": "Name of module file"
+    },
+    "routableComponent": {
+      "type": "boolean",
+      "description": "Component or View type"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name of component for create"
+    }
+  }
+}

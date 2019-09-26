@@ -1,13 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators';
 
 import { FsMessage } from '@firestitch/message';<% if(titledCreateComponent) { %>
 import { FsNavService } from '@firestitch/nav';<% } %>
 import { RouteObserver } from '@firestitch/core';
 
 import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
+
 
 @Component({
   templateUrl: './<%=dasherize(name)%>.component.html',
@@ -40,23 +41,25 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
       });
   }
 
-  public save() {
-    this._<%= camelize(serviceName) %>.save(this.<%= underscore(singleModel) %>)
-      .subscribe(response => {
-        this._message.success('Saved Changes');
-        if (this.<%= underscore(singleModel) %>.id) {
-          this._routeObserver.next(Object.assign(this.<%= underscore(singleModel) %>, response));
-        } else {
-          this._router.navigate(['../', response.id], { relativeTo: this._route });
-        }
-    });
+  public save = () => {
+    return this._<%= camelize(serviceName) %>.save(this.<%= underscore(singleModel) %>)
+      .pipe(
+        tap(
+          response => {
+            this._message.success('Saved Changes');
+            if (this.<%= underscore(singleModel) %>.id) {
+              this._routeObserver.next(Object.assign(this.<%= underscore(singleModel) %>, response));
+            } else {
+              this._router.navigate(['../', response.id], { relativeTo: this._route });
+            }
+          })
+      );
   }
 
   public ngOnDestroy() {
     this._destroy$.next();
     this._destroy$.complete();
   }
-
 <% if(titledCreateComponent) { %>
   private _setTitle() {
     this._navService.setTitle(this.<%= underscore(singleModel) %>.id ? 'Edit <%= capitalize(singleModel)%>' : 'Create <%= capitalize(singleModel)%>');

@@ -25,6 +25,10 @@
       "description": "A basic empty component",
       "factory": "./schematics/basic/index#create"
     },
+    "dialog": {
+      "description": "A basic dialog component",
+      "factory": "./schematics/dialog/index#create"
+    },
     "enum": {
       "description": "Generate enum",
       "factory": "./schematics/enum/index#create"

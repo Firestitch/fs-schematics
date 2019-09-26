@@ -1,5 +1,5 @@
 <mat-card>
-  <form (fsForm)="save()" [fsSkeletonForm]="<%= underscore(singleModel) %>">
+  <form fsForm [submit]="save" [fsSkeletonForm]="<%= underscore(singleModel) %>">
     <ng-container *ngIf="<%= underscore(singleModel) %>">
 
       <div fxLayout="column">
