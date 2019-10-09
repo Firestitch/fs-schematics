@@ -58,7 +58,7 @@ export class <%= classify(name) %>Component implements OnInit {
             template: 'Are you sure you would like to delete this record?',
           },
           menu: true,
-          label: 'Remove'
+          label: 'Delete'
         }
       ],
       fetch: (query) => {
