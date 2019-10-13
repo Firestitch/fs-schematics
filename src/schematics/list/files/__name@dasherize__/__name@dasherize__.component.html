@@ -1,5 +1,5 @@
 <mat-card>
-  <fs-list [config]="config" #<%= camelize(name) %>List>
+  <fs-list [config]="config">
     <fs-list-column name="name" title="Name" [sortable]="true">
       <ng-template fs-list-cell let-row="row">
         <a<% if (mode === 'full') { %> [routerLink]="[row.id]"<%} if (mode === 'dialog') { %> (click)="openDialog(row)"<%}%>>{{row.name}}</a>

@@ -472,7 +472,7 @@ export function addDialogToComponentMetadata(
     }).pop();
 
     let position = null;
-    const toInsertConstructor = `\n\n  constructor(private _${dialogVarName}: MatDialog) {}\n`;
+    const toInsertConstructor = `\n\n    constructor(private _${dialogVarName}: MatDialog) {}\n`;
 
     if (firstMethod) {
       position = firstMethod.getFullStart()
@@ -515,7 +515,7 @@ export function addDialogToComponentMetadata(
     insertPosition = componentClass.getEnd() - 1;
   }
 
-  const toInsert = `\n\n  public ${dialogMethodName}(${underscore(singleModelName)}) {
+  const toInsert = `\n  public ${dialogMethodName}(${underscore(singleModelName)}) {
     const dialogRef = this._${dialogVarName}.open(${classify(singleName)}Component, {
       data: { ${underscore(singleModelName)}: ${underscore(singleModelName)} }
     });
@@ -524,18 +524,17 @@ export function addDialogToComponentMetadata(
       let update = false;
 
       if (response) {
-        update = this.${camelize(name)}List.updateData(response,
+        update = this._listComponent.updateData(response,
           (data: any) => {
             return data.id === response.id;
           });
       }
 
       if (!update) {
-        this.${camelize(name)}List.reload();
+        this._listComponent.reload();
       }
     });
-  }\n
-`;
+  }\n`;
 
   changes.push(
     new InsertChange(componentPath, insertPosition, toInsert),

@@ -16,10 +16,10 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 })
 export class <%= classify(name) %>Component implements OnInit {
 
-  @ViewChild('<%=camelize(name)%>List')
-  public <%=camelize(name)%>List: FsListComponent;
+  @ViewChild(FsListComponent)
+  private _listComponent: FsListComponent;
 
-  public config: FsListConfig;
+  public listConfig: FsListConfig;
 
   constructor(
     private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,<% if (titledComponent) { %>
@@ -31,7 +31,7 @@ export class <%= classify(name) %>Component implements OnInit {
   public ngOnInit() {<% if (titledComponent) { %>
     this._setTitle();
 <% } %>
-    this.config = {
+    this.listConfig = {
       filters: [
         {
           name: 'keyword',
@@ -73,7 +73,7 @@ export class <%= classify(name) %>Component implements OnInit {
         menuLabel: 'Restore',
         reload: true,
         click: (row) => {
-          return this._<%= camelize(serviceName) %>.put({id: row.id, state: 'active'})
+          return this._<%= camelize(serviceName) %>.put({ id: row.id, state: 'active' })
         }
       }
     };
