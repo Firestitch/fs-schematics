@@ -1,5 +1,5 @@
-<form fsForm [submit]="save" [fsSkeletonForm]="<%= underscore(singleModel) %>">
-  <fs-dialog *ngIf="<%= underscore(singleModel) %>">
+<form fsForm [submit]="save" *fsSkeletonForm="<%= underscore(singleModel) %>">
+  <fs-dialog>
     <h1 mat-dialog-title>{{<%= underscore(singleModel) %>.id ? 'Edit <%= capitalize(startCase(singleModel)) %>' : 'Create <%= capitalize(startCase(singleModel)) %>'}}</h1>
     <div mat-dialog-content>
 

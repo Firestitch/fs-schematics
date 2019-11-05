@@ -1,7 +1,5 @@
 <mat-card>
-  <form fsForm [submit]="save" [fsSkeletonForm]="<%= underscore(singleModel) %>">
-    <ng-container *ngIf="<%= underscore(singleModel) %>">
-
+  <form fsForm [submit]="save" *fsSkeletonForm="<%= underscore(singleModel) %>">
       <div fxLayout="column">
         <mat-form-field>
           <input
@@ -17,7 +15,6 @@
         type="submit"
         color="primary">
         {{<%= underscore(singleModel) %>.id ? 'Save' : 'Create'}}
-      </button>
-    </ng-container>
+    </button>
   </form>
 </mat-card>
