@@ -68,7 +68,7 @@ export function create(options: any): Rule {
     const rule = chain([
       branchAndMerge(chain([
         mergeWith(templateSource),
-        addServiceProviderToNgModule(options),
+        options.type === 'service' ? addServiceProviderToNgModule(options) : noop(),
         indexFileExists ? updateIndexFile(options, expansionType) : noop(),
       ]))
     ]);

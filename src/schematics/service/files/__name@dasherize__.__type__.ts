@@ -3,7 +3,9 @@ import { Observable } from 'rxjs';
 import { FsApi } from '@firestitch/api';
 
 
-@Injectable()
+@Injectable(<% if (type === 'data'){ %>{
+  providedIn: 'root'
+}<% } %>)
 export class <%= classify(name) %><% if (type === 'service'){ %>Service<%} else {%>Data<%}%> {
   constructor(private _api: FsApi) {}
 
