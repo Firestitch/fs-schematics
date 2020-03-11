@@ -32,7 +32,8 @@ function filterTemplates(options: any): Rule {
 export function create(options: any): Rule {
 
   return (tree: Tree, _context: SchematicContext) => {
-    const subDir: DirEntry | null = tree.getDir(`${options.path}${options.subdirectory}`);
+    options.componentPath = `${options.path}${options.subdirectory}`;
+    const subDir: DirEntry | null = tree.getDir(options.componentPath);
     const indexFileExists = tree.exists(`${subDir.path}/index.ts`);
 
     const workspace = getWorkspace(tree);
