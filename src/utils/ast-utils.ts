@@ -461,7 +461,7 @@ export function addDialogToComponentMetadata(
           source,
           componentPath || '',
           'MatDialog',
-          '@angular/material',
+          '@angular/material/dialog',
           false,
         ),
       );
@@ -486,7 +486,7 @@ export function addDialogToComponentMetadata(
         source,
         componentPath || '',
         'MatDialog',
-        '@angular/material',
+        '@angular/material/dialog',
         false,
       ),
     );
