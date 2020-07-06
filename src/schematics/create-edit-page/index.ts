@@ -14,7 +14,7 @@ import {
   noop,
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
-import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
+import { WorkspaceDefinition } from '@angular-devkit/core/src/workspace';
 import { addDeclarationToNgModule, addDeclarationToRoutingModule, updateIndexFile } from '../../utils/ng-module-utils';
 import { findModuleFromOptions } from '../../utils/find-module';
 import { ExpansionType } from '../../utils/models/expansion-type';
@@ -27,7 +27,7 @@ import { getServiceClassName } from '../../utils/get-service-class-name';
 import { addResolverSchematic } from '../../utils/add-resolver-schematic';
 
 
-export function getWorkspace(host: Tree): WorkspaceSchema {
+export function getWorkspace(host: Tree): WorkspaceDefinition {
   const path = getWorkspacePath(host);
   const configBuffer = host.read(path);
   if (configBuffer === null) {

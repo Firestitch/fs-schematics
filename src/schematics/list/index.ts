@@ -15,7 +15,7 @@ import {
   url
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
-import { WorkspaceSchema } from '@angular-devkit/core/src/workspace';
+import { WorkspaceDefinition } from '@angular-devkit/core/src/workspace';
 import {
   addDeclarationToNgModule,
   addDeclarationToRoutingModule,
@@ -34,7 +34,7 @@ export function getWorkspacePath(host: Tree): string {
   return possibleFiles.filter(path => host.exists(path))[0];
 }
 
-export function getWorkspace(host: Tree): WorkspaceSchema {
+export function getWorkspace(host: Tree): WorkspaceDefinition {
   const path = getWorkspacePath(host);
   const configBuffer = host.read(path);
   if (configBuffer === null) {
