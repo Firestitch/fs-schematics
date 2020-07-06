@@ -75,7 +75,7 @@ describe('Schematic: Base', () => {
 
   it('should create base component', async () => {
     const tree = await runner
-      .runSchematicAsync('base', optionsForComponent, appTree)
+      .runSchematicAsync('basic', optionsForComponent, appTree)
       .toPromise();
 
     assert(tree.files.includes('/projects/application/src/app/components/test/test.component.ts'));
@@ -83,7 +83,7 @@ describe('Schematic: Base', () => {
 
   it('should create base view', async () => {
     const tree = await runner
-      .runSchematicAsync('base', optionsForView, appTree)
+      .runSchematicAsync('basic', optionsForView, appTree)
       .toPromise();
 
     assert(tree.files.includes('/projects/application/src/app/views/test/test.component.ts'));

@@ -80,6 +80,7 @@ export function create(options: ListOptions): Rule {
 
     config.create = config.create || false;
     config.edit = config.edit || false;
+    config.titledCreateComponent = config.titledCreateComponent || false;
 
     config.type = config.routableComponent === 'true' || config.routableComponent === true
       ? 'view'

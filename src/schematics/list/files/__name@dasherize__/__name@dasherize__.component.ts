@@ -4,7 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';<% } %>
 import { map } from 'rxjs/operators';
 
 import { FsListComponent, FsListConfig } from '@firestitch/list';
-import { ItemType } from '@firestitch/filter';<% if (titledComponent) { %>
+import { ItemType } from '@firestitch/filter';<% if (titledCreateComponent) { %>
 import { FsNavService } from '@firestitch/nav';
 <% } %>
 import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
@@ -22,13 +22,13 @@ export class <%= classify(name) %>Component implements OnInit {
   public listConfig: FsListConfig;
 
   constructor(
-    private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,<% if (titledComponent) { %>
+    private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,<% if (titledCreateComponent) { %>
     private _navService: FsNavService,<% } %><% if (mode === 'full') { %>
     private _route: ActivatedRoute,
     private _router: Router,<% } %>
   ) {}
 
-  public ngOnInit() {<% if (titledComponent) { %>
+  public ngOnInit() {<% if (titledCreateComponent) { %>
     this._setTitle();
 <% } %>
     this.listConfig = {
@@ -77,7 +77,7 @@ export class <%= classify(name) %>Component implements OnInit {
         }
       }
     };
-  }<% if (titledComponent) { %>
+  }<% if (titledCreateComponent) { %>
 
   private _setTitle() {
     this._navService.setTitle('<%= capitalize(name) %>');

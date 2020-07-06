@@ -88,8 +88,8 @@ describe('Schematic: Const', () => {
     const content = appTree.readContent('/projects/application/src/app/consts/test-const.const.ts');
 
     assert(
-      content.indexOf("{ name: TestEnum.Active, value: 'Active' }") > -1 &&
-      content.indexOf("{ name: TestEnum.Passive, value: 'Passive' }") > -1
+      content.indexOf("{ name: 'active', value: TestEnum.Active }") > -1 &&
+      content.indexOf("{ name: 'passive', value: TestEnum.Passive }") > -1
     );
   });
 

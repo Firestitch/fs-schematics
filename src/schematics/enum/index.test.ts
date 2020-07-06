@@ -79,7 +79,7 @@ describe('Schematic: Enum', () => {
   it('enum should contain enum declaration', async () => {
     const content = appTree.readContent('/projects/application/src/app/enums/test.enum.ts');
 
-    assert(content.indexOf('export const enum Test {') > -1);
+    assert(content.indexOf('export enum Test {') > -1);
   });
 
   it('enum should contain correct content', async () => {
