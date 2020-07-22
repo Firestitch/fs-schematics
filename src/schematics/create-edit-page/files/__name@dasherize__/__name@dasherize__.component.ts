@@ -12,7 +12,7 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 
 @Component({
   templateUrl: './<%=dasherize(name)%>.component.html',
-  styleUrls: ['./<%=dasherize(name)%>.component.scss']
+  styleUrls: ['./<%=dasherize(name)%>.component.scss'],
 })
 export class <%= classify(name) %>Component implements OnInit, OnDestroy {
 
@@ -33,7 +33,7 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
     this._routeObserver
       .observer$
       .pipe(
-        takeUntil(this._destroy$)
+        takeUntil(this._destroy$),
       )
       .subscribe(response => {
         this.<%= underscore(singleModel) %> = response || {};<% if(titledCreateComponent) { %>
@@ -48,7 +48,10 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
           response => {
             this._message.success('Saved Changes');
             if (this.<%= underscore(singleModel) %>.id) {
-              this._routeObserver.next(Object.assign(this.<%= underscore(singleModel) %>, response));
+              this._routeObserver.next({
+                ...this.<%= underscore(singleModel) %>,
+                ...response,
+              });
             } else {
               this._router.navigate(['../', response.id], { relativeTo: this._route });
             }

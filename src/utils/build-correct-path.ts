@@ -8,10 +8,20 @@ import { Tree } from '@angular-devkit/schematics';
  * @returns {string}
  */
 export function buildRelativePathForService(options): string {
-  return buildRelativePath(
-    `${options.componentPath}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
-    `${options.servicePath}/${options.service}`
-  ).replace('.ts', '');
+  const isDataServiceRegexp = /\.data\.ts$/;
+  const isDataServiceCorePathRegexp = /\/core\//;
+
+  if (
+    isDataServiceRegexp.test(options.service)
+    && isDataServiceCorePathRegexp.test(options.servicePath)
+  ) {
+    return '@app/core';
+  } else {
+    return buildRelativePath(
+      `${options.componentPath}/${dasherize(options.name)}/${dasherize(options.name)}.component.ts`,
+      `${options.servicePath}/${options.service}`
+    ).replace('.ts', '');
+  }
 }
 
 /**

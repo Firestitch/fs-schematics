@@ -453,7 +453,7 @@ export function addDialogToComponentMetadata(
         declaration += classConstructor.parameters.hasTrailingComma ? '\n' : ',\n';
       }
 
-      declaration += `private _${dialogVarName}: MatDialog`;
+      declaration += `    private _${dialogVarName}: MatDialog,`;
 
       changes.push(
         new InsertChange(componentPath, position, declaration),
@@ -472,7 +472,9 @@ export function addDialogToComponentMetadata(
     }).pop();
 
     let position = null;
-    const toInsertConstructor = `\n\n    constructor(private _${dialogVarName}: MatDialog) {}\n`;
+    const toInsertConstructor = "\
+    \t\t constructor(private _${dialogVarName}: MatDialog) {}\
+    ";
 
     if (firstMethod) {
       position = firstMethod.getFullStart()
@@ -515,26 +517,46 @@ export function addDialogToComponentMetadata(
     insertPosition = componentClass.getEnd() - 1;
   }
 
-  const toInsert = `\n  public ${dialogMethodName}(${underscore(singleModelName)}) {
+  const toInsert = `\n\n  public ${dialogMethodName}(${underscore(singleModelName)}: any): void {
     const dialogRef = this._${dialogVarName}.open(${classify(singleName)}Component, {
-      data: { ${underscore(singleModelName)}: ${underscore(singleModelName)} }
+      data: { ${underscore(singleModelName)} },
     });
 
-    dialogRef.afterClosed().subscribe(response => {
-      let update = false;
+    dialogRef
+      .afterClosed()
+      .pipe(
+        takeUntil(this._destroy$),
+      )
+      .subscribe((response) => {
+        let update = false;
 
-      if (response) {
-        update = this._listComponent.updateData(response,
-          (data: any) => {
-            return data.id === response.id;
-          });
-      }
+        if (response) {
+          update = this._listComponent.updateData(
+            response,
+            (data: any) => {
+              return data.id === response.id;
+            },
+          );
+        }
 
-      if (!update) {
-        this._listComponent.reload();
-      }
-    });
+        if (!update) {
+          this._listComponent.reload();
+        }
+      });
   }\n`;
+
+  const componentConstructor = findNodes(componentClass, ts.SyntaxKind.Constructor);
+  if (componentConstructor) {
+    const destroyInsertPosition = componentConstructor[0].getStart() - 2;
+
+    changes.push(
+      new InsertChange(
+        componentPath,
+        destroyInsertPosition,
+        `  private _destroy$ = new Subject<void>();\n\n`
+      ),
+    );
+  }
 
   changes.push(
     new InsertChange(componentPath, insertPosition, toInsert),
@@ -545,6 +567,20 @@ export function addDialogToComponentMetadata(
       relativePathToComponent,
       false,
     ),
+    insertImport(
+      source,
+      componentPath || '',
+      `Subject`,
+      'rxjs',
+      false,
+    ),
+    insertImport(
+      source,
+      componentPath || '',
+      `takeUntil`,
+      'rxjs/operators',
+      false,
+    )
   );
   return changes;
 }

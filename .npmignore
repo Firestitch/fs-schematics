@@ -25,3 +25,4 @@ Desktop.ini
 **/.DS_Store
 .editorconfig
 .gitmodules
+.nyc_output

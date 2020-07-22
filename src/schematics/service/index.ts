@@ -16,7 +16,7 @@ import { strings } from '@angular-devkit/core';
 import { addServiceProviderToNgModule, updateIndexFile} from '../../utils/ng-module-utils';
 import { ExpansionType } from '../../utils/models/expansion-type';
 import { getWorkspace } from '../../utils/get-workspace';
-import { snakeCase } from 'lodash';
+import { camelCase } from 'lodash';
 
 
 function filterTemplates(options: any): Rule {
@@ -42,8 +42,8 @@ export function create(options: any): Rule {
     }
 
     options.lowercasePluralName = options.pluralName.toLowerCase();
-    options.snakeCaseName = snakeCase(options.name);
-    options.plualSnakeCaseName = snakeCase(options.pluralName);
+    options.camelCaseName = camelCase(options.name);
+    options.plualCamelCaseName = camelCase(options.pluralName);
     options.module = `${options.path}/${options.module}`;
     options.path = `${options.path}${options.subdirectory}`;
 
