@@ -8,6 +8,6 @@ import { <%= classify(name) %>RoutingModule } from './<%= dasherize(name) %>-rou
     <% if (routing) { %><%= classify(name) %>RoutingModule,<% } %>
   ],
   declarations: [
-  ]
+  ],
 })
 export class <%= classify(name) %>Module { }

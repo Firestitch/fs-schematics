@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
+
 import { toNumber } from 'lodash-es';
+
 import { RouteSubject } from '@firestitch/core';
 
 import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
@@ -19,8 +21,8 @@ export class <%= classify(name) %>Resolve implements Resolve<any> {
     }
 
     const query = {};
-    return routeSubject.observe(this._<%= camelize(serviceName) %>.get(route.params.<%= name %>_id, query));
+    return routeSubject
+      .observe(this._<%= camelize(serviceName) %>.get(route.params.<%= name %>_id, query));
   }
+
 }
-
-

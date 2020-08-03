@@ -1,6 +1,6 @@
-<form fsForm [submit]="save" *fsSkeletonForm="<%= underscore(singleModel) %>">
+<form fsForm [submit]="save" *fsSkeletonForm="<%= camelize(singleModel) %>">
   <fs-dialog>
-    <h1 mat-dialog-title>{{<%= underscore(singleModel) %>.id ? 'Edit <%= capitalize(startCase(singleModel)) %>' : 'Create <%= capitalize(startCase(singleModel)) %>'}}</h1>
+    <h1 mat-dialog-title>{{<%= camelize(singleModel) %>.id ? 'Edit <%= capitalize(startCase(singleModel)) %>' : 'Create <%= capitalize(startCase(singleModel)) %>'}}</h1>
     <div mat-dialog-content>
 
       <div fxLayout="column">
@@ -8,7 +8,7 @@
           <input
             matInput
             placeholder="Name"
-            [(ngModel)]="<%= underscore(singleModel) %>.name"
+            [(ngModel)]="<%= camelize(singleModel) %>.name"
             name="name">
         </mat-form-field>
 
@@ -19,7 +19,7 @@
         mat-button
         type="submit"
         color="primary">
-        {{<%= underscore(singleModel) %>.id ? 'Save' : 'Create'}}
+        {{<%= camelize(singleModel) %>.id ? 'Save' : 'Create'}}
       </button>
 
       <button

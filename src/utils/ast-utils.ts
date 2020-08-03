@@ -8,8 +8,8 @@
 import * as ts from 'typescript';
 import { Change, InsertChange } from './change';
 import { insertImport, addRoutesArrayDeclaration } from './route-utils';
-import { camelize, classify, dasherize, underscore } from '@angular-devkit/core/src/utils/strings';
-import { buildRelativePath, ModuleOptions } from './find-module';
+import { camelize, classify } from '@angular-devkit/core/src/utils/strings';
+import { ModuleOptions } from './find-module';
 
 
 /**
@@ -517,9 +517,9 @@ export function addDialogToComponentMetadata(
     insertPosition = componentClass.getEnd() - 1;
   }
 
-  const toInsert = `\n\n  public ${dialogMethodName}(${underscore(singleModelName)}: any): void {
+  const toInsert = `\n\n  public ${dialogMethodName}(${camelize(singleModelName)}: any): void {
     const dialogRef = this._${dialogVarName}.open(${classify(singleName)}Component, {
-      data: { ${underscore(singleModelName)} },
+      data: { ${camelize(singleModelName)} },
     });
 
     dialogRef

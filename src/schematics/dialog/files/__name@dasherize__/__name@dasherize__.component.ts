@@ -1,4 +1,5 @@
 import { Component, Inject } from '@angular/core';
+
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { of } from 'rxjs';
@@ -18,10 +19,11 @@ export class <%= classify(name) %>Component {
 
   public save = () => {
     return of(true)
-    .pipe(
-      tap(response => {
-        this._dialogRef.close(response);
-      }),
-    )
+      .pipe(
+        tap((response) => {
+          this._dialogRef.close(response);
+        }),
+      );
   }
+
 }

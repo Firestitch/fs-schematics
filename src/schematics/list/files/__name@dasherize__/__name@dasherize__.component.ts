@@ -1,12 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';<% if (mode === 'full') { %>
 import { Router, ActivatedRoute } from '@angular/router';<% } %>
 
-import { map } from 'rxjs/operators';
-
 import { FsListComponent, FsListConfig } from '@firestitch/list';
 import { ItemType } from '@firestitch/filter';<% if (titledCreateComponent) { %>
 import { FsNavService } from '@firestitch/nav';
 <% } %>
+
+import { map } from 'rxjs/operators';
+
 import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 
 
@@ -84,4 +85,6 @@ export class <%= classify(name) %>Component implements OnInit {
   private _setTitle(): void {
     this._navService.setTitle('<%= capitalize(name) %>');
   }<% } %>
+
 }
+

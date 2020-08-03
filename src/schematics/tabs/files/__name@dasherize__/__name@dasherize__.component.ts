@@ -37,7 +37,7 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
       {
         label: 'Path B',
         path: 'pathb',
-      }
+      },
     ];
   }
 
@@ -49,4 +49,5 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
   private _setTitle(): void {
     this._navService.setTitle('Title');
   }
+
 }

@@ -1,8 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
+
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { tap } from 'rxjs/operators';
 
 import { FsMessage } from '@firestitch/message';
+
+import { tap } from 'rxjs/operators';
 
 import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 
@@ -13,7 +15,7 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 })
 export class <%= classify(name) %>Component implements OnInit {
 
-  public <%= underscore(singleModel) %> = null;
+  public <%= camelize(singleModel) %> = null;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) private _data: any,
@@ -23,18 +25,18 @@ export class <%= classify(name) %>Component implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-    if (this._data.<%= underscore(singleModel) %>.id) {
-      this._<%= camelize(serviceName) %>.get(this._data.<%= underscore(singleModel) %>.id)
+    if (this._data.<%= camelize(singleModel) %>.id) {
+      this._<%= camelize(serviceName) %>.get(this._data.<%= camelize(singleModel) %>.id)
         .subscribe((response) => {
-          this.<%= underscore(singleModel) %> = response;
+          this.<%= camelize(singleModel) %> = response;
         });
     } else {
-      this.<%= underscore(singleModel) %> = { ...this._data.<%= underscore(singleModel) %> };
+      this.<%= camelize(singleModel) %> = { ...this._data.<%= camelize(singleModel) %> };
     }
   }
 
   public save = () => {
-    return this._<%= camelize(serviceName) %>.save(this.<%= underscore(singleModel) %>)
+    return this._<%= camelize(serviceName) %>.save(this.<%= camelize(singleModel) %>)
       .pipe(
         tap(
           (response) => {
@@ -43,4 +45,5 @@ export class <%= classify(name) %>Component implements OnInit {
           }),
       );
   }
+
 }

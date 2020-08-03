@@ -23,7 +23,7 @@ export class <%= classify(name) %><% if (type === 'service'){ %>Service<%} else 
     );
   }
 
-  public gets<T_DATA = any>(data: T_DATA = {}, config: RequestConfig = {}): Observable<T> {
+  public gets<any>(data: any = {}, config: RequestConfig = {}): Observable<T> {
     return this._api.request(
       'GET',
       '<%= lowercasePluralName %>',
@@ -73,4 +73,5 @@ export class <%= classify(name) %><% if (type === 'service'){ %>Service<%} else 
       ? this.put(data)
       : this.post(data);
   }
+
 }

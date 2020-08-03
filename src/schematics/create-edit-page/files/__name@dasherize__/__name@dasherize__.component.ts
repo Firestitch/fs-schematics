@@ -1,11 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
 
 import { FsMessage } from '@firestitch/message';<% if(titledCreateComponent) { %>
 import { FsNavService } from '@firestitch/nav';<% } %>
 import { RouteObserver } from '@firestitch/core';
+
+import { Subject } from 'rxjs';
+import { takeUntil, tap } from 'rxjs/operators';
 
 import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 
@@ -16,9 +17,9 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 })
 export class <%= classify(name) %>Component implements OnInit, OnDestroy {
 
-  public <%= underscore(singleModel) %>: any = null;
+  public <%= camelize(singleModel) %>: any = null;
 
-  private _routeObserver = new RouteObserver(this._route, '<%= underscore(singleModel) %>');
+  private _routeObserver = new RouteObserver(this._route, '<%= camelize(singleModel) %>');
   private _destroy$ = new Subject();
 
   constructor(
@@ -36,20 +37,20 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
         takeUntil(this._destroy$),
       )
       .subscribe(response => {
-        this.<%= underscore(singleModel) %> = response || {};<% if(titledCreateComponent) { %>
+        this.<%= camelize(singleModel) %> = response || {};<% if(titledCreateComponent) { %>
         this._setTitle();<% } %>
       });
   }
 
   public save = () => {
-    return this._<%= camelize(serviceName) %>.save(this.<%= underscore(singleModel) %>)
+    return this._<%= camelize(serviceName) %>.save(this.<%= camelize(singleModel) %>)
       .pipe(
         tap(
           response => {
             this._message.success('Saved Changes');
-            if (this.<%= underscore(singleModel) %>.id) {
+            if (this.<%= camelize(singleModel) %>.id) {
               this._routeObserver.next({
-                ...this.<%= underscore(singleModel) %>,
+                ...this.<%= camelize(singleModel) %>,
                 ...response,
               });
             } else {
@@ -65,6 +66,7 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
   }
 <% if(titledCreateComponent) { %>
   private _setTitle() {
-    this._navService.setTitle(this.<%= underscore(singleModel) %>.id ? 'Edit <%= capitalize(singleModel)%>' : 'Create <%= capitalize(singleModel)%>');
+    this._navService.setTitle(this.<%= camelize(singleModel) %>.id ? 'Edit <%= capitalize(singleModel)%>' : 'Create <%= capitalize(singleModel)%>');
   }<% } %>
+
 }
