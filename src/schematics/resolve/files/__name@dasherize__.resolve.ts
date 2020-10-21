@@ -4,6 +4,7 @@ import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
 import { RouteSubject } from '@firestitch/core';
 
 import { Observable } from 'rxjs';
+
 import { toNumber } from 'lodash-es';
 
 import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
