@@ -30,13 +30,13 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
     private _navService: FsNavService,<% } %>
   ) {}
 
-  public ngOnInit() {
+  public ngOnInit(): void {
     this._routeObserver
       .observer$
       .pipe(
         takeUntil(this._destroy$),
       )
-      .subscribe(response => {
+      .subscribe((response) => {
         this.<%= camelize(singleModel) %> = response || {};<% if(titledCreateComponent) { %>
         this._setTitle();<% } %>
       });
@@ -45,28 +45,32 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
   public save = () => {
     return this._<%= camelize(serviceName) %>.save(this.<%= camelize(singleModel) %>)
       .pipe(
-        tap(
-          response => {
-            this._message.success('Saved Changes');
-            if (this.<%= camelize(singleModel) %>.id) {
-              this._routeObserver.next({
-                ...this.<%= camelize(singleModel) %>,
-                ...response,
-              });
-            } else {
-              this._router.navigate(['../', response.id], { relativeTo: this._route });
-            }
-          })
+        tap((response) => {
+          this._message.success('Saved Changes');
+          if (this.<%= camelize(singleModel) %>.id) {
+            this._routeObserver.next({
+              ...this.<%= camelize(singleModel) %>,
+              ...response,
+            });
+          } else {
+            this._router.navigate(['../', response.id], { relativeTo: this._route });
+          }
+        }),
       );
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
   }
 <% if(titledCreateComponent) { %>
-  private _setTitle() {
-    this._navService.setTitle(this.<%= camelize(singleModel) %>.id ? 'Edit <%= capitalize(singleModel)%>' : 'Create <%= capitalize(singleModel)%>');
+  private _setTitle(): void {
+    if (this.<%= camelize(singleModel) %>.id) {
+      this._navService.setTitle(this.<%= camelize(singleModel) %>.name, '<%= capitalize(singleModel)%>');
+    } else {
+
+    }
+    this._navService.setTitle('Create <%= capitalize(singleModel)%>');
   }<% } %>
 
 }
