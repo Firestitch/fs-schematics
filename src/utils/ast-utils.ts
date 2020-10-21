@@ -10,6 +10,9 @@ import { Change, InsertChange } from './change';
 import { insertImport, addRoutesArrayDeclaration } from './route-utils';
 import { camelize, classify } from '@angular-devkit/core/src/utils/strings';
 import { ModuleOptions } from './find-module';
+import { createClassDeclaration } from '@schematics/angular/third_party/github.com/Microsoft/TypeScript/lib/typescript';
+import { ClassDeclaration, MethodDeclaration } from 'typescript';
+import { NoopChange } from '@schematics/angular/utility/change';
 
 
 /**
@@ -85,6 +88,183 @@ export function findNode(node: ts.Node, kind: ts.SyntaxKind, text: string): ts.N
   return foundNode;
 }
 
+export function insertImplements(
+  source: ts.SourceFile,
+  filePath: string,
+  name: string,
+  importFrom?: string,
+): Change[] {
+  const changes: Change[] = [];
+
+  const implementsNodes = findNodes(source, ts.SyntaxKind.HeritageClause)
+    .filter((node: any) => node.token === ts.SyntaxKind.ImplementsKeyword);
+
+  if (implementsNodes.length) { // Case when class already has "implements" definition
+
+    if (implementsNodes.length > 1) {
+      throw new Error(`[insertImplements] More than one implements keyword found in a file ${filePath}`);
+    }
+
+    const alreadyImplemented = (implementsNodes[0] as any).types.some((type) => type.expression?.text === 'OnDestroy')
+
+    if (!alreadyImplemented) {
+      changes.push(
+        insertAfterLastOccurrence(implementsNodes, `, ${name}`, filePath, 0),
+      );
+    }
+  } else { // Case when "implements" must be defined from scratch
+    const classesDeclarations = findNodes(source, ts.SyntaxKind.ClassDeclaration);
+
+    if (classesDeclarations.length) {
+      if (classesDeclarations.length > 1) {
+        throw new Error(`[insertImplements] More than one class declaration found in a file ${filePath}`);
+      }
+
+      const f = classesDeclarations[0]
+        .getChildren()
+        .filter((node) => node.kind === ts.SyntaxKind.OpenBraceToken);
+
+      const insertPosition = f[0].pos;
+      changes.push(
+        new InsertChange(filePath, insertPosition, ` implements ${name}`)
+      );
+    }
+  }
+
+  if (importFrom && changes.length) {
+    changes.push(
+      insertImport(
+        source,
+        filePath,
+        name,
+        importFrom,
+        false,
+      )
+    )
+  }
+
+  return changes;
+
+}
+
+export function insertNgOnDestroy(
+  source: ts.SourceFile,
+  filePath: string,
+): any {
+  let change: any = [];
+
+  const classDeclarations = findNodes(source, ts.SyntaxKind.ClassDeclaration);
+
+  if (classDeclarations.length > 1) {
+    throw new Error(`[ngOnDestroy] - More than one class declaration found in a file ${filePath}`);
+  }
+
+  const classDelcaration = classDeclarations.pop() as ClassDeclaration;
+
+  const onDestroyIndex = classDelcaration
+    .members
+    .findIndex((member: MethodDeclaration) => (member?.name as any)?.text === 'ngOnDestroy');
+
+  if (onDestroyIndex > -1) {
+
+  } else {
+
+    const ngHooks = ['ngOnInit', 'ngOnChanges', 'ngAfterViewInit', 'ngOnDestroy'];
+
+    const liveCycleIndex = classDelcaration
+      .members
+      .findIndex((member: MethodDeclaration) => ngHooks.includes((member?.name as any)?.text));
+
+    let insertPosition: number;
+
+    if (liveCycleIndex > -1) {
+      insertPosition = classDelcaration.members[liveCycleIndex].end;
+    } else {
+      insertPosition = getLastPublicMethod(source);
+    }
+
+    change = new InsertChange(
+      filePath,
+      insertPosition,
+      `
+  public ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
+  }
+`)
+  }
+
+  return change;
+
+}
+
+function getLastPublicMethod(source: ts.SourceFile): number {
+  const publicMethods = findNodes(source, ts.SyntaxKind.MethodDeclaration)
+    .filter((method) => {
+      return method.modifiers
+        .some((modifier) => {
+          return modifier.kind !== ts.SyntaxKind.PrivateKeyword && modifier.kind !== ts.SyntaxKind.ProtectedKeyword;
+        });
+  })
+
+  if (publicMethods.length > 0) {
+    return publicMethods.pop().getEnd();
+  } else {
+    const constructorNode = findNodes(source, ts.SyntaxKind.Constructor)[0];
+
+    if (constructorNode) {
+      return constructorNode.getEnd();
+    } else {
+      const classNode = findNodes(source, ts.SyntaxKind.ClassDeclaration)[0];
+
+      if (classNode) {
+        return classNode.getEnd() - 1;
+      }
+    }
+  }
+
+  return null;
+}
+
+
+function insertDestroyDeclaration(source): Change {
+
+  let insertPosition: number;
+
+  const publicProperties = findNodes(source, ts.SyntaxKind.PropertyDeclaration)
+    .filter((method) => {
+      return method.modifiers
+        .some((modifier) => {
+          return modifier.kind !== ts.SyntaxKind.PrivateKeyword && modifier.kind !== ts.SyntaxKind.ProtectedKeyword;
+        });
+    });
+
+  if (publicProperties.length > 0) {
+    insertPosition = publicProperties.pop().getEnd()
+  } else {
+    const classDeclaration = findNodes(source, ts.SyntaxKind.ClassDeclaration)[0];
+
+    const openBraceToken = classDeclaration
+      .getChildren()
+      .find((child) => child.kind === ts.SyntaxKind.OpenBraceToken);
+
+    if (openBraceToken) {
+      insertPosition = openBraceToken.end
+    }
+  }
+
+  if (insertPosition) {
+    return new InsertChange(
+      source,
+      insertPosition,
+      `\n
+  private _destroy$ = new Subject<void>();\n
+`
+    );
+  } else {
+    return new NoopChange();
+  }
+}
 
 /**
  * Helper for sorting nodes.
@@ -427,7 +607,7 @@ export function addDialogToComponentMetadata(
   relativePathToComponent: string
 ): any {
 
-  const changes: any = [];
+  const changes: Change[] = [];
   const dialogMethodName = 'openDialog';
   let dialogVarName = 'dialog';
 
@@ -472,9 +652,9 @@ export function addDialogToComponentMetadata(
     }).pop();
 
     let position = null;
-    const toInsertConstructor = "\
-    \t\t constructor(private _${dialogVarName}: MatDialog) {}\
-    ";
+    const toInsertConstructor = `
+  constructor(private _${dialogVarName}: MatDialog) {}
+`;
 
     if (firstMethod) {
       position = firstMethod.getFullStart()
@@ -520,6 +700,7 @@ export function addDialogToComponentMetadata(
   const toInsert = `\n\n  public ${dialogMethodName}(${camelize(singleModelName)}: any): void {
     const dialogRef = this._${dialogVarName}.open(${classify(singleName)}Component, {
       data: { ${camelize(singleModelName)} },
+      minWidth: '400px',
     });
 
     dialogRef
@@ -528,35 +709,11 @@ export function addDialogToComponentMetadata(
         takeUntil(this._destroy$),
       )
       .subscribe((response) => {
-        let update = false;
-
         if (response) {
-          update = this._listComponent.updateData(
-            response,
-            (data: any) => {
-              return data.id === response.id;
-            },
-          );
-        }
-
-        if (!update) {
-          this._listComponent.reload();
+          this._router.navigate([response.id], { relativeTo: this._route });
         }
       });
   }\n`;
-
-  const componentConstructor = findNodes(componentClass, ts.SyntaxKind.Constructor);
-  if (componentConstructor) {
-    const destroyInsertPosition = componentConstructor[0].getStart() - 2;
-
-    changes.push(
-      new InsertChange(
-        componentPath,
-        destroyInsertPosition,
-        `  private _destroy$ = new Subject<void>();\n\n`
-      ),
-    );
-  }
 
   changes.push(
     new InsertChange(componentPath, insertPosition, toInsert),
@@ -580,7 +737,15 @@ export function addDialogToComponentMetadata(
       `takeUntil`,
       'rxjs/operators',
       false,
-    )
+    ),
+    ...insertImplements(
+      source,
+      componentPath,
+      'OnDestroy',
+      '@angular/core'
+    ),
+    insertDestroyDeclaration(componentClass),
+    insertNgOnDestroy(source, componentPath || ''),
   );
   return changes;
 }
