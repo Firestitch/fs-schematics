@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';<% if (mode === 'full') { %>
+import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';<% if (mode === 'full') { %>
 import { Router, ActivatedRoute } from '@angular/router';<% } %>
 
 import { FsListComponent, FsListConfig } from '@firestitch/list';
@@ -14,6 +14,7 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 @Component({
   templateUrl: './<%=dasherize(name)%>.component.html',
   styleUrls: ['./<%=dasherize(name)%>.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class <%= classify(name) %>Component implements OnInit {
 

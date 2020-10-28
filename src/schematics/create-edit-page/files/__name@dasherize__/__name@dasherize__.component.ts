@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { FsMessage } from '@firestitch/message';<% if(titledCreateComponent) { %>
@@ -14,6 +14,7 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 @Component({
   templateUrl: './<%=dasherize(name)%>.component.html',
   styleUrls: ['./<%=dasherize(name)%>.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class <%= classify(name) %>Component implements OnInit, OnDestroy {
 
@@ -25,6 +26,7 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
   constructor(
     private _route: ActivatedRoute,
     private _router: Router,
+    private _cdRef: ChangeDetectorRef,
     private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
     private _message: FsMessage,<% if(titledCreateComponent) { %>
     private _navService: FsNavService,<% } %>
@@ -39,6 +41,8 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
       .subscribe((response) => {
         this.<%= camelize(singleModel) %> = response || {};<% if(titledCreateComponent) { %>
         this._setTitle();<% } %>
+
+        this._cdRef.markForCheck();
       });
   }
 

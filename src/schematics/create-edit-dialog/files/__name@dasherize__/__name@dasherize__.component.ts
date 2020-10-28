@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -12,6 +12,7 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 @Component({
   templateUrl: './<%=dasherize(name)%>.component.html',
   styleUrls: ['./<%=dasherize(name)%>.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class <%= classify(name) %>Component implements OnInit {
 
@@ -22,6 +23,7 @@ export class <%= classify(name) %>Component implements OnInit {
     private _dialogRef: MatDialogRef<<%= classify(name) %>Component>,
     private _message: FsMessage,
     private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
+    private _cdRef: ChangeDetectorRef,
   ) {}
 
   public ngOnInit(): void {
@@ -29,6 +31,7 @@ export class <%= classify(name) %>Component implements OnInit {
       this._<%= camelize(serviceName) %>.get(this._data.<%= camelize(singleModel) %>.id)
         .subscribe((response) => {
           this.<%= camelize(singleModel) %> = response;
+          this._cdRef.markForCheck();
         });
     } else {
       this.<%= camelize(singleModel) %> = { ...this._data.<%= camelize(singleModel) %> };

@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
@@ -9,6 +9,7 @@ import { tap } from 'rxjs/operators';
 @Component({
   templateUrl: './<%=dasherize(name)%>.component.html',
   styleUrls: ['./<%=dasherize(name)%>.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class <%= classify(name) %>Component {
 
