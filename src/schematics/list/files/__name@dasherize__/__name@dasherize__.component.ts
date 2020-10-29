@@ -45,7 +45,7 @@ export class <%= classify(name) %>Component implements OnInit {
         {
           label: 'Create',
           click: (event) => {<% if (mode === 'full') { %>
-            this._router.navigate(['create'], { relativeTo: this._route });<%} if (mode === 'dialog') {%>
+            this._router.navigate(['create'], { relativeTo: this._route });<%} if (mode === 'dialog' || mode === 'dialog-create-page-edit') {%>
             this.openDialog({});<%}%>
           },
         },

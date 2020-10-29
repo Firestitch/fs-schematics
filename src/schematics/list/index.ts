@@ -127,21 +127,42 @@ export function create(options: ListOptions): Rule {
       routableCreateComponent: config.routableCreateComponent,
     };
 
-    if (config.mode === 'full') {
-      extrenalSchematics.push(
-        schematic(
-          'create-edit-page',
-          childSchematicOptions
-        )
-      )
-    } else if (config.mode === 'dialog') {
-      extrenalSchematics.push(
-        schematic(
-          'create-edit-dialog',
-          childSchematicOptions
-        ));
-    }
 
+    switch (config.mode) {
+      case 'full': {
+        extrenalSchematics.push(
+          schematic(
+            'create-edit-page',
+            childSchematicOptions
+          )
+        );
+      } break;
+
+      case 'dialog': {
+        extrenalSchematics.push(
+          schematic(
+            'create-edit-dialog',
+            childSchematicOptions
+          )
+        );
+      } break;
+
+      case 'dialog-create-page-edit': {
+        extrenalSchematics.push(
+          schematic(
+            'create-edit-page',
+            childSchematicOptions
+          ),
+          schematic(
+            'create-edit-dialog',
+            {
+              ...childSchematicOptions,
+              ...{ name: `${childSchematicOptions.name}-create` },
+            }
+          )
+        );
+      } break;
+    }
     const isRoutingExists = tree.exists(config.routingModule);
 
     const rule = chain([

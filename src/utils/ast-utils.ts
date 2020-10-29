@@ -633,10 +633,26 @@ export function addDialogToComponentMetadata(
         declaration += classConstructor.parameters.hasTrailingComma ? '\n' : ',\n';
       }
 
-      declaration += `    private _${dialogVarName}: MatDialog,`;
+      declaration += `    private _${dialogVarName}: MatDialog,
+    private _route: ActivatedRoute,
+    private _router: Router,`;
 
       changes.push(
         new InsertChange(componentPath, position, declaration),
+        insertImport(
+          source,
+          componentPath || '',
+          'ActivatedRoute',
+          '@angular/router',
+          false,
+        ),
+        insertImport(
+          source,
+          componentPath || '',
+          'Router',
+          '@angular/router',
+          false,
+        ),
         insertImport(
           source,
           componentPath || '',
