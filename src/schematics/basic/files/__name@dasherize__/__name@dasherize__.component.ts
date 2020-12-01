@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 
 @Component({<%if(type==='component'){%>
   selector: 'app-<%=dasherize(name)%>',<%}%>
@@ -8,4 +8,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 })
 export class <%= classify(name) %>Component {
 
+  constructor(private _cdRef: ChangeDetectorRef) {
+
+  }
 }

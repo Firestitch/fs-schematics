@@ -1,4 +1,4 @@
-import { Component, Inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Inject, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
@@ -16,6 +16,7 @@ export class <%= classify(name) %>Component {
   constructor(
     @Inject(MAT_DIALOG_DATA) private _data: any,
     private _dialogRef: MatDialogRef<<%= classify(name) %>Component>,
+    private _cdRef: ChangeDetectorRef,
   ) {}
 
   public save = () => {

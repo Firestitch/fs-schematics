@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';<% if (mode === 'full') { %>
+import { Component, OnInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';<% if (mode === 'full') { %>
 import { Router, ActivatedRoute } from '@angular/router';<% } %>
 
 import { FsListComponent, FsListConfig } from '@firestitch/list';
@@ -24,6 +24,7 @@ export class <%= classify(name) %>Component implements OnInit {
   private _listComponent: FsListComponent;
 
   constructor(
+    private _cdRef: ChangeDetectorRef,
     private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,<% if (titledCreateComponent) { %>
     private _navService: FsNavService,<% } %><% if (mode === 'full') { %>
     private _route: ActivatedRoute,
