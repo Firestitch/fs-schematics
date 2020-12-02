@@ -726,7 +726,7 @@ export function addDialogToComponentMetadata(
       )
       .subscribe((response) => {
         if (response) {
-          this._router.navigate([response.id], { relativeTo: this._route });
+          this.listComponent.reload();
         }
       });
   }\n`;

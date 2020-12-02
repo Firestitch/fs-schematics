@@ -21,7 +21,7 @@ export class <%= classify(name) %>Component implements OnInit {
   public listConfig: FsListConfig;
 
   @ViewChild(FsListComponent)
-  private _listComponent: FsListComponent;
+  public listComponent: FsListComponent;
 
   constructor(
     private _cdRef: ChangeDetectorRef,
