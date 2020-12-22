@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ChangeDetectionStrategy, ChangeDetectorRe
 import { Router, ActivatedRoute } from '@angular/router';<% } %>
 
 import { FsListComponent, FsListConfig } from '@firestitch/list';
-import { ItemType } from '@firestitch/filter';<% if (titledCreateComponent) { %>
+import { ItemType } from '@firestitch/filter';<% if (titledComponent) { %>
 import { FsNavService } from '@firestitch/nav';
 <% } %>
 
@@ -25,13 +25,13 @@ export class <%= classify(name) %>Component implements OnInit {
 
   constructor(
     private _cdRef: ChangeDetectorRef,
-    private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,<% if (titledCreateComponent) { %>
+    private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,<% if (titledComponent) { %>
     private _navService: FsNavService,<% } %><% if (mode === 'full') { %>
     private _route: ActivatedRoute,
     private _router: Router,<% } %>
   ) {}
 
-  public ngOnInit(): void {<% if (titledCreateComponent) { %>
+  public ngOnInit(): void {<% if (titledComponent) { %>
     this._setTitle();
 <% } %>
     this.listConfig = {
@@ -82,7 +82,7 @@ export class <%= classify(name) %>Component implements OnInit {
         },
       },
     };
-  }<% if (titledCreateComponent) { %>
+  }<% if (titledComponent) { %>
 
   private _setTitle(): void {
     this._navService.setTitle('<%= capitalize(name) %>');

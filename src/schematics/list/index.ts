@@ -122,7 +122,7 @@ export function create(options: ListOptions): Rule {
       singleModel: config.singleModel,
       pluralModel: config.pluralModel,
       secondLevel: true,
-      titledCreateComponent: config.titledCreateComponent,
+      titledComponent: config.titledCreateComponent,
       nestedPath: config.nestedPath,
       routableCreateComponent: config.routableCreateComponent,
     };

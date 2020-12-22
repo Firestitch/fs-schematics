@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { FsMessage } from '@firestitch/message';<% if(titledCreateComponent) { %>
+import { FsMessage } from '@firestitch/message';<% if(titledComponent) { %>
 import { FsNavService } from '@firestitch/nav';<% } %>
 import { RouteObserver } from '@firestitch/core';
 
@@ -28,7 +28,7 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
     private _router: Router,
     private _cdRef: ChangeDetectorRef,
     private _<%= camelize(serviceName) %>: <%= classify(serviceName) %>,
-    private _message: FsMessage,<% if(titledCreateComponent) { %>
+    private _message: FsMessage,<% if(titledComponent) { %>
     private _navService: FsNavService,<% } %>
   ) {}
 
@@ -39,7 +39,7 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
         takeUntil(this._destroy$),
       )
       .subscribe((response) => {
-        this.<%= camelize(singleModel) %> = response || {};<% if(titledCreateComponent) { %>
+        this.<%= camelize(singleModel) %> = response || {};<% if(titledComponent) { %>
         this._setTitle();<% } %>
 
         this._cdRef.markForCheck();
@@ -67,7 +67,7 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
     this._destroy$.next();
     this._destroy$.complete();
   }
-<% if(titledCreateComponent) { %>
+<% if(titledComponent) { %>
   private _setTitle(): void {
     if (this.<%= camelize(singleModel) %>.id) {
       this._navService.setTitle(this.<%= camelize(singleModel) %>.name, '<%= capitalize(singleModel)%>');
