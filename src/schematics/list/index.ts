@@ -151,7 +151,11 @@ export function create(options: ListOptions): Rule {
         extrenalSchematics.push(
           schematic(
             'create-edit-page',
-            childSchematicOptions
+            {
+              ...childSchematicOptions,
+              routableComponent: true,
+              routableCreateComponent: true,
+            }
           ),
           schematic(
             'create-edit-dialog',
