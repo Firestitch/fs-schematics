@@ -1,6 +1,6 @@
 {
   "name": "@firestitch/schematics",
-  "version": "7.3.17",
+  "version": "7.3.18",
   "description": "",
   "scripts": {
     "build": "npm-run-all clean:dist compile copy:collection copy:files",
