@@ -1,10 +1,11 @@
-import { Component, Inject, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, Inject, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { FsMessage } from '@firestitch/message';
 
-import { tap } from 'rxjs/operators';
+import { Subject, of } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
 
 import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 
@@ -14,9 +15,11 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
   styleUrls: ['./<%=dasherize(name)%>.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class <%= classify(name) %>Component implements OnInit {
+export class <%= classify(name) %>Component implements OnInit, OnDestroy {
 
   public <%= camelize(singleModel) %> = null;
+
+  private _destroy$ = new Subject<void>();
 
   constructor(
     @Inject(MAT_DIALOG_DATA) private _data: any,
@@ -27,15 +30,24 @@ export class <%= classify(name) %>Component implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-    if (this._data.<%= camelize(singleModel) %>.id) {
-      this._<%= camelize(serviceName) %>.get(this._data.<%= camelize(singleModel) %>.id)
-        .subscribe((response) => {
-          this.<%= camelize(singleModel) %> = response;
-          this._cdRef.markForCheck();
-        });
-    } else {
-      this.<%= camelize(singleModel) %> = { ...this._data.<%= camelize(singleModel) %> };
-    }
+    of(this._data.<%= camelize(singleModel) %>)
+      .pipe(
+        switchMap((<%= camelize(singleModel) %>) => {
+          return <%= camelize(singleModel) %>.id
+            ? this._<%= camelize(serviceName) %>.get(this._data.<%= camelize(singleModel) %>.id)
+            : of(<%= camelize(singleModel) %>);
+        }),
+        takeUntil(this._destroy$),
+      )
+      .subscribe((<%= camelize(singleModel) %>) => {
+        this.<%= camelize(singleModel) %> = { ...<%= camelize(singleModel) %> };
+        this._cdRef.markForCheck();
+      });
+  }
+
+  public ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   public save = () => {
