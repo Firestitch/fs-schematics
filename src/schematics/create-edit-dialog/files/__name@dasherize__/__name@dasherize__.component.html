@@ -1,6 +1,6 @@
 <form fsForm [submit]="save" *fsSkeletonForm="<%= camelize(singleModel) %>">
   <fs-dialog>
-    <h1 mat-dialog-title>{{<%= camelize(singleModel) %>.id ? 'Edit <%= capitalize(startCase(singleModel)) %>' : 'Create <%= capitalize(startCase(singleModel)) %>'}}</h1>
+    <h1 mat-dialog-title>{{<%= camelize(singleModel) %>.id ? '<%= capitalize(startCase(singleModel)) %>' : 'Create <%= capitalize(startCase(singleModel)) %>'}}</h1>
     <div mat-dialog-content>
 
       <div fxLayout="column">
