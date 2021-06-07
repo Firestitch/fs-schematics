@@ -15,8 +15,7 @@ import { strings } from '@angular-devkit/core';
 
 import {
   addDeclarationToNgModule,
-  addDialogToParentComponent,
-  addEntryComponentDeclarationToNgModule,
+  addDialogToParentComponent, importModulesToNgModule,
   updateIndexFile,
 } from '../../utils/ng-module-utils';
 
@@ -101,7 +100,16 @@ export function create(options: any): Rule {
       branchAndMerge(chain([
         mergeWith(templateSource),
         addDeclarationToNgModule(customOptions, !!options.includedModuleExports),
-        addEntryComponentDeclarationToNgModule(customOptions, false),
+        importModulesToNgModule(customOptions, [
+          ['FormsModule', '@angular/forms'],
+          ['MatDialogModule', '@angular/material/dialog'],
+          ['FlexLayoutModule', '@angular/flex-layout'],
+          ['MatButtonModule', '@angular/material/button'],
+          ['FsListModule', '@firestitch/list'],
+          ['FsDialogModule', '@firestitch/dialog'],
+          ['FsFormModule', '@firestitch/form'],
+          ['FsSkeletonModule', '@firestitch/skeleton'],
+        ]),
         addToParent ? addDialogToParentComponent(options) : noop(),
         updateIndexFile(options, ExpansionType.Component),
         routable ? addResolverSchematic(options) : noop(),

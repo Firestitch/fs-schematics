@@ -105,6 +105,7 @@ export function insertImport(source: ts.SourceFile, fileToEdit: string, symbolNa
   if (useStrict.length > 0) {
     fallbackPos = useStrict[0].end;
   }
+
   const open = isDefault ? '' : '{ ';
   const close = isDefault ? '' : ' }';
   // if there are no imports or 'use strict' statement, insert import at beginning of file
@@ -124,7 +125,7 @@ export function insertImport(source: ts.SourceFile, fileToEdit: string, symbolNa
     toInsert,
     fileToEdit,
     fallbackPos,
-    ts.SyntaxKind.StringLiteral,
+    ts.SyntaxKind.StringLiteral
   );
 }
 

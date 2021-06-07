@@ -16,7 +16,7 @@ import { strings } from '@angular-devkit/core';
 
 import {
   addDeclarationToNgModule,
-  addDeclarationToRoutingModule,
+  addDeclarationToRoutingModule, importModulesToNgModule,
   updateIndexFile,
 } from '../../utils/ng-module-utils';
 
@@ -81,6 +81,13 @@ export function create(options: any): Rule {
       branchAndMerge(chain([
         mergeWith(templateSource),
         addDeclarationToNgModule(config, false),
+        importModulesToNgModule(config, [
+          ['RouterModule', '@angular/router'],
+          ['CommonModule', '@angular/common'],
+          ['MatCardModule', '@angular/material/card'],
+          ['MatTabsModule', '@angular/material/tabs'],
+          ['FsTabsModule', '@firestitch/tabs'],
+        ]),
         isRoutingExists && config.type === 'view' ? addDeclarationToRoutingModule(config) : noop(),
         indexFileExists ? updateIndexFile(config, ExpansionType.Component) : noop(),
       ]))

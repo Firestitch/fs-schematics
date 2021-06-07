@@ -15,7 +15,12 @@ import {
 } from '@angular-devkit/schematics';
 import { strings } from '@angular-devkit/core';
 import { WorkspaceDefinition } from '@angular-devkit/core/src/workspace';
-import { addDeclarationToNgModule, addDeclarationToRoutingModule, updateIndexFile } from '../../utils/ng-module-utils';
+import {
+  addDeclarationToNgModule,
+  addDeclarationToRoutingModule,
+  importModulesToNgModule,
+  updateIndexFile
+} from '../../utils/ng-module-utils';
 import { findModuleFromOptions } from '../../utils/find-module';
 import { ExpansionType } from '../../utils/models/expansion-type';
 import {
@@ -97,6 +102,15 @@ export function create(options: any): Rule {
       branchAndMerge(chain([
         mergeWith(templateSource),
         addDeclarationToNgModule(options, !!options.includedModuleExports),
+        importModulesToNgModule(options, [
+          ['FormsModule', '@angular/forms'],
+          ['MatCardModule', '@angular/material/card'],
+          ['MatButtonModule', '@angular/material/button'],
+          ['MatInputModule', '@angular/material/input'],
+          ['FsFormModule', '@firestitch/form'],
+          ['FsSkeletonModule', '@firestitch/skeleton'],
+          ['FlexLayoutModule', '@angular/flex-layout'],
+        ]),
         options.isRouting && options.type === 'view' ? addDeclarationToRoutingModule(options) : noop(),
         updateIndexFile(options, ExpansionType.Component),
         routable ? addResolverSchematic(options) : noop(),

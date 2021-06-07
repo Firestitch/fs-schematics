@@ -285,6 +285,7 @@ function nodesByPosition(first: ts.Node, second: ts.Node): number {
  * @param file file to insert changes into
  * @param fallbackPos position to insert if toInsert happens to be the first occurence
  * @param syntaxKind the ts.SyntaxKind of the subchildren to insert after
+ * @param insertInOrderAfert the ts.SyntaxKind of the subchildren to insert after
  * @return Change instance
  * @throw Error if toInsert is first occurence but fall back is not set
  */
@@ -716,7 +717,6 @@ export function addDialogToComponentMetadata(
   const toInsert = `\n\n  public ${dialogMethodName}(${camelize(singleModelName)}: any): void {
     const dialogRef = this._${dialogVarName}.open(${classify(singleName)}Component, {
       data: { ${camelize(singleModelName)} },
-      minWidth: '400px',
     });
 
     dialogRef

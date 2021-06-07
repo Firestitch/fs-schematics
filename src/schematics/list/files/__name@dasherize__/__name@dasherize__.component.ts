@@ -18,10 +18,10 @@ import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 })
 export class <%= classify(name) %>Component implements OnInit {
 
-  public listConfig: FsListConfig;
-
   @ViewChild(FsListComponent)
   public listComponent: FsListComponent;
+
+  public listConfig: FsListConfig;
 
   constructor(
     private _cdRef: ChangeDetectorRef,

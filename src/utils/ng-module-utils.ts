@@ -56,6 +56,13 @@ export function addModuleDeclarationToNgModule(options: ModuleOptions): Rule {
   }
 }
 
+export function importModulesToNgModule(options: ModuleOptions, imports: string[][]): Rule {
+  return (host: Tree) => {
+    importModules(host, options, imports);
+    return host;
+  }
+}
+
 export function addEntryComponentDeclarationToNgModule(options: ModuleOptions, exports: boolean): Rule {
   return (host: Tree) => {
     addEntryComponentDeclaration(host, options);
@@ -458,6 +465,38 @@ function addModuleDeclaration(host: Tree, options: ModuleOptions) {
     modulePath,
     strings.classify(`${options.name}Module`),
     relativePath);
+
+  const recorder = host.beginUpdate(modulePath);
+  for (const change of changes) {
+    if (change instanceof InsertChange) {
+      recorder.insertLeft(change.pos, change.toAdd);
+    }
+  }
+  host.commitUpdate(recorder);
+}
+
+function importModules(host: Tree, options: ModuleOptions, modulesToImport: string[][]) {
+  const modulePath = options.module;
+
+  const text = host.read(modulePath);
+  if (text === null) {
+    throw new SchematicsException(`File ${modulePath} does not exist.`);
+  }
+  const sourceText = text.toString('utf-8');
+  const source = ts.createSourceFile(modulePath, sourceText, ts.ScriptTarget.Latest, true);
+
+  const changes = [];
+
+  modulesToImport.forEach((importTarget) => {
+    const change = addImportToModule(
+      source,
+      modulePath,
+      importTarget[0],
+      importTarget[1]
+    );
+
+    changes.push(...change);
+  });
 
   const recorder = host.beginUpdate(modulePath);
   for (const change of changes) {

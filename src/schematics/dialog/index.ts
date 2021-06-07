@@ -16,7 +16,7 @@ import { strings } from '@angular-devkit/core';
 
 import {
   addDeclarationToNgModule,
-  addDeclarationToRoutingModule,
+  addDeclarationToRoutingModule, importModulesToNgModule,
   updateIndexFile,
 } from '../../utils/ng-module-utils';
 
@@ -81,6 +81,16 @@ export function create(options: any): Rule {
       branchAndMerge(chain([
         mergeWith(templateSource),
         addDeclarationToNgModule(config, !!config.includedModuleExports),
+        importModulesToNgModule(config, [
+          ['FsListModule', '@firestitch/list'],
+          ['FlexLayoutModule', '@angular/flex-layout'],
+          ['MatButtonModule', '@angular/material/button'],
+          ['MatDialogModule', '@angular/material/dialog'],
+          ['MatInputModule', '@angular/material/input'],
+          ['FsDialogModule', '@firestitch/dialog'],
+          ['FsFormModule', '@firestitch/form'],
+          ['FsSkeletonModule', '@firestitch/skeleton'],
+        ]),
         isRoutingExists && config.type === 'view' ? addDeclarationToRoutingModule(config) : noop(),
         indexFileExists ? updateIndexFile(config, ExpansionType.Component) : noop(),
       ]))
