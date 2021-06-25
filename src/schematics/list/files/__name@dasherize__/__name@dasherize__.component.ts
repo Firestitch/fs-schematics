@@ -10,12 +10,18 @@ import { map } from 'rxjs/operators';
 
 import { <%= classify(serviceName) %> } from '<%= relativeServicePath %>';
 
-
+<% if (routableComponent) { %>
 @Component({
   templateUrl: './<%=dasherize(name)%>.component.html',
   styleUrls: ['./<%=dasherize(name)%>.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-})
+})<% } %><% if (!routableComponent) { %>
+@Component({
+  selector: 'app-<%=name%>',
+  templateUrl: './<%=dasherize(name)%>.component.html',
+  styleUrls: ['./<%=dasherize(name)%>.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})<% } %>
 export class <%= classify(name) %>Component implements OnInit {
 
   @ViewChild(FsListComponent)
