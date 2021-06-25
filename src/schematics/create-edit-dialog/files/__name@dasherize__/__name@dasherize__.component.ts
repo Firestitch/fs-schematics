@@ -53,12 +53,11 @@ export class <%= classify(name) %>Component implements OnInit, OnDestroy {
   public save = () => {
     return this._<%= camelize(serviceName) %>.save(this.<%= camelize(singleModel) %>)
       .pipe(
-        tap(
-          (response) => {
-            this._message.success('Saved Changes');
-            this._dialogRef.close(response);
-          }),
+        tap((<%= camelize(singleModel) %>) => {
+          this._message.success('Saved Changes');
+          this._dialogRef.close(<%= camelize(singleModel) %>);
+        }),
       );
-  }
+  };
 
 }
